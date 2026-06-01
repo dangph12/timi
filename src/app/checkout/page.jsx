@@ -1,0 +1,224 @@
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { Button } from '@/components/ui/button';
+import {
+  Field,
+  FieldLabel,
+  FieldGroup,
+  FieldError
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const schema = yup.object().shape({
+  fullName: yup.string().required('Required'),
+  phoneNumber: yup.string().required('Required'),
+  email: yup.string().email('Invalid email').required('Required'),
+  consent: yup.boolean().oneOf([true], 'Must accept policy'),
+  address: yup.string().required('Required'),
+  deliveryNotes: yup.string()
+});
+
+export default function CheckoutPage() {
+  const form = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      fullName: '',
+      phoneNumber: '',
+      email: '',
+      consent: false,
+      address: '',
+      deliveryNotes: ''
+    }
+  });
+
+  return (
+    <div className='w-full'>
+      <div className='grid grid-cols-1 md:h-screen md:grid-cols-2'>
+        <form
+          onSubmit={form.handleSubmit(console.log)}
+          className='px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-y-auto'
+        >
+          <div className='text-primary text-5xl font-bold italic tracking-tighter mb-4 shrink-0'>
+            tỉ mỉ
+          </div>
+
+          <div className='flex-1 flex flex-col min-h-0 justify-center'>
+            <section className='space-y-2'>
+              <h1 className='text-3xl font-black'>Contact</h1>
+              <FieldGroup>
+                <Controller
+                  name='fullName'
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel className='text-base'>Full name</FieldLabel>
+                      <Input className='h-11 rounded-lg' {...field} />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name='phoneNumber'
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel className='text-base'>
+                        Phone number
+                      </FieldLabel>
+                      <Input className='h-11 rounded-lg' {...field} />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name='email'
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel className='text-base'>Email</FieldLabel>
+                      <Input className='h-11 rounded-lg' {...field} />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+
+              <Controller
+                name='consent'
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field className='pt-1'>
+                    <div
+                      className='text-sm italic font-medium leading-tight cursor-pointer'
+                      onClick={() => field.onChange(!field.value)}
+                    >
+                      I confirm that I am at least 18 years of age and that I
+                      have read and agreed to the privacy policy.
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </section>
+
+            <section className='mt-4 space-y-2'>
+              <h2 className='text-3xl font-black'>Delivery</h2>
+              <FieldGroup>
+                <Controller
+                  name='address'
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel className='text-base'>Address</FieldLabel>
+                      <Input className='h-11 rounded-lg' {...field} />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name='deliveryNotes'
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel className='text-base'>
+                        Delivery notes
+                      </FieldLabel>
+                      <Input className='h-11 rounded-lg' {...field} />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+            </section>
+          </div>
+
+          <div className='mt-4 shrink-0'>
+            <Skeleton className='h-16 w-full rounded-none bg-foreground' />
+          </div>
+        </form>
+
+        <aside className='bg-aside px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-y-auto'>
+          <div className='flex flex-col h-full'>
+            <div className='space-y-4 shrink-0'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-4'>
+                  <Skeleton className='h-12 w-12 rounded-none bg-foreground' />
+                  <span className='text-sm tracking-wide'>TỈ MỈ DIY BOX</span>
+                </div>
+                <span className='text-sm'>59.000đ</span>
+              </div>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-4'>
+                  <Skeleton className='h-12 w-12 rounded-none bg-foreground' />
+                  <span className='text-sm tracking-wide'>
+                    STANDARD VERSION
+                  </span>
+                </div>
+                <span className='text-sm'>120.000đ</span>
+              </div>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-4'>
+                  <Skeleton className='h-12 w-12 rounded-none bg-foreground' />
+                  <span className='text-sm tracking-wide'>KEYRING</span>
+                </div>
+                <span className='text-sm'>0đ</span>
+              </div>
+            </div>
+
+            <div className='flex-1 flex items-center py-4 min-h-0'>
+              <Skeleton className='w-[85%] h-full min-h-[100px] rounded-none bg-foreground' />
+            </div>
+
+            <div className='space-y-4 shrink-0 mt-2'>
+              <div className='flex gap-4'>
+                <Input
+                  placeholder='Discount code'
+                  className='h-12 bg-background rounded-lg text-base'
+                />
+                <Button
+                  variant='secondary'
+                  className='h-12 px-6 bg-btn-muted text-muted-foreground font-medium rounded-lg hover:bg-btn-muted/80'
+                >
+                  Apply
+                </Button>
+              </div>
+
+              <div className='space-y-2 pt-2'>
+                <div className='flex justify-between text-base'>
+                  <span>Subtotal</span>
+                  <span>179.000đ</span>
+                </div>
+                <div className='flex justify-between text-base'>
+                  <span>Shipping</span>
+                  <span>0đ</span>
+                </div>
+                <div className='flex justify-between text-3xl font-black pt-2'>
+                  <span>Total</span>
+                  <span>0đ</span>
+                </div>
+              </div>
+
+              <Button className='w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2'>
+                PAY NOW
+              </Button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
+}
