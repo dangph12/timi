@@ -34,150 +34,197 @@ export default function CheckoutPage() {
   });
 
   return (
-    <div className='container mx-auto max-w-6xl'>
-      <div className='grid min-h-screen md:grid-cols-[1fr_500px]'>
+    <div className='w-full'>
+      <div className='grid h-screen grid-cols-1 md:grid-cols-2 overflow-hidden'>
+        {/* Left Form Column */}
         <form
           onSubmit={form.handleSubmit(console.log)}
-          className='px-8 py-6 space-y-6'
+          // Reduced py-6/8 to py-4/6 to save vertical space
+          className='px-8 py-4 md:px-20 md:py-6 flex flex-col h-full overflow-hidden'
         >
-          <section className='space-y-4'>
-            <h1 className='text-3xl font-bold'>Contact</h1>
-            <FieldGroup>
-              <Controller
-                name='fullName'
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel>Full name</FieldLabel>
-                    <Input {...field} />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-              <Controller
-                name='phoneNumber'
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel>Phone number</FieldLabel>
-                    <Input {...field} />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-              <Controller
-                name='email'
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel>Email</FieldLabel>
-                    <Input {...field} />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-            </FieldGroup>
+          {/* Reduced mb-6 to mb-4 */}
+          <div className='text-brand text-5xl font-bold italic tracking-tighter mb-4 shrink-0'>
+            tỉ mỉ
+          </div>
 
-            <Controller
-              name='consent'
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <div className='flex items-center gap-2'>
-                    <input
-                      type='checkbox'
-                      checked={field.value}
-                      onChange={e => field.onChange(e.target.checked)}
-                      className='h-4 w-4'
-                    />
-                    <span className='text-sm'>
+          {/* Removed overflow-y-auto completely so it behaves as a static block */}
+          <div className='flex-1 flex flex-col min-h-0 justify-center'>
+            {/* Reduced space-y-3 to space-y-2 */}
+            <section className='space-y-2'>
+              <h1 className='text-3xl font-black'>Contact</h1>
+              <FieldGroup>
+                <Controller
+                  name='fullName'
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel className='text-base'>Full name</FieldLabel>
+                      <Input className='h-11 rounded-lg' {...field} />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name='phoneNumber'
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel className='text-base'>
+                        Phone number
+                      </FieldLabel>
+                      <Input className='h-11 rounded-lg' {...field} />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name='email'
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel className='text-base'>Email</FieldLabel>
+                      <Input className='h-11 rounded-lg' {...field} />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+
+              <Controller
+                name='consent'
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field className='pt-1'>
+                    <div
+                      className='text-sm italic font-medium leading-tight cursor-pointer'
+                      onClick={() => field.onChange(!field.value)}
+                    >
                       I confirm that I am at least 18 years of age and that I
                       have read and agreed to the privacy policy.
-                    </span>
-                  </div>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </section>
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </section>
 
-          <section className='space-y-4'>
-            <h2 className='text-3xl font-bold'>Delivery</h2>
-            <FieldGroup>
-              <Controller
-                name='address'
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel>Address</FieldLabel>
-                    <Input {...field} />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-              <Controller
-                name='deliveryNotes'
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel>Delivery notes</FieldLabel>
-                    <Input {...field} />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-            </FieldGroup>
-          </section>
-          <Skeleton className='h-16 w-full rounded-lg' />
+            {/* Reduced mt-6 to mt-4 */}
+            <section className='mt-4 space-y-2'>
+              <h2 className='text-3xl font-black'>Delivery</h2>
+              <FieldGroup>
+                <Controller
+                  name='address'
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel className='text-base'>Address</FieldLabel>
+                      <Input className='h-11 rounded-lg' {...field} />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name='deliveryNotes'
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel className='text-base'>
+                        Delivery notes
+                      </FieldLabel>
+                      <Input className='h-11 rounded-lg' {...field} />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+            </section>
+          </div>
+
+          {/* Reduced height of bottom skeleton from h-20 to h-16 to ensure form fits */}
+          <div className='mt-4 shrink-0'>
+            <Skeleton className='h-16 w-full rounded-none bg-foreground' />
+          </div>
         </form>
 
-        <aside className='border-l bg-muted/20 px-8 py-6'>
-          <div className='space-y-6'>
-            <div className='space-y-3'>
-              {['TỈ MỈ DIY BOX', 'STANDARD VERSION', 'KEYRING'].map(item => (
-                <div key={item} className='flex items-center justify-between'>
-                  <div className='flex items-center gap-3'>
-                    <Skeleton className='h-10 w-10' />
-                    <span>{item}</span>
-                  </div>
-                  <Skeleton className='h-4 w-16' />
+        {/* Right Aside Column */}
+        <aside className='bg-aside px-8 py-4 md:px-20 md:py-6 flex flex-col h-full overflow-hidden'>
+          <div className='flex flex-col h-full'>
+            <div className='space-y-4 shrink-0'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-4'>
+                  <Skeleton className='h-12 w-12 rounded-none bg-foreground' />
+                  <span className='text-sm tracking-wide'>TỈ MỈ DIY BOX</span>
                 </div>
-              ))}
-            </div>
-            <div className='flex justify-center'>
-              <Skeleton className='h-52 w-44 rounded-xl' />
-            </div>
-            <div className='flex gap-2'>
-              <Input placeholder='Discount code' />
-              <Button variant='secondary'>Apply</Button>
-            </div>
-            <div className='space-y-3 border-t pt-4'>
-              <div className='flex justify-between'>
-                <span>Subtotal</span>
-                <Skeleton className='h-4 w-16' />
+                <span className='text-sm'>59.000đ</span>
               </div>
-              <div className='flex justify-between'>
-                <span>Shipping</span>
-                <Skeleton className='h-4 w-16' />
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-4'>
+                  <Skeleton className='h-12 w-12 rounded-none bg-foreground' />
+                  <span className='text-sm tracking-wide'>
+                    STANDARD VERSION
+                  </span>
+                </div>
+                <span className='text-sm'>120.000đ</span>
               </div>
-              <div className='flex justify-between text-2xl font-bold'>
-                <span>Total</span>
-                <Skeleton className='h-8 w-24' />
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-4'>
+                  <Skeleton className='h-12 w-12 rounded-none bg-foreground' />
+                  <span className='text-sm tracking-wide'>KEYRING</span>
+                </div>
+                <span className='text-sm'>0đ</span>
               </div>
             </div>
-            <Button className='w-full h-14'>PAY NOW</Button>
+
+            {/* Allowed min-h to go a bit smaller so it never pushes the layout */}
+            <div className='flex-1 flex items-center py-4 min-h-0'>
+              <Skeleton className='w-[85%] h-full min-h-[100px] rounded-none bg-foreground' />
+            </div>
+
+            <div className='space-y-4 shrink-0 mt-2'>
+              <div className='flex gap-4'>
+                <Input
+                  placeholder='Discount code'
+                  className='h-12 bg-background rounded-lg text-base'
+                />
+                <Button
+                  variant='secondary'
+                  className='h-12 px-6 bg-btn-muted text-muted-foreground font-medium rounded-lg hover:bg-btn-muted/80'
+                >
+                  Apply
+                </Button>
+              </div>
+
+              <div className='space-y-2 pt-2'>
+                <div className='flex justify-between text-base'>
+                  <span>Subtotal</span>
+                  <span>179.000đ</span>
+                </div>
+                <div className='flex justify-between text-base'>
+                  <span>Shipping</span>
+                  <span>0đ</span>
+                </div>
+                <div className='flex justify-between text-3xl font-black pt-2'>
+                  <span>Total</span>
+                  <span>0đ</span>
+                </div>
+              </div>
+
+              <Button className='w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2'>
+                PAY NOW
+              </Button>
+            </div>
           </div>
         </aside>
       </div>
