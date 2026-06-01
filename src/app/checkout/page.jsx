@@ -35,21 +35,16 @@ export default function CheckoutPage() {
 
   return (
     <div className='w-full'>
-      <div className='grid h-screen grid-cols-1 md:grid-cols-2 overflow-hidden'>
-        {/* Left Form Column */}
+      <div className='grid grid-cols-1 md:h-screen md:grid-cols-2'>
         <form
           onSubmit={form.handleSubmit(console.log)}
-          // Reduced py-6/8 to py-4/6 to save vertical space
-          className='px-8 py-4 md:px-20 md:py-6 flex flex-col h-full overflow-hidden'
+          className='px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-y-auto'
         >
-          {/* Reduced mb-6 to mb-4 */}
           <div className='text-brand text-5xl font-bold italic tracking-tighter mb-4 shrink-0'>
             tỉ mỉ
           </div>
 
-          {/* Removed overflow-y-auto completely so it behaves as a static block */}
           <div className='flex-1 flex flex-col min-h-0 justify-center'>
-            {/* Reduced space-y-3 to space-y-2 */}
             <section className='space-y-2'>
               <h1 className='text-3xl font-black'>Contact</h1>
               <FieldGroup>
@@ -116,7 +111,6 @@ export default function CheckoutPage() {
               />
             </section>
 
-            {/* Reduced mt-6 to mt-4 */}
             <section className='mt-4 space-y-2'>
               <h2 className='text-3xl font-black'>Delivery</h2>
               <FieldGroup>
@@ -152,14 +146,12 @@ export default function CheckoutPage() {
             </section>
           </div>
 
-          {/* Reduced height of bottom skeleton from h-20 to h-16 to ensure form fits */}
           <div className='mt-4 shrink-0'>
             <Skeleton className='h-16 w-full rounded-none bg-foreground' />
           </div>
         </form>
 
-        {/* Right Aside Column */}
-        <aside className='bg-aside px-8 py-4 md:px-20 md:py-6 flex flex-col h-full overflow-hidden'>
+        <aside className='bg-aside px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-y-auto'>
           <div className='flex flex-col h-full'>
             <div className='space-y-4 shrink-0'>
               <div className='flex items-center justify-between'>
@@ -187,7 +179,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Allowed min-h to go a bit smaller so it never pushes the layout */}
             <div className='flex-1 flex items-center py-4 min-h-0'>
               <Skeleton className='w-[85%] h-full min-h-[100px] rounded-none bg-foreground' />
             </div>
