@@ -40,7 +40,7 @@ export default function CheckoutPage() {
           onSubmit={form.handleSubmit(console.log)}
           className='px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-y-auto'
         >
-          <div className='text-brand text-5xl font-bold italic tracking-tighter mb-4 shrink-0'>
+          <div className='text-primary text-5xl font-bold italic tracking-tighter mb-4 shrink-0'>
             tỉ mỉ
           </div>
 

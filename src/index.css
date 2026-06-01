@@ -40,10 +40,8 @@
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
 
-  /* Custom Design Variables */
-  --brand: oklch(0.6 0.25 350);
   --aside: oklch(0.98 0 0);
-  --btn-muted: oklch(0.9 0 0);
+  --btn-muted: oklch(0.25 0 0);
 }
 
 .dark {
@@ -80,7 +78,6 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
 
-  --brand: oklch(0.6 0.25 350);
   --aside: oklch(0.18 0 0);
   --btn-muted: oklch(0.25 0 0);
 }
