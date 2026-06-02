@@ -1,8 +1,29 @@
+import { useAtomValue, useSetAtom } from 'jotai';
+import { orderAtom } from '@/store/order';
+import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Copy } from 'lucide-react';
+import { addDoc } from 'firebase/firestore';
+import { ordersCollection } from '@/lib/firebase';
+import { Order } from '@/models/orders';
 
 export default function PaymentPage() {
+  const order = useAtomValue(orderAtom);
+  const customer = order?.customer;
+  const setOrder = useSetAtom(orderAtom);
+  const navigate = useNavigate();
+
+  const handleComplete = async () => {
+    try {
+      const orderData = new Order({ ...order, payment: { status: 'paid' } });
+      await addDoc(ordersCollection, orderData.toFirestore());
+      setOrder(prev => ({ ...prev, paid: true }));
+      navigate('/finish');
+    } catch (e) {
+      console.error('Error adding order: ', e);
+    }
+  };
   return (
     <div className='w-full'>
       <div className='grid grid-cols-1 md:h-screen md:grid-cols-2'>
@@ -95,7 +116,7 @@ export default function PaymentPage() {
           </div>
         </main>
 
-        <aside className='bg-[#f7f7f7] px-8 py-4 md:px-20 md:py-8 flex flex-col md:h-full md:overflow-y-auto'>
+        <aside className='px-8 py-4 md:px-20 md:py-8 flex flex-col md:h-full md:overflow-y-auto'>
           <div className='flex flex-col h-full'>
             <h2 className='text-2xl md:text-3xl font-black mb-4 shrink-0'>
               Order details
@@ -104,15 +125,14 @@ export default function PaymentPage() {
             <div className='bg-background rounded-xl p-5 md:p-6 shadow-sm flex flex-col flex-1 min-h-0'>
               <div className='grid grid-cols-[120px_1fr] gap-y-2 md:gap-y-3 text-sm shrink-0 mb-4'>
                 <span className='font-bold'>Receiver</span>
-                <span>Nguyễn Văn A</span>
+                <span>{customer?.fullName}</span>
 
                 <span className='font-bold'>Phone number</span>
-                <span>0912345678</span>
+                <span>{customer?.phoneNumber}</span>
 
                 <span className='font-bold'>Delivery address</span>
                 <span className='leading-relaxed text-xs md:text-sm'>
-                  Greenwich Hà Nội, Tòa nhà Golden Park, Số 2 Phạm Văn Bạch,
-                  Phường Cầu Giấy, Thành phố Hà Nội
+                  {customer?.address}
                 </span>
               </div>
 
@@ -153,7 +173,10 @@ export default function PaymentPage() {
                 </div>
               </div>
 
-              <Button className='w-full h-12 md:h-14 mt-4 bg-gradient-to-r from-[#eb129d] to-[#5543f5] hover:opacity-90 text-white text-base md:text-lg font-bold rounded-full border-0 shrink-0'>
+              <Button
+                onClick={handleComplete}
+                className='w-full h-12 md:h-14 mt-4 bg-gradient-to-r from-[#eb129d] to-[#5543f5] hover:opacity-90 text-white text-base md:text-lg font-bold rounded-full border-0 shrink-0'
+              >
                 COMPLETE ORDER
               </Button>
             </div>
