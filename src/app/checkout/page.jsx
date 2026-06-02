@@ -9,6 +9,7 @@ import {
   FieldError
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import EstimatedDelivery from '@/components/estimated-delivery';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const schema = yup.object().shape({
@@ -147,7 +148,7 @@ export default function CheckoutPage() {
           </div>
 
           <div className='mt-4 shrink-0'>
-            <Skeleton className='h-16 w-full rounded-none bg-foreground' />
+            <EstimatedDelivery />
           </div>
         </form>
 
