@@ -1,4 +1,10 @@
+import { useAtomValue } from 'jotai';
+import { orderAtom } from '@/store/order';
+
 export default function FinishPage() {
+  const order = useAtomValue(orderAtom);
+  const customer = order?.customer;
+
   return (
     <div className='h-screen bg-[#f7f7f7] flex flex-col relative overflow-hidden'>
       <div className='absolute top-6 left-6 md:top-8 md:left-10'>
@@ -24,15 +30,14 @@ export default function FinishPage() {
             <span>001576</span>
 
             <span className='font-bold'>Receiver</span>
-            <span>Nguyễn Văn A</span>
+            <span>{customer?.fullName}</span>
 
             <span className='font-bold'>Phone number</span>
-            <span>0912345678</span>
+            <span>{customer?.phoneNumber}</span>
 
             <span className='font-bold'>Delivery address</span>
             <span className='leading-relaxed'>
-              Greenwich Hà Nội, Tòa nhà Golden Park, Số 2 Phạm Văn Bạch, Phường
-              Cầu Giấy, Thành phố Hà Nội
+              {customer?.address}
             </span>
           </div>
 

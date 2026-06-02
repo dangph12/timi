@@ -1,3 +1,6 @@
+import { useSetAtom } from 'jotai';
+import { orderAtom } from '@/store/order';
+import { useNavigate } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -16,29 +19,36 @@ const schema = yup.object().shape({
   fullName: yup.string().required('Required'),
   phoneNumber: yup.string().required('Required'),
   email: yup.string().email('Invalid email').required('Required'),
-  consent: yup.boolean().oneOf([true], 'Must accept policy'),
   address: yup.string().required('Required'),
   deliveryNotes: yup.string()
 });
 
 export default function CheckoutPage() {
+  const setOrder = useSetAtom(orderAtom);
+  const navigate = useNavigate();
+
   const form = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       fullName: '',
       phoneNumber: '',
       email: '',
-      consent: false,
       address: '',
       deliveryNotes: ''
     }
   });
 
+  const onSubmit = (data) => {
+    setOrder((prev) => ({ ...prev, customer: data }));
+    navigate('/payment');
+  };
+
   return (
     <div className='w-full'>
       <div className='grid grid-cols-1 md:h-screen md:grid-cols-2'>
         <form
-          onSubmit={form.handleSubmit(console.log)}
+          id='checkout-form'
+          onSubmit={form.handleSubmit(onSubmit)}
           className='px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-y-auto'
         >
           <div className='text-primary text-5xl font-bold italic tracking-tighter mb-4 shrink-0'>
@@ -91,25 +101,10 @@ export default function CheckoutPage() {
                   )}
                 />
               </FieldGroup>
-
-              <Controller
-                name='consent'
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field className='pt-1'>
-                    <div
-                      className='text-sm italic font-medium leading-tight cursor-pointer'
-                      onClick={() => field.onChange(!field.value)}
-                    >
-                      I confirm that I am at least 18 years of age and that I
-                      have read and agreed to the privacy policy.
-                    </div>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
+              <div className='pt-1 text-sm italic font-medium leading-tight cursor-pointer no-wrap'>
+                I confirm that I am at least 18 years of age and that I have
+                read and agreed to the privacy policy.
+              </div>
             </section>
 
             <section className='mt-4 space-y-2'>
@@ -213,7 +208,11 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <Button className='w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2'>
+              <Button
+                type='submit'
+                form='checkout-form'
+                className='w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2'
+              >
                 PAY NOW
               </Button>
             </div>
