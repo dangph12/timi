@@ -17,28 +17,42 @@ const ACCESSORIES = [
 export default function AccessorySelector({ onContinue }) {
   const [selections, setSelections] = useAtom(designSelectionsAtom);
 
+  const activeAccessories = selections.accessory || [];
+
+  function handleSelect(accId) {
+    setSelections(prev => {
+      const currentAccessories = prev.accessory || [];
+      if (currentAccessories.includes(accId)) {
+        return {
+          ...prev,
+          accessory: currentAccessories.filter(id => id !== accId)
+        };
+      } else {
+        return {
+          ...prev,
+          accessory: [...currentAccessories, accId]
+        };
+      }
+    });
+  }
+
   return (
     <>
       <p className='text-xs text-muted-foreground font-semibold mb-4 tracking-wide'>
-        Choose one
+        Choose accessories (Optional)
       </p>
       <div className='grid grid-cols-3 gap-3 mb-4'>
-        {ACCESSORIES.map((acc) => (
+        {ACCESSORIES.map(acc => (
           <OptionCard
             key={acc.id}
             label={acc.label}
             imageSrc={`/accessory/${acc.id}.png`}
-            isSelected={selections.accessory === acc.id}
-            onSelect={() =>
-              setSelections((prev) => ({ ...prev, accessory: acc.id }))
-            }
+            isSelected={activeAccessories.includes(acc.id)}
+            onSelect={() => handleSelect(acc.id)}
           />
         ))}
       </div>
-      <StepContinue
-        disabled={!selections.accessory}
-        onClick={onContinue}
-      />
+      <StepContinue disabled={false} onClick={onContinue} />
     </>
   );
 }

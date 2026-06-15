@@ -36,6 +36,29 @@ const POSITION_OFFSETS = {
   }
 };
 
+const ACCESSORY_OFFSETS = {
+  standard: {
+    A01: { x: 0.65, y: 0.3, scale: 0.35 },
+    A02: { x: 0.65, y: 0.3, scale: 0.35 },
+    A03: { x: 0.65, y: 0.3, scale: 0.35 },
+    A04: { x: 0.65, y: 0.3, scale: 0.35 },
+    A05: { x: 0.65, y: 0.3, scale: 0.35 },
+    A06: { x: 0.65, y: 0.3, scale: 0.35 },
+    A07: { x: 0.65, y: 0.3, scale: 0.35 },
+    A08: { x: 0.65, y: 0.3, scale: 0.35 }
+  },
+  economy: {
+    A01: { x: 0.65, y: 0.3, scale: 0.35 },
+    A02: { x: 0.65, y: 0.3, scale: 0.35 },
+    A03: { x: 0.65, y: 0.3, scale: 0.35 },
+    A04: { x: 0.65, y: 0.3, scale: 0.35 },
+    A05: { x: 0.65, y: 0.3, scale: 0.35 },
+    A06: { x: 0.65, y: 0.3, scale: 0.35 },
+    A07: { x: 0.65, y: 0.3, scale: 0.35 },
+    A08: { x: 0.65, y: 0.3, scale: 0.35 }
+  }
+};
+
 function ImageLayer({ src, x, y, width, height }) {
   const image = useImage(src);
   if (!image) return null;
@@ -93,10 +116,21 @@ export default function DesignCanvas({ width, height }) {
 
   const versionBounds = calcVersionBounds(width, height, versionImage);
 
-  function getLayerProps(category) {
+  function getLayerProps(category, elementId = null) {
     const version = selections.version || 'standard';
-    const offsets = POSITION_OFFSETS[version] || POSITION_OFFSETS.standard;
-    const offset = offsets[category];
+    let offset;
+
+    if (category === 'accessory' && elementId) {
+      const accVersionOffsets =
+        ACCESSORY_OFFSETS[version] || ACCESSORY_OFFSETS.standard;
+      offset =
+        accVersionOffsets[elementId] ||
+        (POSITION_OFFSETS[version] || POSITION_OFFSETS.standard)[category];
+    } else {
+      const offsets = POSITION_OFFSETS[version] || POSITION_OFFSETS.standard;
+      offset = offsets[category];
+    }
+
     if (!offset) return null;
 
     const layerX = versionBounds.x + versionBounds.width * offset.x;
@@ -171,6 +205,28 @@ export default function DesignCanvas({ width, height }) {
               );
             });
           }
+          if (category === 'accessory') {
+            const activeAccs = selections.accessory || [];
+            if (activeAccs.length === 0) return null;
+
+            return activeAccs.map(accId => {
+              const props = getLayerProps('accessory', accId);
+              if (!props) return null;
+
+              const src = `/accessory/${accId}.png`;
+              return (
+                <ImageLayer
+                  key={accId}
+                  src={src}
+                  x={props.x}
+                  y={props.y}
+                  width={props.width}
+                  height={props.height}
+                />
+              );
+            });
+          }
+
           const sel = selections[category];
           if (!sel) return null;
 
