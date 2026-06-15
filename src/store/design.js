@@ -5,12 +5,12 @@ export const designSelectionsAtom = atom({
   hair: null,
   eyes: null,
   lip: null,
-  clothes: null,
+  clothes: [],
   accessory: null,
   item: null,
   packaging: null
 });
 
 export const canChooseClothesAtom = atom(
-  (get) => get(designSelectionsAtom).version !== 'economy'
+  get => get(designSelectionsAtom).version !== 'economy'
 );

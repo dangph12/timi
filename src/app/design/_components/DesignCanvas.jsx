@@ -2,6 +2,7 @@ import { useAtomValue } from 'jotai';
 import { designSelectionsAtom } from '@/store/design';
 import { Stage, Layer, Rect, Image as KonvaImage } from 'react-konva';
 import useImage from '../_hooks/useImage';
+import { CLOTHES } from '@/constants/clothes';
 
 const LAYER_ORDER = [
   'packaging',
@@ -130,6 +131,46 @@ export default function DesignCanvas({ width, height }) {
         )}
 
         {LAYER_ORDER.filter(c => c !== 'version').map(category => {
+          if (category === 'clothes') {
+            const activeIds = selections.clothes || [];
+            if (activeIds.length === 0) return null;
+
+            // Layer ordering: pants/skirts render first, then shirt on top
+            const renderItems = [];
+            const selectedPants = activeIds.filter(id => {
+              const c = CLOTHES.find(item => item.id === id);
+              return c && c.category === 'pant';
+            });
+            const selectedSkirts = activeIds.filter(id => {
+              const c = CLOTHES.find(item => item.id === id);
+              return c && c.category === 'skirt';
+            });
+            const selectedShirts = activeIds.filter(id => {
+              const c = CLOTHES.find(item => item.id === id);
+              return c && c.category === 'shirt';
+            });
+
+            selectedPants.forEach(id => renderItems.push({ id }));
+            selectedSkirts.forEach(id => renderItems.push({ id }));
+            selectedShirts.forEach(id => renderItems.push({ id }));
+
+            const props = getLayerProps('clothes');
+            if (!props) return null;
+
+            return renderItems.map(item => {
+              const src = `/clothes/${item.id}.png`;
+              return (
+                <ImageLayer
+                  key={item.id}
+                  src={src}
+                  x={props.x}
+                  y={props.y}
+                  width={props.width}
+                  height={props.height}
+                />
+              );
+            });
+          }
           const sel = selections[category];
           if (!sel) return null;
 
