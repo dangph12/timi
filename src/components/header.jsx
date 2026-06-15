@@ -39,7 +39,7 @@ export default function Header() {
           <img
             src='/timilogo.png'
             alt='tỉ mỉ logo'
-            className='h-14 md:h-16 lg:h-18 w-auto object-contain'
+            className='h-12 md:h-14 lg:h-16 w-auto object-contain'
           />
         </Link>
       </div>
