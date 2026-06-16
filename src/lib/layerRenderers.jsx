@@ -45,7 +45,37 @@ function renderAccessory(selections, getLayerProps) {
   const activeAccs = selections.accessory || [];
   if (activeAccs.length === 0) return null;
 
-  return activeAccs.map(accId => {
+  const baseAccs = activeAccs.filter(
+    accId => accId !== 'A03' && accId !== 'A04'
+  );
+
+  return baseAccs.map(accId => {
+    const props = getLayerProps('accessory', accId);
+    if (!props) return null;
+
+    const src = `/accessory/${accId}.png`;
+    return (
+      <CanvasImageLayer
+        key={accId}
+        src={src}
+        x={props.x}
+        y={props.y}
+        width={props.width}
+        height={props.height}
+      />
+    );
+  });
+}
+
+function renderAccessoryTop(selections, getLayerProps) {
+  const activeAccs = selections.accessory || [];
+  if (activeAccs.length === 0) return null;
+
+  const topAccs = activeAccs.filter(
+    accId => accId === 'A03' || accId === 'A04'
+  );
+
+  return topAccs.map(accId => {
     const props = getLayerProps('accessory', accId);
     if (!props) return null;
 
@@ -87,5 +117,6 @@ function renderSingleSelect(selections, getLayerProps, category) {
 export const LAYER_RENDERERS = {
   clothes: renderClothes,
   accessory: renderAccessory,
+  accessory_top: renderAccessoryTop,
   default: renderSingleSelect
 };

@@ -4,8 +4,18 @@ import OptionCard from './OptionCard';
 import StepContinue from './StepContinue';
 
 const VERSIONS = [
-  { id: 'economy', label: 'Classic Version', imageSrc: '/version/economy.png', imageScale: 105 },
-  { id: 'standard', label: 'Standard Version', imageSrc: '/version/standard.png', imageScale: 115 }
+  {
+    id: 'economy',
+    label: 'Classic Version',
+    imageSrc: '/version/economy.png',
+    imageScale: 105
+  },
+  {
+    id: 'standard',
+    label: 'Standard Version',
+    imageSrc: '/version/standard.png',
+    imageScale: 115
+  }
 ];
 
 export default function VersionSelector({ onContinue }) {
@@ -17,7 +27,7 @@ export default function VersionSelector({ onContinue }) {
         Choose one
       </p>
       <div className='flex gap-4 mb-4'>
-        {VERSIONS.map((v) => (
+        {VERSIONS.map(v => (
           <OptionCard
             key={v.id}
             label={v.label}
@@ -25,15 +35,21 @@ export default function VersionSelector({ onContinue }) {
             imageScale={v.imageScale}
             isSelected={selections.version === v.id}
             onSelect={() =>
-              setSelections((prev) => ({ ...prev, version: v.id }))
+              setSelections({
+                version: v.id,
+                hair: null,
+                eyes: null,
+                lip: null,
+                clothes: [],
+                accessory: [],
+                item: null,
+                packaging: null
+              })
             }
           />
         ))}
       </div>
-      <StepContinue
-        disabled={!selections.version}
-        onClick={onContinue}
-      />
+      <StepContinue disabled={!selections.version} onClick={onContinue} />
     </>
   );
 }
