@@ -14,3 +14,5 @@ export const designSelectionsAtom = atom({
 export const canChooseClothesAtom = atom(
   get => get(designSelectionsAtom).version !== 'economy'
 );
+
+export const capturedCharacterAtom = atom(null);

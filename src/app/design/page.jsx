@@ -1,4 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import { useSetAtom } from 'jotai';
+import { capturedCharacterAtom } from '@/store/design';
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -40,7 +43,10 @@ const selectorMap = {
 export default function DesignPage() {
   const [activeStep, setActiveStep] = useState(1);
   const canvasRef = useRef(null);
+  const designCanvasRef = useRef(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
+  const navigate = useNavigate();
+  const setCapturedCharacter = useSetAtom(capturedCharacterAtom);
 
   useEffect(() => {
     const handleResize = () => {
@@ -57,7 +63,15 @@ export default function DesignPage() {
   }, []);
 
   function handleContinue() {
-    setActiveStep((prev) => Math.min(prev + 1, sections.length));
+    if (activeStep === sections.length) {
+      if (designCanvasRef.current) {
+        const dataUrl = designCanvasRef.current.getCharacterDataUrl();
+        setCapturedCharacter(dataUrl);
+      }
+      navigate('/checkout');
+    } else {
+      setActiveStep(prev => Math.min(prev + 1, sections.length));
+    }
   }
 
   return (
@@ -66,7 +80,7 @@ export default function DesignPage() {
       <div className='flex flex-1 w-full min-h-0'>
         {/* Left Sidebar */}
         <div className='w-1/3 p-4 overflow-y-auto border-r border-border'>
-          {sections.map((section) => {
+          {sections.map(section => {
             const isCompleted = activeStep > parseInt(section.id);
             const isActive = activeStep === parseInt(section.id);
             const SelectorComponent = selectorMap[parseInt(section.id)];
@@ -75,7 +89,7 @@ export default function DesignPage() {
               <Collapsible
                 key={section.id}
                 open={isActive}
-                onOpenChange={(isOpen) => {
+                onOpenChange={isOpen => {
                   if (isOpen && isCompleted)
                     setActiveStep(parseInt(section.id));
                 }}
@@ -107,9 +121,7 @@ export default function DesignPage() {
                     <SelectorComponent onContinue={handleContinue} />
                   )}
                   {isCompleted && (
-                    <p className='text-xs text-muted-foreground'>
-                      Completed
-                    </p>
+                    <p className='text-xs text-muted-foreground'>Completed</p>
                   )}
                 </CollapsibleContent>
               </Collapsible>
@@ -120,7 +132,11 @@ export default function DesignPage() {
         {/* Right Canvas */}
         <div ref={canvasRef} className='w-2/3 h-full bg-muted'>
           {size.width > 0 && (
-            <DesignCanvas width={size.width} height={size.height} />
+            <DesignCanvas
+              ref={designCanvasRef}
+              width={size.width}
+              height={size.height}
+            />
           )}
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { useAtomValue } from 'jotai';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { designSelectionsAtom } from '@/store/design';
-import { Stage, Layer, Rect, Image as KonvaImage } from 'react-konva';
+import { Stage, Layer, Rect, Image as KonvaImage, Group } from 'react-konva';
 import useImage from '../_hooks/useImage';
 import {
   LAYER_ORDER,
@@ -8,7 +9,7 @@ import {
   CLOTHES_OFFSETS,
   ACCESSORY_OFFSETS
 } from '@/constants/positions';
-import { LAYER_RENDERERS } from '@/lib/layerRenderers.jsx';
+import { LAYER_RENDERERS } from '@/components/LayerRenderers.jsx';
 
 function calcVersionBounds(canvasWidth, canvasHeight, versionImage) {
   const maxDim = Math.min(canvasWidth, canvasHeight) * 0.83;
@@ -32,8 +33,43 @@ function calcVersionBounds(canvasWidth, canvasHeight, versionImage) {
   };
 }
 
-export default function DesignCanvas({ width, height }) {
+const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
   const selections = useAtomValue(designSelectionsAtom);
+
+  const stageRef = useRef(null);
+  const backgroundRef = useRef(null);
+  const categoryRefs = useRef({});
+
+  useImperativeHandle(ref, () => ({
+    getCharacterDataUrl() {
+      if (!stageRef.current) return null;
+
+      // Hide non-character components
+      if (backgroundRef.current) backgroundRef.current.visible(false);
+
+      const itemGroup = categoryRefs.current['item'];
+      const packagingGroup = categoryRefs.current['packaging'];
+
+      if (itemGroup) itemGroup.visible(false);
+      if (packagingGroup) packagingGroup.visible(false);
+
+      // Redraw canvas synchronously to apply visibility changes before capture
+      stageRef.current.draw();
+
+      // Export transparent base64 image
+      const dataUrl = stageRef.current.toDataURL();
+
+      // Restore visibility
+      if (backgroundRef.current) backgroundRef.current.visible(true);
+      if (itemGroup) itemGroup.visible(true);
+      if (packagingGroup) packagingGroup.visible(true);
+
+      // Redraw canvas with full visuals active
+      stageRef.current.draw();
+
+      return dataUrl;
+    }
+  }));
 
   const versionSrc = selections.version
     ? `/version/${selections.version}.png`
@@ -74,9 +110,10 @@ export default function DesignCanvas({ width, height }) {
   }
 
   return (
-    <Stage width={width} height={height}>
+    <Stage ref={stageRef} width={width} height={height}>
       <Layer>
         <Rect
+          ref={backgroundRef}
           x={0}
           y={0}
           width={width}
@@ -98,9 +135,26 @@ export default function DesignCanvas({ width, height }) {
 
         {LAYER_ORDER.filter(c => c !== 'version').map(category => {
           const renderer = LAYER_RENDERERS[category] || LAYER_RENDERERS.default;
-          return renderer(selections, getLayerProps, category);
+          const content = renderer(selections, getLayerProps, category);
+          if (!content) return null;
+          return (
+            <Group
+              key={category}
+              ref={node => {
+                if (node) {
+                  categoryRefs.current[category] = node;
+                } else {
+                  delete categoryRefs.current[category];
+                }
+              }}
+            >
+              {content}
+            </Group>
+          );
         })}
       </Layer>
     </Stage>
   );
-}
+});
+
+export default DesignCanvas;
