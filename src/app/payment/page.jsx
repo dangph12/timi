@@ -2,17 +2,60 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { orderAtom } from '@/store/order';
 import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Copy } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import { addDoc } from 'firebase/firestore';
 import { ordersCollection } from '@/lib/firebase';
 import { Order } from '@/models/orders';
+import { useState } from 'react';
+import EstimatedDelivery from '@/components/estimated-delivery';
+
+// Helper function to remove Vietnamese diacritics
+const removeDiacritics = str => {
+  if (!str) return '';
+  return str
+    .normalize('NFD') // decomposes characters into base characters and diacritical marks
+    .replace(/[\u0300-\u036f]/g, '') // removes diacritical marks
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D');
+};
 
 export default function PaymentPage() {
   const order = useAtomValue(orderAtom);
   const customer = order?.customer;
   const setOrder = useSetAtom(orderAtom);
   const navigate = useNavigate();
+
+  const [copiedAccount, setCopiedAccount] = useState(false);
+  const [copiedContent, setCopiedContent] = useState(false);
+
+  const totalAmount = order?.cart?.total || 194000;
+  const displayTotal = totalAmount.toLocaleString('vi-VN') + 'đ';
+  const displaySubtotal =
+    (order?.cart?.subtotal || 179000).toLocaleString('vi-VN') + 'đ';
+  const displayShipping =
+    (order?.cart?.shipping !== undefined
+      ? order.cart.shipping
+      : 15000
+    ).toLocaleString('vi-VN') + 'đ';
+
+  const rawContent = customer
+    ? `${customer.fullName} ${customer.phoneNumber}`
+    : 'NGUYEN VAN A 0912345678';
+  const paymentContent = removeDiacritics(rawContent).toUpperCase();
+
+  const qrUrl = `https://img.vietqr.io/image/970418-4333998899-qr_only.png?amount=${totalAmount}&addInfo=${encodeURIComponent(paymentContent)}&accountName=NGUYEN%20THUY%20CHI`;
+
+  const handleCopyAccount = () => {
+    navigator.clipboard.writeText('4333998899');
+    setCopiedAccount(true);
+    setTimeout(() => setCopiedAccount(false), 2000);
+  };
+
+  const handleCopyContent = () => {
+    navigator.clipboard.writeText(paymentContent);
+    setCopiedContent(true);
+    setTimeout(() => setCopiedContent(false), 2000);
+  };
 
   const handleComplete = async () => {
     try {
@@ -26,10 +69,14 @@ export default function PaymentPage() {
   };
   return (
     <div className='w-full'>
-      <div className='grid grid-cols-1 md:h-screen md:grid-cols-2'>
-        <main className='px-8 py-4 md:px-20 md:py-8 flex flex-col md:h-full md:overflow-y-auto'>
-          <div className='text-primary text-4xl font-bold italic tracking-tighter mb-4 shrink-0'>
-            tỉ mỉ
+      <div className='grid grid-cols-1 md:h-screen md:grid-cols-[45%_55%]'>
+        <main className='px-8 py-4 md:px-12 md:py-8 lg:px-20 flex flex-col md:h-full md:overflow-y-auto'>
+          <div className='mb-4 shrink-0'>
+            <img
+              src='/timilogo.png'
+              alt='tỉ mỉ'
+              className='h-12 w-auto object-contain'
+            />
           </div>
 
           <div className='flex-1 flex flex-col justify-center min-h-0'>
@@ -52,7 +99,11 @@ export default function PaymentPage() {
               <div className='flex items-center justify-center w-4 h-4 rounded-full border-2 border-primary bg-background shrink-0 ml-1'>
                 <div className='w-2 h-2 rounded-full bg-primary' />
               </div>
-              <Skeleton className='h-6 w-20 md:h-8 md:w-24 rounded shrink-0 bg-gray-500' />
+              <img
+                src='https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Logo_Bidv_m%E1%BB%9Bi.svg/1920px-Logo_Bidv_m%E1%BB%9Bi.svg.png'
+                alt='BIDV Logo'
+                className='h-6 md:h-8 object-contain shrink-0'
+              />
               <span className='text-xs md:text-sm font-bold leading-tight'>
                 BIDV Bank{' '}
                 <span className='font-normal hidden xl:inline'>
@@ -71,10 +122,15 @@ export default function PaymentPage() {
                 <div className='flex items-center gap-2'>
                   <span>4333998899</span>
                   <button
+                    onClick={handleCopyAccount}
                     aria-label='Copy account number'
-                    className='hover:opacity-70 transition-opacity'
+                    className='hover:opacity-70 transition-opacity flex items-center gap-1 text-primary'
                   >
-                    <Copy className='h-4 w-4' />
+                    {copiedAccount ? (
+                      <Check className='h-4 w-4 text-green-500' />
+                    ) : (
+                      <Copy className='h-4 w-4' />
+                    )}
                   </button>
                 </div>
 
@@ -82,27 +138,44 @@ export default function PaymentPage() {
                 <span>NGUYEN THUY CHI</span>
 
                 <span className='font-bold'>Amount</span>
-                <span>194.000đ</span>
+                <span>{displayTotal}</span>
 
                 <span className='font-bold'>Content</span>
                 <div className='flex items-center gap-2'>
-                  <span>NGUYEN VAN A 0912345678</span>
+                  <span className='font-mono font-bold'>{paymentContent}</span>
                   <button
+                    onClick={handleCopyContent}
                     aria-label='Copy content'
-                    className='hover:opacity-70 transition-opacity'
+                    className='hover:opacity-70 transition-opacity flex items-center gap-1 text-primary'
                   >
-                    <Copy className='h-4 w-4' />
+                    {copiedContent ? (
+                      <Check className='h-4 w-4 text-green-500' />
+                    ) : (
+                      <Copy className='h-4 w-4' />
+                    )}
                   </button>
                 </div>
               </div>
             </div>
 
             <section className='flex items-center gap-6 mt-auto shrink-0'>
-              <Skeleton className='h-28 w-28 md:h-32 md:w-32 rounded-none bg-gray-500 shrink-0' />
+              <img
+                src={qrUrl}
+                alt='VietQR Payment Code'
+                className='h-28 w-28 md:h-32 md:w-32 bg-white object-contain shrink-0 border rounded-lg p-1 shadow-sm'
+              />
               <div className='flex flex-col items-center justify-center flex-1 space-y-1'>
-                <div className='flex gap-2 mb-1'>
-                  <Skeleton className='h-5 w-16 md:h-6 md:w-20 rounded-none bg-gray-500' />
-                  <Skeleton className='h-5 w-16 md:h-6 md:w-20 rounded-none bg-gray-500' />
+                <div className='flex gap-2 mb-1 items-center'>
+                  <img
+                    src='https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Logo_Bidv_m%E1%BB%9Bi.svg/1920px-Logo_Bidv_m%E1%BB%9Bi.svg.png'
+                    alt='BIDV Logo'
+                    className='h-4 md:h-5 object-contain'
+                  />
+                  <img
+                    src='https://upload.wikimedia.org/wikipedia/commons/7/77/VietQR_Logo.png'
+                    alt='VietQR Logo'
+                    className='h-4 md:h-5 object-contain'
+                  />
                 </div>
                 <p className='font-bold text-base md:text-lg'>
                   NGUYEN THUY CHI
@@ -116,7 +189,7 @@ export default function PaymentPage() {
           </div>
         </main>
 
-        <aside className='px-8 py-4 md:px-20 md:py-8 flex flex-col md:h-full md:overflow-y-auto'>
+        <aside className='px-8 py-4 md:px-12 md:py-8 lg:px-20 flex flex-col md:h-full md:overflow-y-auto'>
           <div className='flex flex-col h-full'>
             <h2 className='text-2xl md:text-3xl font-black mb-4 shrink-0'>
               Order details
@@ -136,8 +209,8 @@ export default function PaymentPage() {
                 </span>
               </div>
 
-              <div className='flex-1 flex min-h-[60px] py-2 shrink'>
-                <Skeleton className='h-full w-full rounded-none bg-gray-500' />
+              <div className='py-2 shrink-0'>
+                <EstimatedDelivery />
               </div>
 
               <div className='space-y-2 md:space-y-3 shrink-0 mt-4'>
@@ -161,21 +234,21 @@ export default function PaymentPage() {
               <div className='space-y-2 border-t pt-3 shrink-0 mt-3'>
                 <div className='flex justify-between text-sm font-bold'>
                   <span>Subtotal</span>
-                  <span>179.000đ</span>
+                  <span>{displaySubtotal}</span>
                 </div>
                 <div className='flex justify-between text-sm font-bold'>
                   <span>Shipping</span>
-                  <span>15.000đ</span>
+                  <span>{displayShipping}</span>
                 </div>
                 <div className='flex justify-between text-xl md:text-2xl font-black pt-2 md:pt-4'>
                   <span>Total</span>
-                  <span>194.000đ</span>
+                  <span>{displayTotal}</span>
                 </div>
               </div>
 
               <Button
                 onClick={handleComplete}
-                className='w-full h-12 md:h-14 mt-4 bg-gradient-to-r from-[#eb129d] to-[#5543f5] hover:opacity-90 text-white text-base md:text-lg font-bold rounded-full border-0 shrink-0'
+                className='w-full h-12 md:h-14 mt-4 bg-linear-to-r from-[#eb129d] to-[#5543f5] hover:opacity-90 text-white text-base md:text-lg font-bold rounded-full border-0 shrink-0'
               >
                 COMPLETE ORDER
               </Button>
