@@ -1,5 +1,6 @@
-import { useSetAtom } from 'jotai';
+import { useSetAtom, useAtomValue } from 'jotai';
 import { orderAtom } from '@/store/order';
+import { capturedCharacterAtom } from '@/store/design';
 import { useNavigate } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -26,6 +27,7 @@ const schema = yup.object().shape({
 export default function CheckoutPage() {
   const setOrder = useSetAtom(orderAtom);
   const navigate = useNavigate();
+  const capturedCharacter = useAtomValue(capturedCharacterAtom);
 
   const form = useForm({
     resolver: yupResolver(schema),
@@ -38,8 +40,8 @@ export default function CheckoutPage() {
     }
   });
 
-  const onSubmit = (data) => {
-    setOrder((prev) => ({ ...prev, customer: data }));
+  const onSubmit = data => {
+    setOrder(prev => ({ ...prev, customer: data }));
     navigate('/payment');
   };
 
@@ -51,8 +53,12 @@ export default function CheckoutPage() {
           onSubmit={form.handleSubmit(onSubmit)}
           className='px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-y-auto'
         >
-          <div className='text-primary text-5xl font-bold italic tracking-tighter mb-4 shrink-0'>
-            tỉ mỉ
+          <div className='mb-4 shrink-0'>
+            <img
+              src='/timilogo.png'
+              alt='tỉ mỉ'
+              className='h-12 w-auto object-contain'
+            />
           </div>
 
           <div className='flex-1 flex flex-col min-h-0 justify-center'>
@@ -175,8 +181,23 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className='flex-1 flex items-center py-4 min-h-0'>
-              <Skeleton className='w-[85%] h-full min-h-[100px] rounded-none bg-foreground' />
+            <div className='flex-1 flex items-center justify-center py-4 min-h-0'>
+              {capturedCharacter ? (
+                <div className='h-full max-h-65 aspect-square flex flex-col bg-white border-2 border-[#0000D0] rounded-2xl p-3 shadow-sm'>
+                  <div className='flex-1 w-full bg-linear-to-b from-[#0000FF] to-[#4A4AFF] rounded-xl overflow-hidden flex items-center justify-center relative min-h-0'>
+                    <img
+                      src={capturedCharacter}
+                      alt='Your custom character design'
+                      className='w-full h-full object-contain scale-[1.4] drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)] select-none animate-fade-in relative z-10'
+                    />
+                  </div>
+                  <div className='text-center pt-2.5 pb-0.5 text-sm font-black tracking-wider text-[#0000D0] uppercase shrink-0 leading-none'>
+                    ITEM DESIGN
+                  </div>
+                </div>
+              ) : (
+                <Skeleton className='h-full max-h-65 aspect-square rounded-2xl bg-foreground/10' />
+              )}
             </div>
 
             <div className='space-y-4 shrink-0 mt-2'>

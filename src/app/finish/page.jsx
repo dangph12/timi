@@ -8,8 +8,12 @@ export default function FinishPage() {
   return (
     <div className='h-screen bg-[#f7f7f7] flex flex-col relative overflow-hidden'>
       <div className='absolute top-6 left-6 md:top-8 md:left-10'>
-        <div className='text-primary text-4xl md:text-5xl font-bold italic tracking-tighter'>
-          tỉ mỉ
+        <div className='mb-4 shrink-0'>
+          <img
+            src='/timilogo.png'
+            alt='tỉ mỉ'
+            className='h-12 w-auto object-contain'
+          />
         </div>
       </div>
 
@@ -36,9 +40,7 @@ export default function FinishPage() {
             <span>{customer?.phoneNumber}</span>
 
             <span className='font-bold'>Delivery address</span>
-            <span className='leading-relaxed'>
-              {customer?.address}
-            </span>
+            <span className='leading-relaxed'>{customer?.address}</span>
           </div>
 
           <div className='space-y-3 shrink-0 mt-6'>
