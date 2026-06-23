@@ -14,7 +14,7 @@ import {
 import { LAYER_RENDERERS } from '@/components/LayerRenderers.jsx';
 
 function calcVersionBounds(canvasWidth, canvasHeight, versionImage) {
-  const maxDim = Math.min(canvasWidth, canvasHeight) * 0.83;
+  const maxDim = Math.min(canvasWidth, canvasHeight) * 0.7;
   let renderWidth = maxDim;
   let renderHeight = maxDim;
 
@@ -84,12 +84,7 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
     const version = selections.version || 'standard';
     let offset;
 
-    const baseCategory =
-      category === 'hair_bottom'
-        ? 'hair_bottom'
-        : category === 'accessory_top'
-          ? 'accessory'
-          : category;
+    const baseCategory = category === 'hair_bottom' ? 'hair_bottom' : category;
 
     if (baseCategory === 'accessory' && elementId) {
       const accVersionOffsets =
