@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai';
 import { designSelectionsAtom } from '@/store/design';
-import { HAIR_OPTIONS } from '@/constants/positions';
+import { HAIR_OPTIONS } from '@/constants/hair';
 import OptionCard from './OptionCard';
 import StepContinue from './StepContinue';
 

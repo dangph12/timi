@@ -5,13 +5,19 @@ import { Stage, Layer, Rect, Image as KonvaImage, Group } from 'react-konva';
 import useImage from '../_hooks/useImage';
 import {
   LAYER_ORDER,
-  POSITION_OFFSETS,
-  CLOTHES_OFFSETS,
-  ACCESSORY_OFFSETS,
-  HAIR_OFFSETS,
-  HAIR_BOTTOM_OFFSETS
+  POSITION_OFFSETS
 } from '@/constants/positions';
+import { CLOTHES_OFFSETS } from '@/constants/clothes';
+import { ACCESSORY_OFFSETS } from '@/constants/accessory';
+import { HAIR_OFFSETS, HAIR_BOTTOM_OFFSETS } from '@/constants/hair';
 import { LAYER_RENDERERS } from '@/components/LayerRenderers.jsx';
+
+const ELEMENT_OFFSETS = {
+  accessory: ACCESSORY_OFFSETS,
+  clothes: CLOTHES_OFFSETS,
+  hair: HAIR_OFFSETS,
+  hair_bottom: HAIR_BOTTOM_OFFSETS,
+};
 
 function calcVersionBounds(canvasWidth, canvasHeight, versionImage) {
   const maxDim = Math.min(canvasWidth, canvasHeight) * 0.7;
@@ -82,37 +88,15 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
 
   function getLayerProps(category, elementId = null) {
     const version = selections.version || 'standard';
-    let offset;
-
     const baseCategory = category === 'hair_bottom' ? 'hair_bottom' : category;
 
-    if (baseCategory === 'accessory' && elementId) {
-      const accVersionOffsets =
-        ACCESSORY_OFFSETS[version] || ACCESSORY_OFFSETS.standard;
-      offset =
-        accVersionOffsets[elementId] ||
-        (POSITION_OFFSETS[version] || POSITION_OFFSETS.standard)[baseCategory];
-    } else if (baseCategory === 'clothes' && elementId) {
-      const clVersionOffsets =
-        CLOTHES_OFFSETS[version] || CLOTHES_OFFSETS.standard;
-      offset =
-        clVersionOffsets[elementId] ||
-        (POSITION_OFFSETS[version] || POSITION_OFFSETS.standard)[baseCategory];
-    } else if (baseCategory === 'hair' && elementId) {
-      const hairVersionOffsets = HAIR_OFFSETS[version] || HAIR_OFFSETS.standard;
-      offset =
-        hairVersionOffsets[elementId] ||
-        (POSITION_OFFSETS[version] || POSITION_OFFSETS.standard)[baseCategory];
-    } else if (baseCategory === 'hair_bottom' && elementId) {
-      const hairBottomVersionOffsets =
-        HAIR_BOTTOM_OFFSETS[version] || HAIR_BOTTOM_OFFSETS.standard;
-      offset =
-        hairBottomVersionOffsets[elementId] ||
-        (POSITION_OFFSETS[version] || POSITION_OFFSETS.standard)[baseCategory];
-    } else {
-      const offsets = POSITION_OFFSETS[version] || POSITION_OFFSETS.standard;
-      offset = offsets[baseCategory];
-    }
+    const fallbackOffsets = POSITION_OFFSETS[version] || POSITION_OFFSETS.standard;
+
+    const specificOffsets = ELEMENT_OFFSETS[baseCategory];
+    const versionOffsets = specificOffsets?.[version] ?? specificOffsets?.standard;
+    const offset = elementId && versionOffsets
+      ? (versionOffsets[elementId] ?? fallbackOffsets[baseCategory])
+      : fallbackOffsets[baseCategory];
 
     if (!offset) return null;
 
