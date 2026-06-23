@@ -5,15 +5,9 @@ export default function CanvasImageLayer({ src, x, y, width, height }) {
   const image = useImage(src);
   if (!image) return null;
 
-  const imageRatio = image.width / image.height;
-  let renderWidth = width;
-  let renderHeight = height;
-
-  if (imageRatio > 1) {
-    renderHeight = width / imageRatio;
-  } else {
-    renderWidth = height * imageRatio;
-  }
+  const scale = Math.min(width / image.width, height / image.height);
+  const renderWidth = image.width * scale;
+  const renderHeight = image.height * scale;
 
   return (
     <KonvaImage

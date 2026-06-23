@@ -1,5 +1,6 @@
 import { CLOTHES } from '@/constants/clothes';
 import CanvasImageLayer from '@/components/CanvasImageLayer';
+import { HAIR_OPTIONS } from '@/constants/positions';
 
 function renderClothes(selections, getLayerProps) {
   const activeIds = selections.clothes || [];
@@ -114,9 +115,56 @@ function renderSingleSelect(selections, getLayerProps, category) {
   );
 }
 
+function renderHairTop(selections, getLayerProps) {
+  const sel = selections.hair;
+  if (!sel) return null;
+
+  const props = getLayerProps('hair', sel);
+  if (!props) return null;
+
+  const src = `/hair-top/${sel}.png`;
+
+  return (
+    <CanvasImageLayer
+      key='hair'
+      src={src}
+      x={props.x}
+      y={props.y}
+      width={props.width}
+      height={props.height}
+    />
+  );
+}
+
+function renderHairBottom(selections, getLayerProps) {
+  const sel = selections.hair;
+  if (!sel) return null;
+
+  const hairOption = HAIR_OPTIONS.find(h => h.id === sel);
+  if (!hairOption || !hairOption.hasBottom) return null;
+
+  const props = getLayerProps('hair_bottom', sel);
+  if (!props) return null;
+
+  const src = `/hair-bottom/${sel}.png`;
+
+  return (
+    <CanvasImageLayer
+      key='hair_bottom'
+      src={src}
+      x={props.x}
+      y={props.y}
+      width={props.width}
+      height={props.height}
+    />
+  );
+}
+
 export const LAYER_RENDERERS = {
   clothes: renderClothes,
   accessory: renderAccessory,
   accessory_top: renderAccessoryTop,
+  hair: renderHairTop,
+  hair_bottom: renderHairBottom,
   default: renderSingleSelect
 };
