@@ -31,7 +31,7 @@ export default function Header() {
       </nav>
 
       {/* Center Logo */}
-      <div className='absolute left-1/2 -translate-x-1/2'>
+      <div className='absolute left-1/2 -translate-x-1/2 flex items-center justify-center h-full'>
         <Link
           to='/'
           className='hover:opacity-80 transition-opacity flex items-center justify-center'
@@ -39,7 +39,7 @@ export default function Header() {
           <img
             src='/timilogo.png'
             alt='tỉ mỉ logo'
-            className='h-12 md:h-14 lg:h-16 w-auto object-contain'
+            className='h-6 md:h-8 lg:h-10 w-auto object-contain'
           />
         </Link>
       </div>

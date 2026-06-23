@@ -6,7 +6,8 @@ export default function OptionCard({
   isSelected,
   onSelect,
   imageScale = 105,
-  disabled = false
+  disabled = false,
+  imageBgClass = ''
 }) {
   return (
     <button
@@ -20,7 +21,7 @@ export default function OptionCard({
         disabled ? 'opacity-50 blur-[2px] pointer-events-none' : ''
       }`}
     >
-      <div className='aspect-4/3 w-full bg-linear-to-b from-[#0000FF] to-[#4A4AFF] relative overflow-hidden shrink-0'>
+      <div className={`aspect-4/3 w-full relative overflow-hidden shrink-0 ${imageBgClass}`}>
         <div className='absolute inset-0 flex items-center justify-center p-3'>
           <img
             src={imageSrc}

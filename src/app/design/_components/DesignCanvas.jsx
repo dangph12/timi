@@ -20,7 +20,7 @@ const ELEMENT_OFFSETS = {
 };
 
 function calcVersionBounds(canvasWidth, canvasHeight, versionImage) {
-  const maxDim = Math.min(canvasWidth, canvasHeight) * 0.7;
+  const maxDim = Math.min(canvasWidth, canvasHeight) * 0.53;
   let renderWidth = maxDim;
   let renderHeight = maxDim;
 
@@ -35,7 +35,7 @@ function calcVersionBounds(canvasWidth, canvasHeight, versionImage) {
 
   return {
     x: canvasWidth / 2,
-    y: canvasHeight / 2,
+    y: canvasHeight / 2 - 20,
     width: renderWidth,
     height: renderHeight
   };

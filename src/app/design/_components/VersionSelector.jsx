@@ -46,6 +46,7 @@ export default function VersionSelector({ onContinue }) {
                 packaging: null
               })
             }
+            imageBgClass='bg-linear-to-b from-[#0000FF] to-[#4A4AFF]'
           />
         ))}
       </div>
