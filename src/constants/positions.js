@@ -49,20 +49,20 @@ export const CLOTHES_OFFSETS = {
 
 export const ACCESSORY_OFFSETS = {
   standard: {
-    A01: { x: 0, y: 0.46, scale: 0.58 },
-    A02: { x: 0, y: 0.46, scale: 0.58 },
+    A01: { x: 0, y: 0.48, scale: 0.58 },
+    A02: { x: 0, y: 0.48, scale: 0.58 },
     A03: { x: -0.3, y: 0.2, scale: 0.25 },
     A04: { x: 0.3, y: 0.2, scale: 0.25 },
-    A05: { x: 0, y: -0.48, scale: 1.2 },
-    A06: { x: 0, y: -0.48, scale: 1.2 },
-    A07: { x: 0.35, y: -0.48, scale: 0.5 },
+    A05: { x: 0, y: -0.42, scale: 1 },
+    A06: { x: 0, y: -0.42, scale: 1 },
+    A07: { x: 0.35, y: -0.3, scale: 0.25 },
     A08: { x: 0.02, y: -0.1, scale: 1 }
   },
   economy: {
-    A05: { x: 0, y: -0.48, scale: 1.1 },
-    A06: { x: 0, y: -0.48, scale: 1.1 },
-    A07: { x: 0.35, y: -0.48, scale: 0.5 },
-    A08: { x: 0.02, y: 0.2, scale: 1.15 }
+    A05: { x: 0, y: -0.4, scale: 1.1 },
+    A06: { x: 0, y: -0.4, scale: 1.1 },
+    A07: { x: 0.35, y: -0.32, scale: 0.3 },
+    A08: { x: 0.02, y: 0.24, scale: 1.2 }
   }
 };
 
