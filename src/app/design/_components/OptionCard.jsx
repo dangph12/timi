@@ -5,15 +5,19 @@ export default function OptionCard({
   imageSrc,
   isSelected,
   onSelect,
-  imageScale = 105
+  imageScale = 105,
+  disabled = false
 }) {
   return (
     <button
       onClick={onSelect}
+      disabled={disabled}
       className={`group relative flex-1 bg-white border-2 rounded-xl overflow-hidden transition-all duration-200 outline-none flex flex-col ${
         isSelected
           ? 'border-[#0000D0] shadow-md shadow-blue-100'
           : 'border-slate-200 hover:border-slate-300'
+      } ${
+        disabled ? 'opacity-50 blur-[2px] pointer-events-none' : ''
       }`}
     >
       <div className='aspect-4/3 w-full bg-linear-to-b from-[#0000FF] to-[#4A4AFF] relative overflow-hidden shrink-0'>

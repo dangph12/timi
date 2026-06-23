@@ -7,12 +7,14 @@ import {
   LAYER_ORDER,
   POSITION_OFFSETS,
   CLOTHES_OFFSETS,
-  ACCESSORY_OFFSETS
+  ACCESSORY_OFFSETS,
+  HAIR_OFFSETS,
+  HAIR_BOTTOM_OFFSETS
 } from '@/constants/positions';
 import { LAYER_RENDERERS } from '@/components/LayerRenderers.jsx';
 
 function calcVersionBounds(canvasWidth, canvasHeight, versionImage) {
-  const maxDim = Math.min(canvasWidth, canvasHeight) * 0.83;
+  const maxDim = Math.min(canvasWidth, canvasHeight) * 0.7;
   let renderWidth = maxDim;
   let renderHeight = maxDim;
 
@@ -82,21 +84,34 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
     const version = selections.version || 'standard';
     let offset;
 
-    if (category === 'accessory' && elementId) {
+    const baseCategory = category === 'hair_bottom' ? 'hair_bottom' : category;
+
+    if (baseCategory === 'accessory' && elementId) {
       const accVersionOffsets =
         ACCESSORY_OFFSETS[version] || ACCESSORY_OFFSETS.standard;
       offset =
         accVersionOffsets[elementId] ||
-        (POSITION_OFFSETS[version] || POSITION_OFFSETS.standard)[category];
-    } else if (category === 'clothes' && elementId) {
+        (POSITION_OFFSETS[version] || POSITION_OFFSETS.standard)[baseCategory];
+    } else if (baseCategory === 'clothes' && elementId) {
       const clVersionOffsets =
         CLOTHES_OFFSETS[version] || CLOTHES_OFFSETS.standard;
       offset =
         clVersionOffsets[elementId] ||
-        (POSITION_OFFSETS[version] || POSITION_OFFSETS.standard)[category];
+        (POSITION_OFFSETS[version] || POSITION_OFFSETS.standard)[baseCategory];
+    } else if (baseCategory === 'hair' && elementId) {
+      const hairVersionOffsets = HAIR_OFFSETS[version] || HAIR_OFFSETS.standard;
+      offset =
+        hairVersionOffsets[elementId] ||
+        (POSITION_OFFSETS[version] || POSITION_OFFSETS.standard)[baseCategory];
+    } else if (baseCategory === 'hair_bottom' && elementId) {
+      const hairBottomVersionOffsets =
+        HAIR_BOTTOM_OFFSETS[version] || HAIR_BOTTOM_OFFSETS.standard;
+      offset =
+        hairBottomVersionOffsets[elementId] ||
+        (POSITION_OFFSETS[version] || POSITION_OFFSETS.standard)[baseCategory];
     } else {
       const offsets = POSITION_OFFSETS[version] || POSITION_OFFSETS.standard;
-      offset = offsets[category];
+      offset = offsets[baseCategory];
     }
 
     if (!offset) return null;
@@ -123,17 +138,22 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
           fillLinearGradientColorStops={[0, '#0000FF', 1, '#4A4AFF']}
         />
 
-        {versionImage && (
-          <KonvaImage
-            image={versionImage}
-            x={versionBounds.x - versionBounds.width / 2}
-            y={versionBounds.y - versionBounds.height / 2}
-            width={versionBounds.width}
-            height={versionBounds.height}
-          />
-        )}
+        {LAYER_ORDER.map(category => {
+          if (category === 'version') {
+            return (
+              versionImage && (
+                <KonvaImage
+                  key='version'
+                  image={versionImage}
+                  x={versionBounds.x - versionBounds.width / 2}
+                  y={versionBounds.y - versionBounds.height / 2}
+                  width={versionBounds.width}
+                  height={versionBounds.height}
+                />
+              )
+            );
+          }
 
-        {LAYER_ORDER.filter(c => c !== 'version').map(category => {
           const renderer = LAYER_RENDERERS[category] || LAYER_RENDERERS.default;
           const content = renderer(selections, getLayerProps, category);
           if (!content) return null;
