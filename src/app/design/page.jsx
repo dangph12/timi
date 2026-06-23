@@ -74,8 +74,17 @@ export default function DesignPage() {
     }
   }
 
+  const title = 'Design Your Character - Tỉ Mỉ';
+  const description = 'Customize your DIY box with unique hair, eyes, clothes, and accessories. Create your perfect character design.';
+
   return (
-    <div className='flex h-screen flex-col font-sans overflow-hidden'>
+    <>
+      <title>{title}</title>
+      <meta name='description' content={description} />
+      <meta property='og:title' content={title} />
+      <meta property='og:description' content={description} />
+      <meta property='og:type' content='website' />
+      <div className='flex h-screen flex-col font-sans overflow-hidden'>
       <Header />
       <div className='flex flex-col md:flex-row flex-1 w-full min-h-0 overflow-hidden'>
         {/* Left Sidebar */}
@@ -149,5 +158,6 @@ export default function DesignPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -2,8 +2,17 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/header';
 
 export function Page() {
+  const title = 'Tỉ Mỉ - Made by hand, shaped by you';
+  const description = 'Custom DIY character design workshop. Design your own unique character and bring it home with Tỉ Mỉ.';
+
   return (
-    <div className='flex min-h-screen flex-col font-sans'>
+    <>
+      <title>{title}</title>
+      <meta name='description' content={description} />
+      <meta property='og:title' content={title} />
+      <meta property='og:description' content={description} />
+      <meta property='og:type' content='website' />
+      <div className='flex min-h-screen flex-col font-sans'>
       <Header />
 
       {/* Hero Section */}
@@ -46,6 +55,7 @@ export function Page() {
         </div>
       </main>
     </div>
+    </>
   );
 }
 
