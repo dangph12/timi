@@ -45,8 +45,17 @@ export default function CheckoutPage() {
     navigate('/payment');
   };
 
+  const title = 'Checkout - Tỉ Mỉ';
+  const description = 'Complete your order for the Tỉ Mỉ DIY character box. Provide your contact and delivery information.';
+
   return (
-    <div className='w-full'>
+    <>
+      <title>{title}</title>
+      <meta name='description' content={description} />
+      <meta property='og:title' content={title} />
+      <meta property='og:description' content={description} />
+      <meta property='og:type' content='website' />
+      <div className='w-full'>
       <div className='grid grid-cols-1 md:h-screen md:grid-cols-2'>
         <form
           id='checkout-form'
@@ -241,5 +250,6 @@ export default function CheckoutPage() {
         </aside>
       </div>
     </div>
+    </>
   );
 }

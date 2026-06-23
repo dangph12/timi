@@ -67,8 +67,17 @@ export default function PaymentPage() {
       console.error('Error adding order: ', e);
     }
   };
+  const title = 'Payment - Tỉ Mỉ';
+  const description = 'Bank transfer payment instructions for your Tỉ Mỉ order. Complete your purchase with BIDV bank transfer.';
+
   return (
-    <div className='w-full'>
+    <>
+      <title>{title}</title>
+      <meta name='description' content={description} />
+      <meta property='og:title' content={title} />
+      <meta property='og:description' content={description} />
+      <meta property='og:type' content='website' />
+      <div className='w-full'>
       <div className='grid grid-cols-1 md:h-screen md:grid-cols-[45%_55%]'>
         <main className='px-8 py-4 md:px-12 md:py-8 lg:px-20 flex flex-col md:h-full md:overflow-y-auto'>
           <div className='mb-4 shrink-0'>
@@ -257,5 +266,6 @@ export default function PaymentPage() {
         </aside>
       </div>
     </div>
+    </>
   );
 }

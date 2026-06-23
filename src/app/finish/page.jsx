@@ -5,8 +5,17 @@ export default function FinishPage() {
   const order = useAtomValue(orderAtom);
   const customer = order?.customer;
 
+  const title = 'Order Confirmed - Tỉ Mỉ';
+  const description = 'Thank you for your order at Tỉ Mỉ workshop. Your custom DIY character is being prepared.';
+
   return (
-    <div className='h-screen bg-[#f7f7f7] flex flex-col relative overflow-hidden'>
+    <>
+      <title>{title}</title>
+      <meta name='description' content={description} />
+      <meta property='og:title' content={title} />
+      <meta property='og:description' content={description} />
+      <meta property='og:type' content='website' />
+      <div className='h-screen bg-[#f7f7f7] flex flex-col relative overflow-hidden'>
       <div className='absolute top-6 left-6 md:top-8 md:left-10'>
         <div className='mb-4 shrink-0'>
           <img
@@ -78,5 +87,6 @@ export default function FinishPage() {
         </div>
       </main>
     </div>
+    </>
   );
 }
