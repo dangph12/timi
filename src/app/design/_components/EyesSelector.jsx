@@ -1,16 +1,8 @@
 import { useAtom } from 'jotai';
 import { designSelectionsAtom } from '@/store/design';
+import { EYES } from '@/constants/eyes';
 import OptionCard from './OptionCard';
 import StepContinue from './StepContinue';
-
-const EYES = [
-  { id: 'E01', label: 'Eyes E01' },
-  { id: 'E02', label: 'Eyes E02' },
-  { id: 'E03', label: 'Eyes E03' },
-  { id: 'E04', label: 'Eyes E04' },
-  { id: 'E05', label: 'Eyes E05' },
-  { id: 'E06', label: 'Eyes E06' }
-];
 
 export default function EyesSelector({ onContinue }) {
   const [selections, setSelections] = useAtom(designSelectionsAtom);

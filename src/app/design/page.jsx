@@ -19,26 +19,15 @@ import PackagingSelector from './_components/PackagingSelector';
 import DesignCanvas from './_components/DesignCanvas';
 
 const sections = [
-  { id: '1', title: 'SELECT VERSION' },
-  { id: '2', title: 'SELECT HAIR' },
-  { id: '3', title: 'SELECT EYES' },
-  { id: '4', title: 'SELECT LIP' },
-  { id: '5', title: 'SELECT CLOTHES' },
-  { id: '6', title: 'SELECT ACCESSORY' },
-  { id: '7', title: 'SELECT ITEM' },
-  { id: '8', title: 'SELECT PACKAGING' }
+  { step: 1, title: 'SELECT VERSION', Component: VersionSelector },
+  { step: 2, title: 'SELECT HAIR', Component: HairSelector },
+  { step: 3, title: 'SELECT EYES', Component: EyesSelector },
+  { step: 4, title: 'SELECT LIP', Component: LipSelector },
+  { step: 5, title: 'SELECT CLOTHES', Component: ClothesSelector },
+  { step: 6, title: 'SELECT ACCESSORY', Component: AccessorySelector },
+  { step: 7, title: 'SELECT ITEM', Component: ItemSelector },
+  { step: 8, title: 'SELECT PACKAGING', Component: PackagingSelector }
 ];
-
-const selectorMap = {
-  1: VersionSelector,
-  2: HairSelector,
-  3: EyesSelector,
-  4: LipSelector,
-  5: ClothesSelector,
-  6: AccessorySelector,
-  7: ItemSelector,
-  8: PackagingSelector
-};
 
 export default function DesignPage() {
   const [activeStep, setActiveStep] = useState(1);
@@ -52,7 +41,6 @@ export default function DesignPage() {
   useEffect(() => {
     const activeRef = sectionRefs.current[activeStep];
     if (activeRef) {
-      // Small timeout ensures CollapsibleContent layout height changes have fully completed/transitioned
       const timer = setTimeout(() => {
         activeRef.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 50);
@@ -93,22 +81,21 @@ export default function DesignPage() {
         {/* Left Sidebar */}
         <div className='w-full md:w-1/3 p-4 pb-28 md:pb-4 overflow-y-auto border-t md:border-t-0 md:border-r border-border order-2 md:order-1 flex-1'>
           {sections.map(section => {
-            const isCompleted = activeStep > parseInt(section.id);
-            const isActive = activeStep === parseInt(section.id);
-            const SelectorComponent = selectorMap[parseInt(section.id)];
+            const isCompleted = activeStep > section.step;
+            const isActive = activeStep === section.step;
 
             return (
               <div
-                key={section.id}
+                key={section.step}
                 ref={el => {
-                  if (el) sectionRefs.current[section.id] = el;
+                  if (el) sectionRefs.current[section.step] = el;
                 }}
               >
                 <Collapsible
                   open={isActive}
                   onOpenChange={isOpen => {
                     if (isOpen && isCompleted)
-                      setActiveStep(parseInt(section.id));
+                      setActiveStep(section.step);
                   }}
                   className='mb-2 rounded-md'
                 >
@@ -118,15 +105,15 @@ export default function DesignPage() {
                         ? 'text-[#0000D0]'
                         : 'text-muted-foreground'
                     }`}
-                    disabled={parseInt(section.id) > activeStep}
+                    disabled={section.step > activeStep}
                   >
                     {isActive || isCompleted ? (
                       <span className='inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#0000D0] text-white text-sm font-extrabold shrink-0'>
-                        {section.id}
+                        {section.step}
                       </span>
                     ) : (
                       <span className='inline-flex items-center justify-center w-7 h-7 rounded-full border border-muted-foreground/30 text-muted-foreground/70 text-sm font-bold shrink-0'>
-                        {section.id}
+                        {section.step}
                       </span>
                     )}
                     <span className='tracking-wide uppercase text-sm font-black'>
@@ -134,8 +121,8 @@ export default function DesignPage() {
                     </span>
                   </CollapsibleTrigger>
                   <CollapsibleContent className='p-4 bg-muted/20 border-t border-border/40'>
-                    {isActive && SelectorComponent && (
-                      <SelectorComponent onContinue={handleContinue} />
+                    {isActive && (
+                      <section.Component onContinue={handleContinue} />
                     )}
                     {isCompleted && (
                       <p className='text-xs text-muted-foreground'>Completed</p>
