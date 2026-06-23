@@ -2,7 +2,7 @@ import { useAtomValue } from 'jotai';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { designSelectionsAtom } from '@/store/design';
 import { Stage, Layer, Rect, Image as KonvaImage, Group } from 'react-konva';
-import useImage from '../_hooks/useImage';
+import useImage from 'use-image';
 import {
   LAYER_ORDER,
   POSITION_OFFSETS
@@ -82,7 +82,7 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
   const versionSrc = selections.version
     ? `/version/${selections.version}.png`
     : null;
-  const versionImage = useImage(versionSrc);
+  const [versionImage] = useImage(versionSrc);
 
   const versionBounds = calcVersionBounds(width, height, versionImage);
 
