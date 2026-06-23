@@ -121,9 +121,9 @@ export default function DesignPage() {
                     </span>
                   </CollapsibleTrigger>
                   <CollapsibleContent className='p-4 bg-muted/20 border-t border-border/40'>
-                    {isActive && (
+                    <div style={{ display: isActive ? '' : 'none' }}>
                       <section.Component onContinue={handleContinue} />
-                    )}
+                    </div>
                     {isCompleted && (
                       <p className='text-xs text-muted-foreground'>Completed</p>
                     )}
