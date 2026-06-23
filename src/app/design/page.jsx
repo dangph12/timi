@@ -44,9 +44,21 @@ export default function DesignPage() {
   const [activeStep, setActiveStep] = useState(1);
   const canvasRef = useRef(null);
   const designCanvasRef = useRef(null);
+  const sectionRefs = useRef({});
   const [size, setSize] = useState({ width: 0, height: 0 });
   const navigate = useNavigate();
   const setCapturedCharacter = useSetAtom(capturedCharacterAtom);
+
+  useEffect(() => {
+    const activeRef = sectionRefs.current[activeStep];
+    if (activeRef) {
+      // Small timeout ensures CollapsibleContent layout height changes have fully completed/transitioned
+      const timer = setTimeout(() => {
+        activeRef.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [activeStep]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -77,60 +89,69 @@ export default function DesignPage() {
   return (
     <div className='flex h-screen flex-col font-sans overflow-hidden'>
       <Header />
-      <div className='flex flex-1 w-full min-h-0'>
+      <div className='flex flex-col md:flex-row flex-1 w-full min-h-0 overflow-hidden'>
         {/* Left Sidebar */}
-        <div className='w-1/3 p-4 overflow-y-auto border-r border-border'>
+        <div className='w-full md:w-1/3 p-4 pb-28 md:pb-4 overflow-y-auto border-t md:border-t-0 md:border-r border-border order-2 md:order-1 flex-1'>
           {sections.map(section => {
             const isCompleted = activeStep > parseInt(section.id);
             const isActive = activeStep === parseInt(section.id);
             const SelectorComponent = selectorMap[parseInt(section.id)];
 
             return (
-              <Collapsible
+              <div
                 key={section.id}
-                open={isActive}
-                onOpenChange={isOpen => {
-                  if (isOpen && isCompleted)
-                    setActiveStep(parseInt(section.id));
+                ref={el => {
+                  if (el) sectionRefs.current[section.id] = el;
                 }}
-                className='mb-2 rounded-md'
               >
-                <CollapsibleTrigger
-                  className={`w-full p-4 font-bold text-left flex items-center gap-2 ${
-                    isCompleted || isActive
-                      ? 'text-[#0000D0]'
-                      : 'text-muted-foreground'
-                  }`}
-                  disabled={parseInt(section.id) > activeStep}
+                <Collapsible
+                  open={isActive}
+                  onOpenChange={isOpen => {
+                    if (isOpen && isCompleted)
+                      setActiveStep(parseInt(section.id));
+                  }}
+                  className='mb-2 rounded-md'
                 >
-                  {isActive || isCompleted ? (
-                    <span className='inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#0000D0] text-white text-sm font-extrabold shrink-0'>
-                      {section.id}
+                  <CollapsibleTrigger
+                    className={`w-full p-4 font-bold text-left flex items-center gap-2 ${
+                      isCompleted || isActive
+                        ? 'text-[#0000D0]'
+                        : 'text-muted-foreground'
+                    }`}
+                    disabled={parseInt(section.id) > activeStep}
+                  >
+                    {isActive || isCompleted ? (
+                      <span className='inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#0000D0] text-white text-sm font-extrabold shrink-0'>
+                        {section.id}
+                      </span>
+                    ) : (
+                      <span className='inline-flex items-center justify-center w-7 h-7 rounded-full border border-muted-foreground/30 text-muted-foreground/70 text-sm font-bold shrink-0'>
+                        {section.id}
+                      </span>
+                    )}
+                    <span className='tracking-wide uppercase text-sm font-black'>
+                      {section.title}
                     </span>
-                  ) : (
-                    <span className='inline-flex items-center justify-center w-7 h-7 rounded-full border border-muted-foreground/30 text-muted-foreground/70 text-sm font-bold shrink-0'>
-                      {section.id}
-                    </span>
-                  )}
-                  <span className='tracking-wide uppercase text-sm font-black'>
-                    {section.title}
-                  </span>
-                </CollapsibleTrigger>
-                <CollapsibleContent className='p-4 bg-muted/20 border-t border-border/40'>
-                  {isActive && SelectorComponent && (
-                    <SelectorComponent onContinue={handleContinue} />
-                  )}
-                  {isCompleted && (
-                    <p className='text-xs text-muted-foreground'>Completed</p>
-                  )}
-                </CollapsibleContent>
-              </Collapsible>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className='p-4 bg-muted/20 border-t border-border/40'>
+                    {isActive && SelectorComponent && (
+                      <SelectorComponent onContinue={handleContinue} />
+                    )}
+                    {isCompleted && (
+                      <p className='text-xs text-muted-foreground'>Completed</p>
+                    )}
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
             );
           })}
         </div>
 
         {/* Right Canvas */}
-        <div ref={canvasRef} className='w-2/3 h-full bg-muted'>
+        <div
+          ref={canvasRef}
+          className='w-full h-[40vh] md:h-full md:w-2/3 bg-muted order-1 md:order-2 shrink-0 md:shrink'
+        >
           {size.width > 0 && (
             <DesignCanvas
               ref={designCanvasRef}

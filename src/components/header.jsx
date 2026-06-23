@@ -61,7 +61,7 @@ export default function Header() {
           </button>
         </div>
         <Button
-          className='bg-gradient-to-r from-[#f43397] to-[#b340e6] hover:opacity-90 transition-opacity text-white font-black rounded-full px-4 py-2 md:px-5 md:py-2.5 lg:px-6 border-0 text-xs md:text-sm tracking-wide shadow-sm h-auto'
+          className='bg-linear-to-r from-[#f43397] to-[#b340e6] hover:opacity-90 transition-opacity text-white font-black rounded-full px-4 py-2 md:px-5 md:py-2.5 lg:px-6 border-0 text-xs md:text-sm tracking-wide shadow-sm h-auto'
           asChild
         >
           <Link to='/design'>
