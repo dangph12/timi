@@ -1,131 +1,106 @@
 import { CLOTHES } from '@/constants/clothes';
-import CanvasImageLayer from '@/components/CanvasImageLayer';
 import { HAIR_OPTIONS } from '@/constants/hair';
-
-const IMAGE_SRC = {
-  clothes: id => `/clothes/${id}.png`,
-  accessory: id => `/accessory/${id}.png`,
-  hair: id => `/hair-top/${id}.png`,
-  hair_bottom: id => `/hair-bottom/${id}.png`,
-  default: (id, category) => `/${category}/${id}.png`
-};
+import CanvasImageLayer from '@/components/CanvasImageLayer';
 
 const CLOTHES_CATEGORY_ORDER = { pant: 0, skirt: 1, shirt: 2 };
 
-function renderClothes(selections, getLayerProps) {
-  const activeIds = selections.clothes || [];
-  if (activeIds.length === 0) return null;
+const CATEGORY_CONFIG = {
+  hair_bottom: {
+    multi: false,
+    selectionKey: 'hair',
+    srcTemplate: (id) => `/hair-bottom/${id}.png`,
+    guard: (sel) => {
+      const opt = HAIR_OPTIONS.find((h) => h.id === sel);
+      return opt?.hasBottom ?? false;
+    },
+  },
+  clothes: {
+    multi: true,
+    selectionKey: 'clothes',
+    srcTemplate: (id) => `/clothes/${id}.png`,
+    sort: (ids) =>
+      [...ids].sort((a, b) => {
+        const catOf = (id) => CLOTHES.find((c) => c.id === id)?.category ?? '';
+        return (
+          (CLOTHES_CATEGORY_ORDER[catOf(a)] ?? 99) -
+          (CLOTHES_CATEGORY_ORDER[catOf(b)] ?? 99)
+        );
+      }),
+  },
+  accessory: {
+    multi: true,
+    selectionKey: 'accessory',
+    srcTemplate: (id) => `/accessory/${id}.png`,
+    passesRotation: true,
+  },
+  hair: {
+    multi: false,
+    selectionKey: 'hair',
+    srcTemplate: (id) => `/hair-top/${id}.png`,
+  },
+  version: {
+    multi: false,
+    selectionKey: 'version',
+    srcTemplate: (id) => `/version/${id}.png`,
+  },
+};
 
-  const sorted = [...activeIds].sort((a, b) => {
-    const catA = CLOTHES.find(c => c.id === a)?.category ?? '';
-    const catB = CLOTHES.find(c => c.id === b)?.category ?? '';
-    return (
-      (CLOTHES_CATEGORY_ORDER[catA] ?? 99) -
-      (CLOTHES_CATEGORY_ORDER[catB] ?? 99)
-    );
-  });
+const DEFAULT_CONFIG = {
+  multi: false,
+  srcTemplate: (id, category) => `/${category}/${id}.png`,
+};
 
-  return sorted.map(id => {
-    const props = getLayerProps('clothes', id);
-    if (!props) return null;
-    return (
-      <CanvasImageLayer
-        key={id}
-        src={IMAGE_SRC.clothes(id)}
-        x={props.x}
-        y={props.y}
-        width={props.width}
-        height={props.height}
-      />
-    );
-  });
+function getConfig(category) {
+  const specific = CATEGORY_CONFIG[category];
+  if (specific) {
+    return {
+      ...DEFAULT_CONFIG,
+      ...specific,
+      selectionKey: specific.selectionKey ?? category,
+    };
+  }
+  return { ...DEFAULT_CONFIG, selectionKey: category };
 }
 
-function renderAccessory(selections, getLayerProps) {
-  const activeAccs = selections.accessory || [];
-  if (activeAccs.length === 0) return null;
+export function renderLayer(selections, getLayerProps, category) {
+  const config = getConfig(category);
+  const sel = selections[config.selectionKey];
 
-  return activeAccs.map(accId => {
-    const props = getLayerProps('accessory', accId);
-    if (!props) return null;
-    return (
-      <CanvasImageLayer
-        key={accId}
-        src={IMAGE_SRC.accessory(accId)}
-        x={props.x}
-        y={props.y}
-        width={props.width}
-        height={props.height}
-        rotation={props.rotation}
-      />
-    );
-  });
-}
+  if (config.multi) {
+    const ids = sel ? (config.sort ? config.sort(sel) : sel) : [];
+    if (ids.length === 0) return null;
+    return ids.map((id) => {
+      const props = getLayerProps(category, id);
+      if (!props) return null;
+      return (
+        <CanvasImageLayer
+          key={id}
+          src={config.srcTemplate(id)}
+          x={props.x}
+          y={props.y}
+          width={props.width}
+          height={props.height}
+          rotation={config.passesRotation ? (props.rotation || 0) : 0}
+        />
+      );
+    });
+  }
 
-function renderHairTop(selections, getLayerProps) {
-  const sel = selections.hair;
   if (!sel) return null;
+  if (config.guard && !config.guard(sel)) return null;
 
-  const props = getLayerProps('hair', sel);
-  if (!props) return null;
-
-  return (
-    <CanvasImageLayer
-      key='hair'
-      src={IMAGE_SRC.hair(sel)}
-      x={props.x}
-      y={props.y}
-      width={props.width}
-      height={props.height}
-    />
-  );
-}
-
-function renderHairBottom(selections, getLayerProps) {
-  const sel = selections.hair;
-  if (!sel) return null;
-
-  const hairOption = HAIR_OPTIONS.find(h => h.id === sel);
-  if (!hairOption || !hairOption.hasBottom) return null;
-
-  const props = getLayerProps('hair_bottom', sel);
-  if (!props) return null;
-
-  return (
-    <CanvasImageLayer
-      key='hair_bottom'
-      src={IMAGE_SRC.hair_bottom(sel)}
-      x={props.x}
-      y={props.y}
-      width={props.width}
-      height={props.height}
-    />
-  );
-}
-
-function renderSingleSelect(selections, getLayerProps, category) {
-  const sel = selections[category];
-  if (!sel) return null;
-
-  const props = getLayerProps(category);
+  const props = getLayerProps(category, sel);
   if (!props) return null;
 
   return (
     <CanvasImageLayer
       key={category}
-      src={IMAGE_SRC.default(sel, category)}
+      src={config.srcTemplate(sel, category)}
       x={props.x}
       y={props.y}
       width={props.width}
       height={props.height}
+      rotation={config.passesRotation ? (props.rotation || 0) : 0}
     />
   );
 }
-
-export const LAYER_RENDERERS = {
-  clothes: renderClothes,
-  accessory: renderAccessory,
-  hair: renderHairTop,
-  hair_bottom: renderHairBottom,
-  default: renderSingleSelect
-};

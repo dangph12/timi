@@ -12,6 +12,7 @@ export const LAYER_ORDER = [
 
 export const POSITION_OFFSETS = {
   standard: {
+    version: { x: 0, y: 0, scale: 1 },
     clothes: { x: 0, y: 0.55, scale: 1 },
     hair: { x: 0, y: -0.2, scale: 1 },
     hair_bottom: { x: 0, y: -0.2, scale: 1 },
@@ -22,6 +23,7 @@ export const POSITION_OFFSETS = {
     packaging: { x: 0, y: 0, scale: 1.1 }
   },
   economy: {
+    version: { x: 0, y: 0, scale: 1 },
     clothes: { x: 0, y: 0.55, scale: 1 },
     hair: { x: 0, y: -0.1, scale: 0.6 },
     hair_bottom: { x: 0, y: -0.1, scale: 0.6 },
