@@ -12,14 +12,14 @@ export const CLOTHES = [
 
 export const CLOTHES_OFFSETS = {
   standard: {
-    C01: { x: 0, y: 0.33, scale: 0.7 },
-    C02: { x: 0, y: 0.18, scale: 1 },
-    C03: { x: 0, y: 0.18, scale: 1 },
-    C04: { x: 0, y: 0.17, scale: 1 },
-    C05: { x: 0, y: 0.33, scale: 0.7 },
-    C06: { x: 0, y: 0.16, scale: 1 },
+    C01: { x: 0, y: 0.35, scale: 0.64 },
+    C02: { x: 0, y: 0.14, scale: 0.8 },
+    C03: { x: 0, y: 0.16, scale: 0.8 },
+    C04: { x: 0, y: 0.15, scale: 0.88 },
+    C05: { x: 0, y: 0.35, scale: 0.64 },
+    C06: { x: 0, y: 0.145, scale: 0.87 },
     C07: { x: 0, y: 0.24, scale: 0.9 },
-    C08: { x: 0, y: 0.16, scale: 1 },
-    C09: { x: 0, y: 0.35, scale: 0.8 }
+    C08: { x: 0, y: 0.152, scale: 0.92 },
+    C09: { x: 0, y: 0.33, scale: 0.8 }
   }
 };
