@@ -1,7 +1,7 @@
 import { useAtomValue } from 'jotai';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { designSelectionsAtom } from '@/store/design';
-import { Stage, Layer, Rect, Group } from 'react-konva';
+import { Stage, Layer, Rect, Group, Text } from 'react-konva';
 import { LAYER_ORDER } from '@/constants/positions';
 import useImage from 'use-image';
 import { useLayerProps } from '@/app/design/_hooks/useLayerProps';
@@ -22,7 +22,12 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
 
   const showItemPreview = !!(selections.item?.type && selections.item?.color);
   const characterWidth = showItemPreview ? Math.round(width * 0.6) : width;
-  const getLayerProps = useLayerProps(selections, characterWidth, height, versionImage);
+  const getLayerProps = useLayerProps(
+    selections,
+    characterWidth,
+    height,
+    versionImage
+  );
 
   const itemVersion = selections.version || 'standard';
   const itemSrc = showItemPreview
@@ -57,6 +62,10 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
 
   const itemPreviewWidth = Math.round(width * 0.28);
   const itemPreviewHeight = Math.round(height * 0.55);
+  const imageCenterX = Math.round(width * 0.8);
+  const imageTop = Math.round(height / 2 - itemPreviewHeight / 2);
+  const sampleFontSize = Math.round(itemPreviewHeight * 0.15);
+  const sampleY = Math.round(imageTop - sampleFontSize * 0.1);
 
   return (
     <Stage ref={stageRef} width={width} height={height}>
@@ -83,10 +92,21 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
         })}
         {showItemPreview && (
           <Group ref={itemPreviewRef}>
+            <Text
+              text='SAMPLE'
+              x={Math.round(width * 0.66)}
+              y={sampleY}
+              width={itemPreviewWidth}
+              fontSize={sampleFontSize}
+              fontFamily='Roboto Variable'
+              fontStyle='bold'
+              fill='white'
+              align='center'
+            />
             {itemSrc && (
               <CanvasImageLayer
                 src={itemSrc}
-                x={width * 0.8}
+                x={imageCenterX}
                 y={height / 2}
                 width={itemPreviewWidth}
                 height={itemPreviewHeight}
