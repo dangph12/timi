@@ -1,7 +1,14 @@
 import { Image as KonvaImage } from 'react-konva';
 import useImage from 'use-image';
 
-export default function CanvasImageLayer({ src, x, y, width, height }) {
+export default function CanvasImageLayer({
+  src,
+  x,
+  y,
+  width,
+  height,
+  rotation = 0
+}) {
   const [image] = useImage(src);
   if (!image) return null;
 
@@ -16,6 +23,7 @@ export default function CanvasImageLayer({ src, x, y, width, height }) {
       y={y - renderHeight / 2}
       width={renderWidth}
       height={renderHeight}
+      rotation={rotation}
     />
   );
 }

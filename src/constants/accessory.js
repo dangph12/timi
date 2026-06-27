@@ -13,8 +13,8 @@ export const ACCESSORY_OFFSETS = {
   standard: {
     A01: { x: 0, y: 0.48, scale: 0.58 },
     A02: { x: 0, y: 0.48, scale: 0.58 },
-    A03: { x: -0.3, y: 0.2, scale: 0.25 },
-    A04: { x: 0.3, y: 0.2, scale: 0.25 },
+    A03: { x: -0.43, y: 0.21, scale: 0.2, rotation: 20 },
+    A04: { x: 0.54, y: 0.18, scale: 0.15, rotation: 25 },
     A05: { x: 0, y: -0.42, scale: 1.1 },
     A06: { x: 0, y: -0.42, scale: 1.1 },
     A07: { x: 0.35, y: -0.3, scale: 0.25 },
