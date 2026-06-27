@@ -17,11 +17,11 @@ export default function OptionCard({
         isSelected
           ? 'border-[#0000D0] shadow-md shadow-blue-100'
           : 'border-slate-200 hover:border-slate-300'
-      } ${
-        disabled ? 'opacity-50 blur-[2px] pointer-events-none' : ''
-      }`}
+      } ${disabled ? 'opacity-50 blur-[2px] pointer-events-none' : ''}`}
     >
-      <div className={`aspect-4/3 w-full relative overflow-hidden shrink-0 ${imageBgClass}`}>
+      <div
+        className={`aspect-4/3 w-full relative overflow-hidden shrink-0 ${imageBgClass}`}
+      >
         <div className='absolute inset-0 flex items-center justify-center p-3'>
           <img
             src={imageSrc}

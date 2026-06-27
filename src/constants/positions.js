@@ -5,8 +5,8 @@ export const LAYER_ORDER = [
   'eyes',
   'lip',
   'hair',
-  'clothes',
   'accessory',
+  'clothes',
   'item'
 ];
 

@@ -16,27 +16,19 @@ export default function ClothesSelector({ onContinue }) {
       const isSelected = currentClothes.includes(item.id);
 
       if (isSelected) {
-        // Deselect item
         return {
           ...prev,
           clothes: currentClothes.filter(id => id !== item.id)
         };
       }
 
-      // Select new item
-      const newClothes =
-        item.category === 'skirt'
-          ? [item.id]
-          : [
-              ...currentClothes.filter(id => {
-                const config = CLOTHES.find(c => c.id === id);
-                if (!config) return false;
-                if (config.category === 'skirt') return false;
-                if (config.category === item.category) return false; // Replace old shirt/pant with new selection
-                return true;
-              }),
-              item.id
-            ];
+      const newClothes = [
+        ...currentClothes.filter(id => {
+          const config = CLOTHES.find(c => c.id === id);
+          return config && config.category !== item.category;
+        }),
+        item.id
+      ];
 
       return {
         ...prev,
@@ -50,7 +42,7 @@ export default function ClothesSelector({ onContinue }) {
   return (
     <>
       <p className='text-xs text-muted-foreground font-semibold mb-4 tracking-wide'>
-        {canChoose ? 'Choose clothes' : 'Not available for Classic Version'}
+        {canChoose ? 'Choose clothes' : 'Not available for Economy Version'}
       </p>
 
       <div
