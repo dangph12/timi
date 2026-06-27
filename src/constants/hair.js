@@ -10,14 +10,14 @@ export const HAIR_OFFSETS = {
     H08: { x: 0, y: -0.32, scale: 1 }
   },
   economy: {
-    H01: { x: 0.03, y: -0.25, scale: 1.2 },
-    H02: { x: 0.005, y: -0.08, scale: 1.2 },
-    H03: { x: 0, y: -0.17, scale: 1.2 },
-    H04: { x: 0, y: -0.23, scale: 1.1 },
-    H05: { x: 0, y: -0.23, scale: 1.1 },
-    H06: { x: 0, y: -0.23, scale: 1.1 },
-    H07: { x: 0, y: -0.3, scale: 1.1 },
-    H08: { x: 0, y: -0.23, scale: 1.1 }
+    H01: { x: 0.03, y: -0.12, scale: 1.15 },
+    H02: { x: 0.005, y: 0.05, scale: 1.2 },
+    H03: { x: 0, y: -0.03, scale: 1.1 },
+    H04: { x: 0, y: -0.15, scale: 0.98 },
+    H05: { x: 0, y: -0.16, scale: 1.05 },
+    H06: { x: 0, y: -0.185, scale: 1.12 },
+    H07: { x: 0, y: -0.22, scale: 1.01 },
+    H08: { x: 0, y: -0.183, scale: 1.1 }
   }
 };
 
@@ -31,12 +31,12 @@ export const HAIR_BOTTOM_OFFSETS = {
     H07: { x: 0, y: -0.25, scale: 1.15 }
   },
   economy: {
-    H01: { x: 0, y: 0.1, scale: 1 },
-    H02: { x: 0, y: 0.15, scale: 0.9 },
-    H03: { x: 0, y: 0.2, scale: 1.1 },
-    H04: { x: 0, y: -0.13, scale: 1.1 },
-    H05: { x: 0, y: -0.15, scale: 1.1 },
-    H07: { x: 0, y: 0.02, scale: 1.1 }
+    H01: { x: 0, y: -0.01, scale: 1.31 },
+    H02: { x: 0, y: -0.02, scale: 1.24 },
+    H03: { x: 0, y: 0.2, scale: 1.7 },
+    H04: { x: 0, y: 0.04, scale: 1.33 },
+    H05: { x: -0.015, y: -0.04, scale: 1.3 },
+    H07: { x: 0.01, y: -0.055, scale: 1.15 }
   }
 };
 

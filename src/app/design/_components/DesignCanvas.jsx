@@ -39,10 +39,10 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
       stageRef.current.draw();
 
       return dataUrl;
-    },
+    }
   }));
 
-  const refFor = (category) => (node) => {
+  const refFor = category => node => {
     if (node) categoryRefs.current[category] = node;
     else delete categoryRefs.current[category];
   };
@@ -60,7 +60,7 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
           fillLinearGradientEndPoint={{ x: 0, y: height }}
           fillLinearGradientColorStops={[0, '#0000FF', 1, '#4A4AFF']}
         />
-        {LAYER_ORDER.map((category) => {
+        {LAYER_ORDER.map(category => {
           const content = renderLayer(selections, getLayerProps, category);
           return (
             content && (
