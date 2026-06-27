@@ -1,10 +1,12 @@
+/* eslint-disable react-refresh/only-export-components */
+import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router';
 
-import HomePage from '@/app/page';
-import DesignPage from '@/app/design/page';
-import CheckoutPage from '@/app/checkout/page';
-import PaymentPage from '@/app/payment/page';
-import FinishPage from '@/app/finish/page';
+const HomePage = lazy(() => import('@/app/page'));
+const DesignPage = lazy(() => import('@/app/design/page'));
+const CheckoutPage = lazy(() => import('@/app/checkout/page'));
+const PaymentPage = lazy(() => import('@/app/payment/page'));
+const FinishPage = lazy(() => import('@/app/finish/page'));
 
 const router = createBrowserRouter([
   {
