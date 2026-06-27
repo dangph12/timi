@@ -7,7 +7,7 @@ export const designSelectionsAtom = atom({
   lip: null,
   clothes: [],
   accessory: [],
-  item: null,
+  item: { type: null, color: null },
   packaging: null
 });
 

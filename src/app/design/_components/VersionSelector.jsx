@@ -6,7 +6,7 @@ import StepContinue from './StepContinue';
 const VERSIONS = [
   {
     id: 'economy',
-    label: 'Classic Version',
+    label: 'Economy Version',
     imageSrc: '/version/economy.png',
     imageScale: 105
   },
