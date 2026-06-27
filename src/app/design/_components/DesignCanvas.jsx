@@ -3,10 +3,7 @@ import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { designSelectionsAtom } from '@/store/design';
 import { Stage, Layer, Rect, Image as KonvaImage, Group } from 'react-konva';
 import useImage from 'use-image';
-import {
-  LAYER_ORDER,
-  POSITION_OFFSETS
-} from '@/constants/positions';
+import { LAYER_ORDER, POSITION_OFFSETS } from '@/constants/positions';
 import { CLOTHES_OFFSETS } from '@/constants/clothes';
 import { ACCESSORY_OFFSETS } from '@/constants/accessory';
 import { HAIR_OFFSETS, HAIR_BOTTOM_OFFSETS } from '@/constants/hair';
@@ -16,7 +13,7 @@ const ELEMENT_OFFSETS = {
   accessory: ACCESSORY_OFFSETS,
   clothes: CLOTHES_OFFSETS,
   hair: HAIR_OFFSETS,
-  hair_bottom: HAIR_BOTTOM_OFFSETS,
+  hair_bottom: HAIR_BOTTOM_OFFSETS
 };
 
 function calcVersionBounds(canvasWidth, canvasHeight, versionImage) {
@@ -90,13 +87,16 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
     const version = selections.version || 'standard';
     const baseCategory = category === 'hair_bottom' ? 'hair_bottom' : category;
 
-    const fallbackOffsets = POSITION_OFFSETS[version] || POSITION_OFFSETS.standard;
+    const fallbackOffsets =
+      POSITION_OFFSETS[version] || POSITION_OFFSETS.standard;
 
     const specificOffsets = ELEMENT_OFFSETS[baseCategory];
-    const versionOffsets = specificOffsets?.[version] ?? specificOffsets?.standard;
-    const offset = elementId && versionOffsets
-      ? (versionOffsets[elementId] ?? fallbackOffsets[baseCategory])
-      : fallbackOffsets[baseCategory];
+    const versionOffsets =
+      specificOffsets?.[version] ?? specificOffsets?.standard;
+    const offset =
+      elementId && versionOffsets
+        ? (versionOffsets[elementId] ?? fallbackOffsets[baseCategory])
+        : fallbackOffsets[baseCategory];
 
     if (!offset) return null;
 
@@ -105,7 +105,13 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
     const layerW = versionBounds.width * offset.scale;
     const layerH = versionBounds.height * offset.scale;
 
-    return { x: layerX, y: layerY, width: layerW, height: layerH };
+    return {
+      x: layerX,
+      y: layerY,
+      width: layerW,
+      height: layerH,
+      rotation: offset.rotation || 0
+    };
   }
 
   return (
