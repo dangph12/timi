@@ -3,8 +3,8 @@ export const ACCESSORIES = [
   { id: 'A02', label: 'Accessory A02' },
   { id: 'A03', label: 'Accessory A03' },
   { id: 'A04', label: 'Accessory A04' },
-  { id: 'A05', label: 'Accessory A05' },
-  { id: 'A06', label: 'Accessory A06' },
+  { id: 'A05', label: 'Accessory A05', type: 'hat' },
+  { id: 'A06', label: 'Accessory A06', type: 'hat' },
   { id: 'A07', label: 'Accessory A07' },
   { id: 'A08', label: 'Accessory A08' }
 ];
