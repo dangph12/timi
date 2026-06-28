@@ -1,14 +1,22 @@
-import { useMemo } from 'react';
-import { POSITION_OFFSETS } from '@/constants/positions';
-import { CLOTHES_OFFSETS } from '@/constants/clothes';
-import { ACCESSORY_OFFSETS } from '@/constants/accessory';
-import { HAIR_OFFSETS, HAIR_BOTTOM_OFFSETS, HAIR_OPTIONS } from '@/constants/hair';
+import { useMemo } from "react";
+import { POSITION_OFFSETS } from "@/constants/positions";
+import { CLOTHES_OFFSETS } from "@/constants/clothes";
+import { ACCESSORY_OFFSETS, ACCESSORIES } from "@/constants/accessory";
+import {
+  HAIR_OFFSETS,
+  HAIR_BOTTOM_OFFSETS,
+  HAIR_OPTIONS,
+} from "@/constants/hair";
 
 const ELEMENT_OFFSETS = {
   accessory: ACCESSORY_OFFSETS,
   clothes: CLOTHES_OFFSETS,
   hair: HAIR_OFFSETS,
   hair_bottom: HAIR_BOTTOM_OFFSETS,
+};
+
+const HAIR_HAT_Y_TWEAKS = {
+  H02_A06: -0.05,
 };
 
 function calcVersionBounds(canvasWidth, canvasHeight, versionImage) {
@@ -44,7 +52,7 @@ export function useLayerProps(selections, width, height, versionImage) {
 
   return useMemo(() => {
     function getLayerProps(category, elementId = null) {
-      const version = selectedVersion || 'standard';
+      const version = selectedVersion || "standard";
       const fallbackOffsets =
         POSITION_OFFSETS[version] || POSITION_OFFSETS.standard;
 
@@ -59,13 +67,14 @@ export function useLayerProps(selections, width, height, versionImage) {
       if (!offset) return null;
 
       let scale = offset.scale;
+      let yOffset = offset.y;
 
       if (
-        category === 'accessory' &&
-        (elementId === 'A05' || elementId === 'A06') &&
+        category === "accessory" &&
+        ACCESSORIES.find((a) => a.id === elementId)?.type === "hat" &&
         selectedHair
       ) {
-        const hairOpt = HAIR_OPTIONS.find(h => h.id === selectedHair);
+        const hairOpt = HAIR_OPTIONS.find((h) => h.id === selectedHair);
         const useBottom = hairOpt?.hasBottom ?? false;
 
         const hairOffsets = useBottom
@@ -76,18 +85,21 @@ export function useLayerProps(selections, width, height, versionImage) {
 
         const refOffsets =
           HAIR_BOTTOM_OFFSETS[version] ?? HAIR_BOTTOM_OFFSETS.standard;
-        const refOffset = refOffsets['H01'];
+        const refOffset = refOffsets["H01"];
 
         if (hairOffset?.scale && refOffset?.scale) {
           const hairSize = versionBounds.width * hairOffset.scale;
           const refSize = versionBounds.width * refOffset.scale;
           scale = offset.scale * (hairSize / refSize) + 0.1;
         }
+
+        const key = selectedHair + "_" + elementId;
+        yOffset += HAIR_HAT_Y_TWEAKS[key] ?? 0;
       }
 
       return {
         x: versionBounds.x + versionBounds.width * offset.x,
-        y: versionBounds.y + versionBounds.height * offset.y,
+        y: versionBounds.y + versionBounds.height * yOffset,
         width: versionBounds.width * scale,
         height: versionBounds.height * scale,
         rotation: offset.rotation || 0,
