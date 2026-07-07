@@ -7,7 +7,7 @@ export default function OptionCard({
   onSelect,
   imageScale = 105,
   disabled = false,
-  imageBgClass = 'bg-linear-to-b from-[#0000FF] to-[#4A4AFF]'
+  imageBgClass = 'bg-[repeating-conic-gradient(#e5e7eb_0%_25%,#f3f4f6_0%_50%)] bg-[length:8px_8px]'
 }) {
   return (
     <button
