@@ -101,20 +101,27 @@ export default function PartSelector({ part, onContinue }) {
   }
 
   const showNotAvailable = !isBody && selections.styleId == null;
+  const noOptions = options && options.length === 0;
 
   return (
     <>
       <p className="text-xs text-muted-foreground font-semibold mb-4 tracking-wide">
         {showNotAvailable
           ? 'Select body first'
-          : part.allowMultiSelect
-            ? 'Choose (Optional)'
-            : 'Choose one'}
+          : noOptions
+            ? 'No options for this style'
+            : part.allowMultiSelect
+              ? 'Choose (Optional)'
+              : 'Choose one'}
       </p>
 
       {showNotAvailable ? (
         <div className="text-center py-4 text-muted-foreground text-sm">
           Please select a body option first.
+        </div>
+      ) : noOptions ? (
+        <div className="text-center py-4 text-muted-foreground text-sm">
+          No options available for this part with the current style.
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-3 mb-4">
@@ -159,7 +166,7 @@ export default function PartSelector({ part, onContinue }) {
       )}
 
       <StepContinue
-        disabled={!isSelected && !part.allowMultiSelect}
+        disabled={!noOptions && !isSelected && !part.allowMultiSelect}
         onClick={onContinue}
         label="CONTINUE →"
       />
