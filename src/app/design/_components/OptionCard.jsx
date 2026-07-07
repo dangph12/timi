@@ -7,7 +7,7 @@ export default function OptionCard({
   onSelect,
   imageScale = 105,
   disabled = false,
-  imageBgClass = ''
+  imageBgClass = 'bg-linear-to-b from-[#0000FF] to-[#4A4AFF]'
 }) {
   return (
     <button
