@@ -11,3 +11,5 @@ export const cartAtom = atom(
 export const customerAtom = atom(
   (get) => get(orderAtom)?.customer || null
 );
+
+export const orderIdAtom = atom(null);
