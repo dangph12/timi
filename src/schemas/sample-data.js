@@ -1,9 +1,3 @@
-export const sampleCharacterDesign = {
-  name: "My Character",
-  imageUrl: "data:image/png",
-  partSelections: [{ partOptionId: 1 }],
-};
-
 export const sampleOrder = {
   email: "customer@example.com",
   phone: "0912345678",
