@@ -197,23 +197,7 @@ export default function CheckoutPage() {
                     <Skeleton className="h-12 w-12 rounded-none bg-foreground" />
                     <span className="text-sm tracking-wide">TỈ MỈ DIY BOX</span>
                   </div>
-                  <span className="text-sm">59.000đ</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Skeleton className="h-12 w-12 rounded-none bg-foreground" />
-                    <span className="text-sm tracking-wide">
-                      STANDARD VERSION
-                    </span>
-                  </div>
-                  <span className="text-sm">120.000đ</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Skeleton className="h-12 w-12 rounded-none bg-foreground" />
-                    <span className="text-sm tracking-wide">KEYRING</span>
-                  </div>
-                  <span className="text-sm">0đ</span>
+                  <span className="text-sm">179.000đ</span>
                 </div>
               </div>
 
