@@ -3,7 +3,6 @@ import { useNavigate } from "react-router";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   designSelectionsAtom,
-  capturedCharacterAtom,
   designIdAtom,
 } from "@/store/design";
 import { useMutation } from "@tanstack/react-query";
@@ -26,13 +25,11 @@ export default function DesignPage() {
   const sectionRefs = useRef({});
   const [size, setSize] = useState({ width: 0, height: 0 });
   const navigate = useNavigate();
-  const setCapturedCharacter = useSetAtom(capturedCharacterAtom);
   const designSelections = useAtomValue(designSelectionsAtom);
   const setDesignId = useSetAtom(designIdAtom);
 
-  const { data: parts, isLoading: partsLoading } = useParts();
+  const { data: parts, isLoading: partsLoading, error: partsError } = useParts();
   const sections = parts || [];
-  const stepIndex = activeStep - 1;
 
   const designMutation = useMutation({
     mutationFn: createDesign,
@@ -101,6 +98,20 @@ export default function DesignPage() {
           <Header />
           <div className="flex-1 p-8 flex items-center justify-center">
             <Skeleton className="w-64 h-8 rounded" />
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (partsError) {
+    return (
+      <>
+        <title>{title}</title>
+        <div className="flex h-screen flex-col font-sans overflow-hidden">
+          <Header />
+          <div className="flex-1 p-8 flex items-center justify-center text-red-500 text-sm">
+            Failed to load design options. Please try again later.
           </div>
         </div>
       </>
