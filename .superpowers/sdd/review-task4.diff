@@ -1,0 +1,40 @@
+# Review package: db70852..HEAD
+
+## Commits
+81b5ac6 feat: add usePartsData hook (parts list + per-part options)
+
+## Files changed
+ src/app/design/_hooks/usePartsData.js | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+## Diff
+diff --git a/src/app/design/_hooks/usePartsData.js b/src/app/design/_hooks/usePartsData.js
+new file mode 100644
+index 0000000..919cc9f
+--- /dev/null
++++ b/src/app/design/_hooks/usePartsData.js
+@@ -0,0 +1,24 @@
++import { useQuery } from '@tanstack/react-query';
++import { useAtomValue } from 'jotai';
++import { getParts, getPartOptions } from '@/services/parts';
++import { designSelectionsAtom } from '@/store/design';
++
++export function useParts() {
++  return useQuery({
++    queryKey: ['parts'],
++    queryFn: getParts,
++    staleTime: Infinity,
++  });
++}
++
++export function usePartOptions(partId) {
++  const selections = useAtomValue(designSelectionsAtom);
++  const enabled = selections.styleId != null || partId === 1;
++
++  return useQuery({
++    queryKey: ['partOptions', partId, selections.styleId],
++    queryFn: () => getPartOptions(partId, selections.styleId),
++    enabled,
++    staleTime: Infinity,
++  });
++}

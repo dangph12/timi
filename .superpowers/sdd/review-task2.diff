@@ -1,0 +1,38 @@
+# Review package: 891312b..HEAD
+
+## Commits
+49a744e refactor: new designSelections shape (styleId + partId map) + partOptionsAtom
+
+## Files changed
+ src/store/design.js | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
+
+## Diff
+diff --git a/src/store/design.js b/src/store/design.js
+index f4fd5bb..90a85a5 100644
+--- a/src/store/design.js
++++ b/src/store/design.js
+@@ -1,20 +1,12 @@
+ import { atom } from 'jotai';
+ 
+ export const designSelectionsAtom = atom({
+-  version: null,
+-  hair: null,
+-  eyes: null,
+-  lip: null,
+-  clothes: [],
+-  accessory: [],
+-  item: { type: null, color: null },
+-  packaging: null
++  styleId: null,
++  selections: {}
+ });
+ 
+-export const canChooseClothesAtom = atom(
+-  get => get(designSelectionsAtom).version !== 'economy'
+-);
++export const partOptionsAtom = atom({});
+ 
+ export const capturedCharacterAtom = atom(null);
+ 
+ export const designIdAtom = atom(null);
