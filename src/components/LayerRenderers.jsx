@@ -16,7 +16,7 @@ export function renderLayers(selections, getLayerProps, parts, partOptions) {
       const option = options.find(o => o.id === optionId);
       if (!option) return null;
 
-      const props = getLayerProps(part.id, partOptions);
+      const props = getLayerProps(part.id, partOptions, optionId);
       if (!props) return null;
 
       return (

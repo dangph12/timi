@@ -29,11 +29,13 @@ export function useLayerProps(width, height, bodyImage) {
   );
 
   return useMemo(() => {
-    function getLayerProps(partId, partOptions) {
+    function getLayerProps(partId, partOptions, optionId) {
       const optionsArr = partOptions?.[partId];
       if (!optionsArr || optionsArr.length === 0) return null;
 
-      const option = optionsArr[0];
+      const option = optionId
+        ? optionsArr.find(o => o.id === optionId)
+        : optionsArr[0];
       if (!option) return null;
 
       return {
