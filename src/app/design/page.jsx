@@ -53,18 +53,18 @@ export default function DesignPage() {
   }, [activeStep]);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (canvasRef.current) {
-        setSize({
-          width: canvasRef.current.offsetWidth,
-          height: canvasRef.current.offsetHeight,
-        });
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    if (partsLoading) return;
+    const el = canvasRef.current;
+    if (!el) return;
+    const measure = () => setSize({
+      width: el.offsetWidth,
+      height: el.offsetHeight,
+    });
+    const observer = new ResizeObserver(() => measure());
+    observer.observe(el);
+    measure();
+    return () => observer.disconnect();
+  }, [partsLoading]);
 
   const handleContinue = useCallback(() => {
     if (activeStep === sections.length) {
