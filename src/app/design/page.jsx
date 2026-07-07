@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
@@ -14,27 +14,10 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 import Header from "@/components/header";
-import VersionSelector from "./_components/VersionSelector";
-import HairSelector from "./_components/HairSelector";
-import EyesSelector from "./_components/EyesSelector";
-import LipSelector from "./_components/LipSelector";
-import ClothesSelector from "./_components/ClothesSelector";
-import AccessorySelector from "./_components/AccessorySelector";
-import ItemSelector from "./_components/ItemSelector";
-import PackagingSelector from "./_components/PackagingSelector";
+import PartSelector from "./_components/PartSelector";
 import DesignCanvas from "./_components/DesignCanvas";
-import { sampleCharacterDesign } from "@/schemas/sample-data";
-
-const sections = [
-  { step: 1, title: "SELECT VERSION", Component: VersionSelector },
-  { step: 2, title: "SELECT HAIR", Component: HairSelector },
-  { step: 3, title: "SELECT EYES", Component: EyesSelector },
-  { step: 4, title: "SELECT LIP", Component: LipSelector },
-  { step: 5, title: "SELECT CLOTHES", Component: ClothesSelector },
-  { step: 6, title: "SELECT ACCESSORY", Component: AccessorySelector },
-  { step: 7, title: "SELECT ITEM", Component: ItemSelector },
-  { step: 8, title: "SELECT PACKAGING", Component: PackagingSelector },
-];
+import { useParts } from "@/app/design/_hooks/usePartsData";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DesignPage() {
   const [activeStep, setActiveStep] = useState(1);
@@ -46,6 +29,10 @@ export default function DesignPage() {
   const setCapturedCharacter = useSetAtom(capturedCharacterAtom);
   const designSelections = useAtomValue(designSelectionsAtom);
   const setDesignId = useSetAtom(designIdAtom);
+
+  const { data: parts, isLoading: partsLoading } = useParts();
+  const sections = parts || [];
+  const stepIndex = activeStep - 1;
 
   const designMutation = useMutation({
     mutationFn: createDesign,
@@ -82,21 +69,43 @@ export default function DesignPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  function handleContinue() {
+  const handleContinue = useCallback(() => {
     if (activeStep === sections.length) {
+      const partSelections = [];
+      Object.entries(designSelections.selections).forEach(([partId, val]) => {
+        const ids = Array.isArray(val) ? val : [val];
+        ids.forEach(id => {
+          if (id != null) partSelections.push({ partOptionId: id });
+        });
+      });
+
       designMutation.mutate({
-        name: sampleCharacterDesign.name || "",
-        imageUrl: sampleCharacterDesign.imageUrl,
-        partSelections: sampleCharacterDesign.partSelections,
+        name: "My Character",
+        imageUrl: "data:image/png",
+        partSelections,
       });
     } else {
       setActiveStep((prev) => Math.min(prev + 1, sections.length));
     }
-  }
+  }, [activeStep, sections.length, designSelections, designMutation]);
 
   const title = "Design Your Character - Tỉ Mỉ";
   const description =
     "Customize your DIY box with unique hair, eyes, clothes, and accessories. Create your perfect character design.";
+
+  if (partsLoading) {
+    return (
+      <>
+        <title>{title}</title>
+        <div className="flex h-screen flex-col font-sans overflow-hidden">
+          <Header />
+          <div className="flex-1 p-8 flex items-center justify-center">
+            <Skeleton className="w-64 h-8 rounded" />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -110,21 +119,22 @@ export default function DesignPage() {
         <div className="flex flex-col md:flex-row flex-1 w-full min-h-0 overflow-hidden">
           {/* Left Sidebar */}
           <div className="w-full md:w-1/3 p-4 pb-28 md:pb-4 overflow-y-auto border-t md:border-t-0 md:border-r border-border order-2 md:order-1 flex-1">
-            {sections.map((section) => {
-              const isCompleted = activeStep > section.step;
-              const isActive = activeStep === section.step;
+            {sections.map((part, idx) => {
+              const stepNum = idx + 1;
+              const isCompleted = activeStep > stepNum;
+              const isActive = activeStep === stepNum;
 
               return (
                 <div
-                  key={section.step}
+                  key={part.id}
                   ref={(el) => {
-                    if (el) sectionRefs.current[section.step] = el;
+                    if (el) sectionRefs.current[stepNum] = el;
                   }}
                 >
                   <Collapsible
                     open={isActive}
                     onOpenChange={(isOpen) => {
-                      if (isOpen && isCompleted) setActiveStep(section.step);
+                      if (isOpen && isCompleted) setActiveStep(stepNum);
                     }}
                     className="mb-2 rounded-md"
                   >
@@ -134,24 +144,27 @@ export default function DesignPage() {
                           ? "text-[#0000D0]"
                           : "text-muted-foreground"
                       }`}
-                      disabled={section.step > activeStep}
+                      disabled={stepNum > activeStep}
                     >
                       {isActive || isCompleted ? (
                         <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#0000D0] text-white text-sm font-extrabold shrink-0">
-                          {section.step}
+                          {stepNum}
                         </span>
                       ) : (
                         <span className="inline-flex items-center justify-center w-7 h-7 rounded-full border border-muted-foreground/30 text-muted-foreground/70 text-sm font-bold shrink-0">
-                          {section.step}
+                          {stepNum}
                         </span>
                       )}
                       <span className="tracking-wide uppercase text-sm font-black">
-                        {section.title}
+                        {part.name}
                       </span>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="p-4 bg-muted/20 border-t border-border/40">
                       <div style={{ display: isActive ? "" : "none" }}>
-                        <section.Component onContinue={handleContinue} />
+                        <PartSelector
+                          part={part}
+                          onContinue={handleContinue}
+                        />
                       </div>
                       {isCompleted && (
                         <p className="text-xs text-muted-foreground">
