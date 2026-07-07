@@ -5,6 +5,7 @@ import { usePartOptions } from '@/app/design/_hooks/usePartsData';
 import OptionCard from './OptionCard';
 import StepContinue from './StepContinue';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Ban } from 'lucide-react';
 
 export default function PartSelector({ part, onContinue }) {
   const [selections, setSelections] = useAtom(designSelectionsAtom);
@@ -28,7 +29,7 @@ export default function PartSelector({ part, onContinue }) {
       if (isBody) {
         return {
           styleId: option.styleId,
-          selections: { ...prev.selections, [part.id]: option.id }
+          selections: { [part.id]: option.id }
         };
       }
 
@@ -71,6 +72,16 @@ export default function PartSelector({ part, onContinue }) {
     });
   }
 
+  function handleDeselect() {
+    setSelections(prev => ({
+      ...prev,
+      selections: {
+        ...prev.selections,
+        [part.id]: part.allowMultiSelect ? [] : null
+      }
+    }));
+  }
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-3 gap-3 mb-4">
@@ -107,6 +118,28 @@ export default function PartSelector({ part, onContinue }) {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-3 mb-4">
+          {!isBody && (
+            <button
+              type="button"
+              onClick={handleDeselect}
+              className={`group relative flex-1 bg-white border-2 rounded-xl overflow-hidden transition-all duration-200 outline-none flex flex-col ${
+                !isSelected
+                  ? 'border-[#0000D0] shadow-md shadow-blue-100'
+                  : 'border-slate-200 hover:border-slate-300'
+              }`}
+            >
+              <div className="aspect-4/3 w-full relative overflow-hidden shrink-0 flex items-center justify-center bg-slate-50">
+                <Ban className="w-10 h-10 text-slate-300" />
+              </div>
+              <div className="p-3 bg-white text-center w-full border-t border-slate-100 mt-auto">
+                <p className={`text-[11px] font-black tracking-wider uppercase transition-colors ${
+                  !isSelected ? 'text-[#0000D0]' : 'text-slate-600'
+                }`}>
+                  Không
+                </p>
+              </div>
+            </button>
+          )}
           {options?.map(option => {
             const isActive = part.allowMultiSelect
               ? (Array.isArray(current) && current.includes(option.id))
