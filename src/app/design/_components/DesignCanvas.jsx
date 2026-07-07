@@ -1,15 +1,11 @@
-import { useAtomValue } from 'jotai';
-import { forwardRef, useImperativeHandle, useRef } from 'react';
-import { designSelectionsAtom, partOptionsAtom } from '@/store/design';
-import { Stage, Layer, Rect, Group } from 'react-konva';
+import { memo, forwardRef, useImperativeHandle, useRef, useMemo } from 'react';
+import { Stage, Layer, Rect } from 'react-konva';
 import useImage from 'use-image';
 import { useLayerProps } from '@/app/design/_hooks/useLayerProps';
 import { renderLayers } from '@/components/LayerRenderers';
 import { useParts } from '@/app/design/_hooks/usePartsData';
 
-const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
-  const selections = useAtomValue(designSelectionsAtom);
-  const partOptions = useAtomValue(partOptionsAtom);
+const DesignCanvas = memo(forwardRef(function DesignCanvas({ width, height, selections, partOptions }, ref) {
   const stageRef = useRef(null);
   const backgroundRef = useRef(null);
 
@@ -34,7 +30,10 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
     }
   }));
 
-  const layers = renderLayers(selections, getLayerProps, parts, partOptions);
+  const layers = useMemo(
+    () => renderLayers(selections, getLayerProps, parts, partOptions),
+    [selections, getLayerProps, parts, partOptions]
+  );
 
   return (
     <Stage ref={stageRef} width={width} height={height}>
@@ -49,14 +48,10 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height }, ref) {
           fillLinearGradientEndPoint={{ x: 0, y: height }}
           fillLinearGradientColorStops={[0, '#0000FF', 1, '#4A4AFF']}
         />
-        {layers.map((element, i) => (
-          <Group key={i}>
-            {element}
-          </Group>
-        ))}
+        {layers}
       </Layer>
     </Stage>
   );
-});
+}));
 
 export default DesignCanvas;

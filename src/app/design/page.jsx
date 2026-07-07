@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   designSelectionsAtom,
+  partOptionsAtom,
   designIdAtom,
 } from "@/store/design";
 import { useMutation } from "@tanstack/react-query";
@@ -26,6 +27,7 @@ export default function DesignPage() {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const navigate = useNavigate();
   const designSelections = useAtomValue(designSelectionsAtom);
+  const partOptions = useAtomValue(partOptionsAtom);
   const setDesignId = useSetAtom(designIdAtom);
 
   const { data: parts, isLoading: partsLoading, error: partsError } = useParts();
@@ -56,10 +58,14 @@ export default function DesignPage() {
     if (partsLoading) return;
     const el = canvasRef.current;
     if (!el) return;
-    const measure = () => setSize({
-      width: el.offsetWidth,
-      height: el.offsetHeight,
-    });
+    const measure = () => {
+      const w = el.offsetWidth;
+      const h = el.offsetHeight;
+      setSize(prev => {
+        if (prev.width === w && prev.height === h) return prev;
+        return { width: w, height: h };
+      });
+    };
     const observer = new ResizeObserver(() => measure());
     observer.observe(el);
     measure();
@@ -199,6 +205,8 @@ export default function DesignPage() {
                 ref={designCanvasRef}
                 width={size.width}
                 height={size.height}
+                selections={designSelections}
+                partOptions={partOptions}
               />
             )}
           </div>

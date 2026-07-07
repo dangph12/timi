@@ -14,7 +14,10 @@ export default function PartSelector({ part, onContinue }) {
 
   useEffect(() => {
     if (options) {
-      setPartOptions(prev => ({ ...prev, [part.id]: options }));
+      setPartOptions(prev => {
+        if (prev[part.id] === options) return prev;
+        return { ...prev, [part.id]: options };
+      });
     }
   }, [options, part.id, setPartOptions]);
 
