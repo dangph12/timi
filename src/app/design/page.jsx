@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/collapsible";
 import Header from "@/components/header";
 import PartSelector from "./_components/PartSelector";
+import SkuSelector from "./_components/SkuSelector";
 import DesignCanvas from "./_components/DesignCanvas";
 import { useParts } from "@/app/design/_hooks/usePartsData";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,8 +31,13 @@ export default function DesignPage() {
   const partOptions = useAtomValue(partOptionsAtom);
   const setDesignId = useSetAtom(designIdAtom);
 
-  const { data: parts, isLoading: partsLoading, error: partsError } = useParts();
+  const {
+    data: parts,
+    isLoading: partsLoading,
+    error: partsError,
+  } = useParts();
   const sections = parts || [];
+  const skuStep = sections.length + 1;
 
   const designMutation = useMutation({
     mutationFn: createDesign,
@@ -61,7 +67,7 @@ export default function DesignPage() {
     const measure = () => {
       const w = el.offsetWidth;
       const h = el.offsetHeight;
-      setSize(prev => {
+      setSize((prev) => {
         if (prev.width === w && prev.height === h) return prev;
         return { width: w, height: h };
       });
@@ -73,11 +79,11 @@ export default function DesignPage() {
   }, [partsLoading]);
 
   const handleContinue = useCallback(() => {
-    if (activeStep === sections.length) {
+    if (activeStep === skuStep) {
       const partSelections = [];
-      Object.entries(designSelections.selections).forEach(([partId, val]) => {
+      Object.entries(designSelections.selections).forEach(([val]) => {
         const ids = Array.isArray(val) ? val : [val];
-        ids.forEach(id => {
+        ids.forEach((id) => {
           if (id != null) partSelections.push({ partOptionId: id });
         });
       });
@@ -87,10 +93,12 @@ export default function DesignPage() {
         imageUrl: "data:image/png",
         partSelections,
       });
+    } else if (activeStep === sections.length) {
+      setActiveStep(skuStep);
     } else {
       setActiveStep((prev) => Math.min(prev + 1, sections.length));
     }
-  }, [activeStep, sections.length, designSelections, designMutation]);
+  }, [activeStep, sections.length, skuStep, designSelections, designMutation]);
 
   const title = "Design Your Character - Tỉ Mỉ";
   const description =
@@ -178,10 +186,7 @@ export default function DesignPage() {
                     </CollapsibleTrigger>
                     <CollapsibleContent className="p-4 bg-muted/20 border-t border-border/40">
                       {isActive && (
-                        <PartSelector
-                          part={part}
-                          onContinue={handleContinue}
-                        />
+                        <PartSelector part={part} onContinue={handleContinue} />
                       )}
                       {isCompleted && !isActive && (
                         <p className="text-xs text-muted-foreground">
@@ -193,6 +198,53 @@ export default function DesignPage() {
                 </div>
               );
             })}
+
+            {/* SKU Step */}
+            <div
+              ref={(el) => {
+                if (el) sectionRefs.current[skuStep] = el;
+              }}
+            >
+              <Collapsible
+                open={activeStep === skuStep}
+                onOpenChange={(isOpen) => {
+                  if (isOpen && activeStep > skuStep) setActiveStep(skuStep);
+                }}
+                className="mb-2 rounded-md"
+              >
+                <CollapsibleTrigger
+                  className={`w-full p-4 font-bold text-left flex items-center gap-2 ${
+                    activeStep >= skuStep
+                      ? "text-[#0000D0]"
+                      : "text-muted-foreground"
+                  }`}
+                  disabled={skuStep > activeStep}
+                >
+                  {activeStep >= skuStep ? (
+                    <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#0000D0] text-white text-sm font-extrabold shrink-0">
+                      {skuStep}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center justify-center w-7 h-7 rounded-full border border-muted-foreground/30 text-muted-foreground/70 text-sm font-bold shrink-0">
+                      {skuStep}
+                    </span>
+                  )}
+                  <span className="tracking-wide uppercase text-sm font-black">
+                    SẢN PHẨM
+                  </span>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 bg-muted/20 border-t border-border/40">
+                  {activeStep === skuStep && (
+                    <SkuSelector onContinue={handleContinue} />
+                  )}
+                  {activeStep > skuStep && (
+                    <p className="text-xs text-muted-foreground">
+                      Completed
+                    </p>
+                  )}
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
           </div>
 
           {/* Right Canvas */}

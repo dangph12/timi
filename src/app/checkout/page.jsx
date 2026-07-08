@@ -1,6 +1,7 @@
 import { useSetAtom, useAtomValue } from "jotai";
-import { orderAtom, orderIdAtom } from "@/store/order";
+import { orderIdAtom } from "@/store/order";
 import { capturedCharacterAtom, designIdAtom } from "@/store/design";
+import { selectedSkuAtom, skuSelectionsAtom } from "@/store/sku";
 import { useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
@@ -28,11 +29,16 @@ const schema = yup.object().shape({
 });
 
 export default function CheckoutPage() {
-  const setOrder = useSetAtom(orderAtom);
   const setOrderId = useSetAtom(orderIdAtom);
   const navigate = useNavigate();
   const capturedCharacter = useAtomValue(capturedCharacterAtom);
   const designId = useAtomValue(designIdAtom);
+  const selectedSku = useAtomValue(selectedSkuAtom);
+  const skuSelections = useAtomValue(skuSelectionsAtom);
+
+  const price = selectedSku?.price ?? 0;
+  const quantity = skuSelections?.quantity ?? 1;
+  const subtotal = price * quantity;
 
   const form = useForm({
     resolver: yupResolver(schema),
@@ -63,9 +69,9 @@ export default function CheckoutPage() {
       address: data.address,
       items: [
         {
-          skuId: 1,
+          skuId: selectedSku?.id,
           characterDesignId: designId,
-          quantity: 1,
+          quantity: quantity,
         },
       ],
     });
@@ -197,7 +203,7 @@ export default function CheckoutPage() {
                     <Skeleton className="h-12 w-12 rounded-none bg-foreground" />
                     <span className="text-sm tracking-wide">TỈ MỈ DIY BOX</span>
                   </div>
-                  <span className="text-sm">179.000đ</span>
+                  <span className="text-sm">{price.toLocaleString('vi-VN')}đ</span>
                 </div>
               </div>
 
@@ -237,7 +243,7 @@ export default function CheckoutPage() {
                 <div className="space-y-2 pt-2">
                   <div className="flex justify-between text-base">
                     <span>Subtotal</span>
-                    <span>179.000đ</span>
+                    <span>{subtotal.toLocaleString('vi-VN')}đ</span>
                   </div>
                   <div className="flex justify-between text-base">
                     <span>Shipping</span>
@@ -245,7 +251,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-3xl font-black pt-2">
                     <span>Total</span>
-                    <span>0đ</span>
+                    <span>{subtotal.toLocaleString('vi-VN')}đ</span>
                   </div>
                 </div>
 
