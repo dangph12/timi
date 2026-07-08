@@ -5,6 +5,7 @@ import { useSkus } from '@/app/design/_hooks/useSkusData';
 import OptionCard from './OptionCard';
 import QuantityInput from './QuantityInput';
 import StepContinue from './StepContinue';
+import SkuPriceDisplay from './SkuPriceDisplay';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function buildCombos(skus) {
@@ -96,7 +97,7 @@ export default function SkuSelector({ onContinue }) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-3 w-24 rounded" />
-        <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3">
           {[...Array(3)].map((_, i) => (
             <Skeleton key={i} className="aspect-4/3 rounded-xl" />
           ))}
@@ -127,7 +128,7 @@ export default function SkuSelector({ onContinue }) {
       <p className="text-xs text-muted-foreground font-semibold mb-4 tracking-wide">
         Choose category
       </p>
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-2 gap-3 mb-6">
         {categories.map((cat) => (
           <OptionCard
             key={cat.id}
@@ -136,6 +137,7 @@ export default function SkuSelector({ onContinue }) {
             isSelected={categoryId === cat.id}
             onSelect={() => handleCategorySelect(cat)}
             disabled={disabledCategoryIds.has(cat.id)}
+            imageScale={150}
           />
         ))}
       </div>
@@ -166,17 +168,6 @@ export default function SkuSelector({ onContinue }) {
         })}
       </div>
 
-      {selectedSku && (
-        <div className="flex items-center justify-between mb-4 p-3 bg-blue-50/30 rounded-lg border border-blue-100">
-          <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">
-            Price
-          </span>
-          <span className="text-sm font-black text-[#0000D0] tracking-wider">
-            {selectedSku.price.toLocaleString('vi-VN')}đ
-          </span>
-        </div>
-      )}
-
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">
           Quantity
@@ -187,6 +178,8 @@ export default function SkuSelector({ onContinue }) {
           onChange={(qty) => setSelections((prev) => ({ ...prev, quantity: qty }))}
         />
       </div>
+
+      <SkuPriceDisplay selectedSku={selectedSku} quantity={quantity} />
 
       <StepContinue
         disabled={!canContinue}

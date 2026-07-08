@@ -169,7 +169,7 @@ export default function PartSelector({ part, onContinue }) {
       )}
 
       <StepContinue
-        disabled={!noOptions && !isSelected && !part.allowMultiSelect}
+        disabled={!noOptions && !isSelected && !part.allowMultiSelect && isBody}
         onClick={onContinue}
         label="CONTINUE →"
       />

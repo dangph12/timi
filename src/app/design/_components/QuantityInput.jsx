@@ -4,8 +4,19 @@ export default function QuantityInput({ value, max, onChange }) {
   const atMin = value <= 1;
   const atMax = value >= max;
 
+  function handleInputChange(e) {
+    const raw = e.target.value;
+    if (raw === '') {
+      onChange(1);
+      return;
+    }
+    const num = parseInt(raw, 10);
+    if (isNaN(num)) return;
+    onChange(Math.max(1, Math.min(max, num)));
+  }
+
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-1">
       <button
         type="button"
         onClick={() => onChange(Math.max(1, value - 1))}
@@ -14,7 +25,13 @@ export default function QuantityInput({ value, max, onChange }) {
       >
         <Minus className="size-3.5 stroke-2" />
       </button>
-      <span className="text-sm font-bold w-8 text-center tabular-nums">{value}</span>
+      <input
+        type="text"
+        inputMode="numeric"
+        value={value}
+        onChange={handleInputChange}
+        className="w-12 text-center text-sm font-bold tabular-nums border-2 border-slate-300 rounded-lg py-1 outline-none focus:border-[#0000D0] focus:ring-1 focus:ring-[#0000D0]/20 transition-colors"
+      />
       <button
         type="button"
         onClick={() => onChange(Math.min(max, value + 1))}
