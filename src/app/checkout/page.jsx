@@ -1,15 +1,16 @@
+import { useState } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
 import { orderIdAtom } from "@/store/order";
 import { capturedCharacterAtom, designIdAtom, designNameAtom } from "@/store/design";
 import { selectedSkuAtom, skuSelectionsAtom } from "@/store/sku";
 import { useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { createOrder } from "@/services/orders";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { checkoutFormSchema } from "@/schemas";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronDown } from "lucide-react";
 import {
   Field,
   FieldLabel,
@@ -44,6 +45,26 @@ export default function CheckoutPage() {
     },
   });
 
+  const [selectedProvince, setSelectedProvince] = useState(null);
+  const [selectedWard, setSelectedWard] = useState(null);
+
+  const provincesQuery = useQuery({
+    queryKey: ["provinces"],
+    queryFn: () =>
+      fetch("https://provinces.open-api.vn/api/v2/p/").then((r) => r.json()),
+    staleTime: Infinity,
+  });
+
+  const wardsQuery = useQuery({
+    queryKey: ["wards", selectedProvince?.code],
+    queryFn: () =>
+      fetch(
+        `https://provinces.open-api.vn/api/v2/p/${selectedProvince.code}?depth=2`
+      ).then((r) => r.json()),
+    enabled: !!selectedProvince,
+    staleTime: Infinity,
+  });
+
   const orderMutation = useMutation({
     mutationFn: createOrder,
     onSuccess: (data) => {
@@ -56,10 +77,14 @@ export default function CheckoutPage() {
   });
 
   const onSubmit = (data) => {
+    const fullAddress = [data.address, selectedWard?.name, selectedProvince?.name]
+      .filter(Boolean)
+      .join(", ");
+
     orderMutation.mutate({
       email: data.email,
       phone: data.phone,
-      address: data.address,
+      address: fullAddress,
       items: [
         {
           skuId: selectedSku?.id,
@@ -144,6 +169,62 @@ export default function CheckoutPage() {
               <section className="mt-4 space-y-2">
                 <h2 className="text-3xl font-black">Delivery</h2>
                 <FieldGroup>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field>
+                      <FieldLabel className="text-base">Province / City</FieldLabel>
+                      <div className="relative">
+                        <select
+                          value={selectedProvince?.code ?? ""}
+                          onChange={(e) => {
+                            const code = Number(e.target.value);
+                            const province = code
+                              ? provincesQuery.data?.find((p) => p.code === code)
+                              : null;
+                            setSelectedProvince(province);
+                            setSelectedWard(null);
+                          }}
+                          className="h-11 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 appearance-none"
+                        >
+                          <option value="">Select province / city</option>
+                          {provincesQuery.data?.map((p) => (
+                            <option key={p.code} value={p.code}>
+                              {p.name}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-muted-foreground" />
+                      </div>
+                    </Field>
+
+                    <Field>
+                      <FieldLabel className="text-base">Ward</FieldLabel>
+                      <div className="relative">
+                        <select
+                          value={selectedWard?.code ?? ""}
+                          onChange={(e) => {
+                            const code = Number(e.target.value);
+                            const ward = code
+                              ? wardsQuery.data?.wards?.find((w) => w.code === code)
+                              : null;
+                            setSelectedWard(ward);
+                          }}
+                          disabled={!selectedProvince || wardsQuery.isLoading}
+                          className="h-11 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 appearance-none"
+                        >
+                          <option value="">
+                            {selectedProvince ? "Select ward" : "Select province first"}
+                          </option>
+                          {wardsQuery.data?.wards?.map((w) => (
+                            <option key={w.code} value={w.code}>
+                              {w.name}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-muted-foreground" />
+                      </div>
+                    </Field>
+                  </div>
+
                   <Controller
                     name="address"
                     control={form.control}
@@ -157,6 +238,7 @@ export default function CheckoutPage() {
                       </Field>
                     )}
                   />
+
                   <Controller
                     name="note"
                     control={form.control}
