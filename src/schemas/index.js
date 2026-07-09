@@ -16,10 +16,19 @@ export const orderItemSchema = yup.object({
   quantity: yup.number().required(),
 });
 
+export const checkoutFormSchema = yup.object().shape({
+  name: yup.string().required("Required"),
+  phone: yup.string().required("Required"),
+  email: yup.string().email("Invalid email").required("Required"),
+  address: yup.string().required("Required"),
+  note: yup.string(),
+});
+
 export const orderSchema = yup.object({
   email: yup.string().required(),
   phone: yup.string().required(),
   address: yup.string().required(),
+  note: yup.string(),
   accountId: yup.number(),
   items: yup.array(orderItemSchema),
 });

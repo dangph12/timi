@@ -1,12 +1,14 @@
 import { useMemo } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { skuSelectionsAtom, selectedSkuAtom } from '@/store/sku';
+import { designNameAtom } from '@/store/design';
 import { useSkus } from '@/app/design/_hooks/useSkusData';
 import OptionCard from './OptionCard';
 import QuantityInput from './QuantityInput';
 import StepContinue from './StepContinue';
 import SkuPriceDisplay from './SkuPriceDisplay';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 
 function buildCombos(skus) {
   const combos = new Set();
@@ -32,10 +34,11 @@ function deriveSizes(skus) {
   return Array.from(seen.values());
 }
 
-export default function SkuSelector({ onContinue }) {
+export default function SkuSelector({ onContinue, isPending = false }) {
   const { data: skus, isLoading, error } = useSkus();
   const [selections, setSelections] = useAtom(skuSelectionsAtom);
   const selectedSku = useAtomValue(selectedSkuAtom);
+  const [designName, setDesignName] = useAtom(designNameAtom);
   const { categoryId, sizeId, quantity } = selections;
 
   const categories = useMemo(() => (skus ? deriveCategories(skus) : []), [skus]);
@@ -125,6 +128,18 @@ export default function SkuSelector({ onContinue }) {
 
   return (
     <>
+      <div className="mb-6">
+        <p className="text-xs text-muted-foreground font-semibold mb-2 tracking-wide">
+          Character design name
+        </p>
+        <Input
+          value={designName}
+          onChange={(e) => setDesignName(e.target.value)}
+          className="h-11 rounded-lg"
+          placeholder="My Character"
+        />
+      </div>
+
       <p className="text-xs text-muted-foreground font-semibold mb-4 tracking-wide">
         Choose category
       </p>
@@ -185,6 +200,7 @@ export default function SkuSelector({ onContinue }) {
         disabled={!canContinue}
         onClick={onContinue}
         label="CHECKOUT"
+        isPending={isPending}
       />
     </>
   );

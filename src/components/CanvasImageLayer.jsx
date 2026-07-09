@@ -9,7 +9,7 @@ export default function CanvasImageLayer({
   height,
   rotation = 0
 }) {
-  const [image] = useImage(src);
+  const [image] = useImage(src, "anonymous");
   if (!image) return null;
 
   const scale = Math.min(width / image.width, height / image.height);

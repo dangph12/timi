@@ -1,13 +1,13 @@
 import { useSetAtom, useAtomValue } from "jotai";
 import { orderIdAtom } from "@/store/order";
-import { capturedCharacterAtom, designIdAtom } from "@/store/design";
+import { capturedCharacterAtom, designIdAtom, designNameAtom } from "@/store/design";
 import { selectedSkuAtom, skuSelectionsAtom } from "@/store/sku";
 import { useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { createOrder } from "@/services/orders";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { checkoutFormSchema } from "@/schemas";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import {
@@ -17,22 +17,15 @@ import {
   FieldError,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import EstimatedDelivery from "@/components/estimated-delivery";
+import Header from "@/components/header";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const schema = yup.object().shape({
-  fullName: yup.string().required("Required"),
-  phoneNumber: yup.string().required("Required"),
-  email: yup.string().email("Invalid email").required("Required"),
-  address: yup.string().required("Required"),
-  deliveryNotes: yup.string(),
-});
 
 export default function CheckoutPage() {
   const setOrderId = useSetAtom(orderIdAtom);
   const navigate = useNavigate();
   const capturedCharacter = useAtomValue(capturedCharacterAtom);
   const designId = useAtomValue(designIdAtom);
+  const designName = useAtomValue(designNameAtom);
   const selectedSku = useAtomValue(selectedSkuAtom);
   const skuSelections = useAtomValue(skuSelectionsAtom);
 
@@ -41,13 +34,13 @@ export default function CheckoutPage() {
   const subtotal = price * quantity;
 
   const form = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(checkoutFormSchema),
     defaultValues: {
-      fullName: "",
-      phoneNumber: "",
+      name: "",
+      phone: "",
       email: "",
       address: "",
-      deliveryNotes: "",
+      note: "",
     },
   });
 
@@ -65,7 +58,7 @@ export default function CheckoutPage() {
   const onSubmit = (data) => {
     orderMutation.mutate({
       email: data.email,
-      phone: data.phoneNumber,
+      phone: data.phone,
       address: data.address,
       items: [
         {
@@ -88,27 +81,20 @@ export default function CheckoutPage() {
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content="website" />
-      <div className="w-full">
-        <div className="grid grid-cols-1 md:h-screen md:grid-cols-2">
+      <div className="flex flex-col h-screen">
+        <Header />
+        <div className="grid grid-cols-1 flex-1 min-h-0 md:grid-cols-2">
           <form
             id="checkout-form"
             onSubmit={form.handleSubmit(onSubmit)}
             className="px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-y-auto"
           >
-            <div className="mb-4 shrink-0">
-              <img
-                src="/timilogo.png"
-                alt="tỉ mỉ"
-                className="h-12 w-auto object-contain"
-              />
-            </div>
-
-            <div className="flex-1 flex flex-col min-h-0 justify-center">
+            <div className="flex-1 flex flex-col min-h-0">
               <section className="space-y-2">
                 <h1 className="text-3xl font-black">Contact</h1>
                 <FieldGroup>
                   <Controller
-                    name="fullName"
+                    name="name"
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <Field>
@@ -121,7 +107,7 @@ export default function CheckoutPage() {
                     )}
                   />
                   <Controller
-                    name="phoneNumber"
+                    name="phone"
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <Field>
@@ -172,7 +158,7 @@ export default function CheckoutPage() {
                     )}
                   />
                   <Controller
-                    name="deliveryNotes"
+                    name="note"
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <Field>
@@ -189,88 +175,81 @@ export default function CheckoutPage() {
                 </FieldGroup>
               </section>
             </div>
-
-            <div className="mt-4 shrink-0">
-              <EstimatedDelivery />
-            </div>
           </form>
 
-          <aside className="bg-aside px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-y-auto">
-            <div className="flex flex-col h-full">
-              <div className="space-y-4 shrink-0">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Skeleton className="h-12 w-12 rounded-none bg-foreground" />
-                    <span className="text-sm tracking-wide">TỈ MỈ DIY BOX</span>
-                  </div>
-                  <span className="text-sm">{price.toLocaleString('vi-VN')}đ</span>
+          <aside className="bg-aside px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-hidden">
+            <div className="flex-1 md:min-h-0 md:overflow-y-auto">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[350px]">
+                  <thead>
+                    <tr className="border-b border-border/50">
+                      <th className="pb-4 font-semibold text-muted-foreground whitespace-nowrap">Tên sản phẩm</th>
+                      <th className="pb-4 text-center font-semibold text-muted-foreground whitespace-nowrap">Số lượng</th>
+                      <th className="pb-4 text-right font-semibold text-muted-foreground whitespace-nowrap">Giá tiền</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="py-4 pr-4">
+                        <div className="flex items-center gap-4">
+                          {capturedCharacter ? (
+                            <img
+                              src={capturedCharacter}
+                              alt={designName}
+                              className="h-16 w-12 object-contain bg-foreground shrink-0"
+                            />
+                          ) : (
+                            <Skeleton className="h-16 w-12 shrink-0 rounded-none bg-foreground" />
+                          )}
+                          <div className="flex flex-col">
+                            <span className="text-sm md:text-base font-bold text-foreground">
+                              {designName}
+                            </span>
+                            <span className="text-xs md:text-sm text-muted-foreground mt-0.5">
+                              {selectedSku?.category?.name}{" "}
+                              {selectedSku?.category?.name && selectedSku?.size?.name ? "·" : ""}{" "}
+                              {selectedSku?.size?.name}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 text-center align-middle">
+                        <span className="text-sm text-foreground">{quantity}</span>
+                      </td>
+                      <td className="py-4 text-right align-middle">
+                        <span className="text-sm text-foreground whitespace-nowrap">
+                          {price.toLocaleString('vi-VN')}đ
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="shrink-0 space-y-4 mt-6 pt-4 border-t border-border/50">
+              <div className="space-y-2">
+                <div className="flex justify-between text-2xl md:text-3xl font-black">
+                  <span>Total</span>
+                  <span>{subtotal.toLocaleString('vi-VN')}đ</span>
                 </div>
               </div>
 
-              <div className="flex-1 flex items-center justify-center py-4 min-h-0">
-                {capturedCharacter ? (
-                  <div className="h-full max-h-65 aspect-square flex flex-col bg-white border-2 border-[#0000D0] rounded-2xl p-3 shadow-sm">
-                    <div className="flex-1 w-full bg-linear-to-b from-[#0000FF] to-[#4A4AFF] rounded-xl overflow-hidden flex items-center justify-center relative min-h-0">
-                      <img
-                        src={capturedCharacter}
-                        alt="Your custom character design"
-                        className="w-full h-full object-contain scale-[1.4] drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)] select-none animate-fade-in relative z-10"
-                      />
-                    </div>
-                    <div className="text-center pt-2.5 pb-0.5 text-sm font-black tracking-wider text-[#0000D0] uppercase shrink-0 leading-none">
-                      ITEM DESIGN
-                    </div>
-                  </div>
+              <Button
+                type="submit"
+                form="checkout-form"
+                disabled={orderMutation.isPending}
+                className="w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2"
+              >
+                {orderMutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Submitting...
+                  </span>
                 ) : (
-                  <Skeleton className="h-full max-h-65 aspect-square rounded-2xl bg-foreground/10" />
+                  "PAY NOW"
                 )}
-              </div>
-
-              <div className="space-y-4 shrink-0 mt-2">
-                <div className="flex gap-4">
-                  <Input
-                    placeholder="Discount code"
-                    className="h-12 bg-background rounded-lg text-base"
-                  />
-                  <Button
-                    variant="secondary"
-                    className="h-12 px-6 bg-btn-muted text-muted-foreground font-medium rounded-lg hover:bg-btn-muted/80"
-                  >
-                    Apply
-                  </Button>
-                </div>
-
-                <div className="space-y-2 pt-2">
-                  <div className="flex justify-between text-base">
-                    <span>Subtotal</span>
-                    <span>{subtotal.toLocaleString('vi-VN')}đ</span>
-                  </div>
-                  <div className="flex justify-between text-base">
-                    <span>Shipping</span>
-                    <span>0đ</span>
-                  </div>
-                  <div className="flex justify-between text-3xl font-black pt-2">
-                    <span>Total</span>
-                    <span>{subtotal.toLocaleString('vi-VN')}đ</span>
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  form="checkout-form"
-                  disabled={orderMutation.isPending}
-                  className="w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2"
-                >
-                  {orderMutation.isPending ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Submitting...
-                    </span>
-                  ) : (
-                    "PAY NOW"
-                  )}
-                </Button>
-              </div>
+              </Button>
             </div>
           </aside>
         </div>

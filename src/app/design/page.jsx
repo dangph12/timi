@@ -5,9 +5,12 @@ import {
   designSelectionsAtom,
   partOptionsAtom,
   designIdAtom,
+  capturedCharacterAtom,
+  designNameAtom,
 } from "@/store/design";
 import { useMutation } from "@tanstack/react-query";
 import { createDesign } from "@/services/designs";
+import { uploadCharacterDesign } from "@/services/cloudinary";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -19,6 +22,7 @@ import SkuSelector from "./_components/SkuSelector";
 import DesignCanvas from "./_components/DesignCanvas";
 import { useParts } from "@/app/design/_hooks/usePartsData";
 import { Skeleton } from "@/components/ui/skeleton";
+import Loading from "@/components/loading";
 
 export default function DesignPage() {
   const [activeStep, setActiveStep] = useState(1);
@@ -30,6 +34,8 @@ export default function DesignPage() {
   const designSelections = useAtomValue(designSelectionsAtom);
   const partOptions = useAtomValue(partOptionsAtom);
   const setDesignId = useSetAtom(designIdAtom);
+  const setCapturedCharacter = useSetAtom(capturedCharacterAtom);
+  const designName = useAtomValue(designNameAtom);
 
   const {
     data: parts,
@@ -40,7 +46,13 @@ export default function DesignPage() {
   const skuStep = sections.length + 1;
 
   const designMutation = useMutation({
-    mutationFn: createDesign,
+    mutationFn: async ({ name, dataUrl, partSelections }) => {
+      const imageUrl = dataUrl
+        ? await uploadCharacterDesign(dataUrl)
+        : "";
+      setCapturedCharacter(imageUrl);
+      return createDesign({ name, imageUrl, partSelections });
+    },
     onSuccess: (data) => {
       setDesignId(data.id);
       navigate("/checkout");
@@ -81,16 +93,19 @@ export default function DesignPage() {
   const handleContinue = useCallback(() => {
     if (activeStep === skuStep) {
       const partSelections = [];
-      Object.entries(designSelections.selections).forEach(([val]) => {
+      Object.entries(designSelections.selections).forEach(([, val]) => {
         const ids = Array.isArray(val) ? val : [val];
         ids.forEach((id) => {
           if (id != null) partSelections.push({ partOptionId: id });
         });
       });
 
+      const dataUrl =
+        designCanvasRef.current?.getCharacterDataUrl() ?? "";
+
       designMutation.mutate({
-        name: "My Character",
-        imageUrl: "data:image/png",
+        name: designName,
+        dataUrl,
         partSelections,
       });
     } else if (activeStep === sections.length) {
@@ -98,7 +113,14 @@ export default function DesignPage() {
     } else {
       setActiveStep((prev) => Math.min(prev + 1, sections.length));
     }
-  }, [activeStep, sections.length, skuStep, designSelections, designMutation]);
+  }, [
+    activeStep,
+    sections.length,
+    skuStep,
+    designSelections,
+    designName,
+    designMutation,
+  ]);
 
   const title = "Design Your Character - Tỉ Mỉ";
   const description =
@@ -235,7 +257,10 @@ export default function DesignPage() {
                 </CollapsibleTrigger>
                 <CollapsibleContent className="p-4 bg-muted/20 border-t border-border/40">
                   {activeStep === skuStep && (
-                    <SkuSelector onContinue={handleContinue} />
+                    <SkuSelector
+                      onContinue={handleContinue}
+                      isPending={designMutation.isPending}
+                    />
                   )}
                   {activeStep > skuStep && (
                     <p className="text-xs text-muted-foreground">
@@ -264,6 +289,15 @@ export default function DesignPage() {
           </div>
         </div>
       </div>
+
+      {designMutation.isPending && (
+        <div className="fixed inset-0 z-[60] bg-white flex flex-col items-center justify-center">
+          <Loading className="h-12 w-12 text-[#0000D0]" />
+          <p className="mt-6 text-sm font-bold tracking-wide text-[#0000D0]">
+            Creating your character...
+          </p>
+        </div>
+      )}
     </>
   );
 }

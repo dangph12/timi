@@ -14,18 +14,49 @@ const DesignCanvas = memo(forwardRef(function DesignCanvas({ width, height, sele
   const bodyOptionId = selections.selections[1];
   const bodyOptions = partOptions[1] || [];
   const bodyOption = bodyOptions.find(o => o.id === bodyOptionId);
-  const [bodyImage] = useImage(bodyOption?.imageUrl || null);
+  const [bodyImage] = useImage(bodyOption?.imageUrl || null, "anonymous");
 
   const getLayerProps = useLayerProps(width, height, bodyImage);
 
   useImperativeHandle(ref, () => ({
     getCharacterDataUrl() {
       if (!stageRef.current) return null;
+      const stage = stageRef.current;
+
       backgroundRef.current?.visible(false);
-      stageRef.current.draw();
-      const dataUrl = stageRef.current.toDataURL();
+      stage.draw();
+
+      const layer = stage.findOne("Layer");
+      let cropRect = null;
+
+      layer?.children?.forEach((child) => {
+        if (child === backgroundRef.current) return;
+        const rect = child.getClientRect();
+        if (!cropRect) {
+          cropRect = { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+        } else {
+          const x2 = Math.max(cropRect.x + cropRect.width, rect.x + rect.width);
+          const y2 = Math.max(cropRect.y + cropRect.height, rect.y + rect.height);
+          cropRect.x = Math.min(cropRect.x, rect.x);
+          cropRect.y = Math.min(cropRect.y, rect.y);
+          cropRect.width = x2 - cropRect.x;
+          cropRect.height = y2 - cropRect.y;
+        }
+      });
+
+      if (cropRect) {
+        const padding = 20;
+        cropRect.x = Math.max(0, cropRect.x - padding);
+        cropRect.y = Math.max(0, cropRect.y - padding);
+        cropRect.width = Math.min(stage.width() - cropRect.x, cropRect.width + padding * 2);
+        cropRect.height = Math.min(stage.height() - cropRect.y, cropRect.height + padding * 2);
+      }
+
+      const dataUrl = stage.toDataURL(cropRect || undefined);
+
       backgroundRef.current?.visible(true);
-      stageRef.current.draw();
+      stage.draw();
+
       return dataUrl;
     }
   }));
@@ -44,9 +75,7 @@ const DesignCanvas = memo(forwardRef(function DesignCanvas({ width, height, sele
           y={0}
           width={width}
           height={height}
-          fillLinearGradientStartPoint={{ x: 0, y: 0 }}
-          fillLinearGradientEndPoint={{ x: 0, y: height }}
-          fillLinearGradientColorStops={[0, '#0000FF', 1, '#4A4AFF']}
+          fill="#FFFFFF"
         />
         {layers}
       </Layer>
