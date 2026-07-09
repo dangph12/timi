@@ -82,6 +82,7 @@ export default function CheckoutPage() {
       .join(", ");
 
     orderMutation.mutate({
+      name: data.name,
       email: data.email,
       phone: data.phone,
       address: fullAddress,
