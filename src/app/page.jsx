@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import Header from '@/components/header';
 
 export function Page() {
   const title = 'Tỉ Mỉ - Made by hand, shaped by you';
@@ -13,8 +12,7 @@ export function Page() {
       <meta property='og:title' content={title} />
       <meta property='og:description' content={description} />
       <meta property='og:type' content='website' />
-      <div className='flex min-h-screen flex-col font-sans'>
-        <Header />
+      <div className='flex h-full flex-col font-sans'>
 
         {/* Hero Section */}
         <main className='flex-1 relative bg-[#e7e7eb] flex flex-col justify-end px-0 md:px-8 py-10 lg:py-16'>

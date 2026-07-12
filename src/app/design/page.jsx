@@ -16,7 +16,6 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "@/components/ui/collapsible";
-import Header from "@/components/header";
 import PartSelector from "./_components/PartSelector";
 import SkuSelector from "./_components/SkuSelector";
 import DesignCanvas from "./_components/DesignCanvas";
@@ -130,8 +129,7 @@ export default function DesignPage() {
     return (
       <>
         <title>{title}</title>
-        <div className="flex h-screen flex-col font-sans overflow-hidden">
-          <Header />
+        <div className="flex h-full flex-col font-sans">
           <div className="flex-1 p-8 flex items-center justify-center">
             <Skeleton className="w-64 h-8 rounded" />
           </div>
@@ -144,8 +142,7 @@ export default function DesignPage() {
     return (
       <>
         <title>{title}</title>
-        <div className="flex h-screen flex-col font-sans overflow-hidden">
-          <Header />
+        <div className="flex h-full flex-col font-sans">
           <div className="flex-1 p-8 flex items-center justify-center text-red-500 text-sm">
             Failed to load design options. Please try again later.
           </div>
@@ -161,8 +158,7 @@ export default function DesignPage() {
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content="website" />
-      <div className="flex h-screen flex-col font-sans overflow-hidden">
-        <Header />
+      <div className="flex h-full flex-col font-sans">
         <div className="flex flex-col md:flex-row flex-1 w-full min-h-0 overflow-hidden">
           {/* Left Sidebar */}
           <div className="w-full md:w-1/3 p-4 pb-28 md:pb-4 overflow-y-auto border-t md:border-t-0 md:border-r border-border order-2 md:order-1 flex-1">
