@@ -1,47 +1,52 @@
-### Task 2: Rewrite design store atom
+# Task 2: Add orderPublicIdAtom to store
 
 **Files:**
-- Modify: `src/store/design.js:1-20`
+- Modify: `src/store/order.js`
 
 **Interfaces:**
 - Consumes: `atom` from jotai
-- Produces:
-  - `designSelectionsAtom` — `{ styleId: number | null, selections: Record<number, number | number[]> }`
-  - `partOptionsAtom` — `Record<number, Option[]>`, accumulates options per part as they load
-  - Removes: `canChooseClothesAtom` (no more version), `version`, `hair`, `eyes`, `lip`, `clothes`, `accessory`, `item`, `packaging` fields
-  - Keeps: `capturedCharacterAtom`, `designIdAtom`
+- Produces: `orderPublicIdAtom` — stores the publicId string from order creation response
 
-**Goal:** New atom shape. `selections` keys are part IDs (1-8). Values are option IDs (single-select parts) or option ID arrays (multi-select parts). Also adds `partOptionsAtom` so `DesignCanvas` can read loaded options from all completed steps.
+**Goal:** Add a new jotai atom `orderPublicIdAtom` alongside the existing atoms.
 
-- [ ] **Step 1: Replace store/design.js**
-
+**Current src/store/order.js:**
 ```js
 import { atom } from 'jotai';
 
-export const designSelectionsAtom = atom({
-  styleId: null,
-  selections: {}
-});
+export const orderAtom = atom(null);
 
-export const partOptionsAtom = atom({});
+export const cartAtom = atom(
+  (get) => get(orderAtom)?.cart || null
+);
 
-export const capturedCharacterAtom = atom(null);
+export const customerAtom = atom(
+  (get) => get(orderAtom)?.customer || null
+);
 
-export const designIdAtom = atom(null);
+export const orderIdAtom = atom(null);
 ```
 
-- [ ] **Step 2: Search codebase for `canChooseClothesAtom` references and confirm no remaining imports**
+**Expected final src/store/order.js:**
+```js
+import { atom } from 'jotai';
 
+export const orderAtom = atom(null);
+
+export const cartAtom = atom(
+  (get) => get(orderAtom)?.cart || null
+);
+
+export const customerAtom = atom(
+  (get) => get(orderAtom)?.customer || null
+);
+
+export const orderIdAtom = atom(null);
+
+export const orderPublicIdAtom = atom(null);
+```
+
+**Commit command:**
 ```bash
-rg "canChooseClothesAtom" src/
+git add src/store/order.js
+git commit -m "feat: add orderPublicIdAtom for SSE subscription"
 ```
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add src/store/design.js
-git commit -m "refactor: new designSelections shape (styleId + partId map) + partOptionsAtom"
-```
-
----
-

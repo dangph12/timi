@@ -1,10 +1,8 @@
-# Task 3 Report: New services for parts API
+# Task 3 Report
 
 **Status:** DONE
 
 **Commits:**
-- `db70852` - feat: add parts API service (getParts, getPartOptions)
+- `718b12253002a9ce02cef92a55c5bc5a5b72c4f3` — feat: store publicId on order creation
 
-**Concerns:** None. Pattern matches `src/services/designs.js` exactly. LF→CRLF warning is cosmetic (git core.autocrlf).
-
-**Report file:** `.superpowers/sdd/task-3-report.md`
+**Concerns:** None

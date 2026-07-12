@@ -1,32 +1,63 @@
-### Task 3: New services for parts API
+# Task 3: Update checkout page to store publicId
 
 **Files:**
-- Create: `src/services/parts.js`
+- Modify: `src/app/checkout/page.jsx`
 
 **Interfaces:**
-- Produces:
-  - `getParts() => Promise<Part[]>` — Part: `{ id: number, name: string, layerOrder: number, allowMultiSelect: boolean }`
-  - `getPartOptions(partId: number, styleId?: number) => Promise<Option[]>` — Option: `{ id: number, name: string, partId: number, styleId: number|null, imageUrl: string, deltaX: number, deltaY: number, deltaScale: number, rotation: number, mutexGroupKey: string | null }`
+- Consumes: `orderPublicIdAtom` from `@/store/order`, `createOrder` from `@/services/orders`
+- Produces: stores `publicId` from `POST /v1/orders` response into atom
 
-- [ ] **Step 1: Create src/services/parts.js**
+**Goal:** When the checkout page creates an order, store the `publicId` from the API response so the payment page can use it for SSE subscription.
 
+**Changes needed:**
+
+1. Add `orderPublicIdAtom` to the import from `@/store/order`:
+
+Current import:
 ```js
-import { api } from '@/lib/api';
-
-export const getParts = () => api.get('v1/parts').json();
-
-export const getPartOptions = (partId, styleId) => {
-  const searchParams = styleId != null ? { styleId } : {};
-  return api.get(`v1/parts/${partId}/options`, { searchParams }).json();
-};
+import { orderIdAtom, orderAtom } from "@/store/order";
+```
+Change to:
+```js
+import { orderIdAtom, orderAtom, orderPublicIdAtom } from "@/store/order";
 ```
 
-- [ ] **Step 2: Commit**
+2. Add `useSetAtom` for `orderPublicIdAtom` near the other setters (around line 24):
 
+Current:
+```js
+const setOrderId = useSetAtom(orderIdAtom);
+const setOrder = useSetAtom(orderAtom);
+```
+Change to:
+```js
+const setOrderId = useSetAtom(orderIdAtom);
+const setOrder = useSetAtom(orderAtom);
+const setOrderPublicId = useSetAtom(orderPublicIdAtom);
+```
+
+3. Update the `onSuccess` callback to store `publicId`:
+
+Current (around line 70-74):
+```js
+    onSuccess: (data) => {
+      setOrderId(data.id);
+      setOrder((prev) => ({ ...prev, id: data.id }));
+      navigate("/payment");
+    },
+```
+Change to:
+```js
+    onSuccess: (data) => {
+      setOrderId(data.id);
+      setOrderPublicId(data.publicId);
+      setOrder((prev) => ({ ...prev, id: data.id, publicId: data.publicId }));
+      navigate("/payment");
+    },
+```
+
+**Commit command:**
 ```bash
-git add src/services/parts.js
-git commit -m "feat: add parts API service (getParts, getPartOptions)"
+git add src/app/checkout/page.jsx
+git commit -m "feat: store publicId on order creation"
 ```
-
----
-

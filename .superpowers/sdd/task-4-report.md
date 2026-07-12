@@ -1,9 +1,5 @@
-# Task 4: Create usePartsData hook — Complete
+# Task 4 Report
 
-**Commit:** 81b5ac6
-
-## Done
-- Created `src/app/design/_hooks/usePartsData.js` with `useParts()` and `usePartOptions(partId)` hooks
-- `useParts()` — fetches all parts sorted by id, staleTime Infinity
-- `usePartOptions(partId)` — uses `styleId` from `designSelectionsAtom`; body (partId=1) fetches always, others only when `styleId != null`
-- Committed with message: `feat: add usePartsData hook (parts list + per-part options)`
+- Status: DONE
+- Commits: 755ec22fe5c898c76af3b1350efdca48cbbfd7af
+- Concerns: None

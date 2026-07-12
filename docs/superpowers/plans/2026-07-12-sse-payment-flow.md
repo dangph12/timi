@@ -1,4 +1,163 @@
-# Task 4: Rewrite payment page with SSE + disabled button + toast
+# SSE Payment Flow — Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Replace manual "COMPLETE ORDER" button with SSE-based real-time payment confirmation via VietQR `des=publicId`.
+
+**Architecture:** Checkout stores `publicId` from `POST /v1/orders` response. Payment page connects `EventSource` to `/sse/orders/{publicId}`, disables button until `PAID` event arrives, then shows toast + enables button. No backend changes needed.
+
+**Tech Stack:** React 19, Vite 8, Jotai, ky, sonner (toast), EventSource (native)
+
+## Global Constraints
+
+- No auto-redirect — user clicks button after PAID event
+- No `POST /v1/transactions` call — removed entirely
+- VietQR `des` parameter uses `publicId`, not customer name+phone
+- Bank transfer info stays hardcoded on payment page (unchanged)
+- SSE URL uses `VITE_API_BASE_URL` from env
+- SSE event: `payment-status` with `{"status":"PAID"}`
+- Only PAID event exists — no PENDING/EXPIRED
+- SSE connection closes on component unmount
+
+---
+
+### Task 1: Install sonner + add Toaster to layout
+
+**Files:**
+- Modify: `package.json`
+- Modify: `src/components/layout.jsx`
+
+**Interfaces:**
+- Consumes: nothing
+- Produces: `<Toaster />` component available globally in app
+
+- [ ] **Step 1: Install sonner**
+
+Run: `pnpm add sonner`
+
+- [ ] **Step 2: Add Toaster to layout.jsx**
+
+Replace `src/components/layout.jsx` with:
+
+```jsx
+import { Outlet } from "react-router";
+import Header from "@/components/header";
+import { Toaster } from "sonner";
+
+export default function Layout() {
+  return (
+    <div className="flex flex-col h-screen">
+      <Header />
+      <div className="flex-1 min-h-0">
+        <Outlet />
+      </div>
+      <Toaster />
+    </div>
+  );
+}
+```
+
+Note: `sonner`'s `<Toaster />` is placed outside the main content container so toasts overlay globally. It has no peer dependencies — works with React 19 directly.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add package.json pnpm-lock.yaml src/components/layout.jsx
+git commit -m "feat: add sonner toast + Toaster to layout"
+```
+
+---
+
+### Task 2: Add orderPublicIdAtom to store
+
+**Files:**
+- Modify: `src/store/order.js`
+
+**Interfaces:**
+- Consumes: `atom` from jotai
+- Produces: `orderPublicIdAtom` — stores the publicId string from order creation response
+
+- [ ] **Step 1: Add orderPublicIdAtom**
+
+Replace `src/store/order.js` with:
+
+```js
+import { atom } from 'jotai';
+
+export const orderAtom = atom(null);
+
+export const cartAtom = atom(
+  (get) => get(orderAtom)?.cart || null
+);
+
+export const customerAtom = atom(
+  (get) => get(orderAtom)?.customer || null
+);
+
+export const orderIdAtom = atom(null);
+
+export const orderPublicIdAtom = atom(null);
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add src/store/order.js
+git commit -m "feat: add orderPublicIdAtom for SSE subscription"
+```
+
+---
+
+### Task 3: Update checkout page to store publicId
+
+**Files:**
+- Modify: `src/app/checkout/page.jsx`
+
+**Interfaces:**
+- Consumes: `orderPublicIdAtom` from `@/store/order`, `createOrder` from `@/services/orders`
+- Produces: stores `publicId` from `POST /v1/orders` response into atom
+
+- [ ] **Step 1: Add import for orderPublicIdAtom**
+
+Add to imports in `src/app/checkout/page.jsx`:
+
+```js
+import { orderIdAtom, orderAtom, orderPublicIdAtom } from "@/store/order";
+```
+
+Replace existing `import { orderIdAtom, orderAtom } from "@/store/order";`
+
+- [ ] **Step 2: Add setter for orderPublicIdAtom**
+
+Add to the `useSetAtom` calls (line ~24):
+
+```js
+const setOrderPublicId = useSetAtom(orderPublicIdAtom);
+```
+
+- [ ] **Step 3: Store publicId on order creation success**
+
+Replace the `onSuccess` handler (~line 70-74):
+
+```js
+    onSuccess: (data) => {
+      setOrderId(data.id);
+      setOrderPublicId(data.publicId);
+      setOrder((prev) => ({ ...prev, id: data.id, publicId: data.publicId }));
+      navigate("/payment");
+    },
+```
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/app/checkout/page.jsx
+git commit -m "feat: store publicId on order creation"
+```
+
+---
+
+### Task 4: Rewrite payment page with SSE + disabled button + toast
 
 **Files:**
 - Modify: `src/app/payment/page.jsx`
@@ -7,16 +166,9 @@
 - Consumes: `orderAtom`, `orderPublicIdAtom` from `@/store/order`, `toast` from `sonner`
 - Produces: SSE subscription to `/sse/orders/{publicId}`, disabled button until PAID, VietQR with `des=publicId`
 
-**Goal:** Replace the entire payment page. New page:
-1. Connects to SSE on mount using `publicId` from store
-2. Subscribes to `payment-status` event
-3. On PAID event: shows sonner toast, enables the finish button
-4. Button disabled until PAID received
-5. VietQR `des` = `publicId` instead of customer name+phone
-6. No API call on button click — just navigates to `/finish`
-7. SSE cleanup on unmount
+- [ ] **Step 1: Rewrite payment/page.jsx**
 
-**Replace the entire file `src/app/payment/page.jsx` with this:**
+Replace entire file with:
 
 ```jsx
 import { useEffect, useState } from "react";
@@ -323,8 +475,49 @@ export default function PaymentPage() {
 }
 ```
 
-**Commit command:**
+- [ ] **Step 2: Commit**
+
 ```bash
 git add src/app/payment/page.jsx
 git commit -m "feat: SSE payment flow with disabled button + sonner toast"
 ```
+
+---
+
+### Task 5: Delete unused payments service
+
+**Files:**
+- Delete: `src/services/payments.js`
+
+**Interfaces:**
+- Removes: `createTransaction` function (no longer used anywhere)
+
+- [ ] **Step 1: Verify no imports of payments.js remain**
+
+Run: `rg "payments" src/`
+
+Expected: No matches.
+
+- [ ] **Step 2: Delete payments.js**
+
+Run: `Remove-Item -LiteralPath "src/services/payments.js"`
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add -A
+git commit -m "chore: remove unused payments service"
+```
+
+---
+
+### Task 6: Verify build compiles
+
+**Files:**
+- Modify: none (verification only)
+
+- [ ] **Step 1: Run build**
+
+Run: `pnpm run build`
+
+Expected: Build succeeds with no errors.

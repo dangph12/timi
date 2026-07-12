@@ -1,41 +1,56 @@
-### Task 1: Fix API parseJson for array responses
+# Task 1: Install sonner + add Toaster to layout
 
 **Files:**
-- Modify: `src/lib/api.js:6-9`
+- Modify: `package.json`
+- Modify: `src/components/layout.jsx`
 
 **Interfaces:**
-- Produces: `api.get('v1/parts').json()` returns `Part[]`, not indexed object
+- Consumes: nothing
+- Produces: `<Toaster />` component available globally in app
 
-**Goal:** The existing `parseJson` spreads array data into object keys (e.g., `{0: item, 1: item}`). GET endpoints return arrays in the `data` field. Fix to return arrays unchanged with `status`/`message` attached.
+**Steps:**
+1. Run `pnpm add sonner`
+2. Replace `src/components/layout.jsx` with content that imports `{ Toaster } from "sonner"` and adds `<Toaster />` component after the main content div but inside the Layout component's return.
+3. Commit with message: `feat: add sonner toast + Toaster to layout`
 
-- [ ] **Step 1: Update parseJson in api.js**
+**Current layout.jsx:**
+```jsx
+import { Outlet } from "react-router";
+import Header from "@/components/header";
 
-Replace:
-```js
-  parseJson: (text) => {
-    const { status, message, data } = JSON.parse(text);
-    return { ...data, status, message };
-  }
+export default function Layout() {
+  return (
+    <div className="flex flex-col h-screen">
+      <Header />
+      <div className="flex-1 min-h-0">
+        <Outlet />
+      </div>
+    </div>
+  );
+}
 ```
-With:
-```js
-  parseJson: (text) => {
-    const { status, message, data } = JSON.parse(text);
-    if (Array.isArray(data)) {
-      data.status = status;
-      data.message = message;
-      return data;
-    }
-    return { ...data, status, message };
-  }
+
+**Expected final layout.jsx:**
+```jsx
+import { Outlet } from "react-router";
+import Header from "@/components/header";
+import { Toaster } from "sonner";
+
+export default function Layout() {
+  return (
+    <div className="flex flex-col h-screen">
+      <Header />
+      <div className="flex-1 min-h-0">
+        <Outlet />
+      </div>
+      <Toaster />
+    </div>
+  );
+}
 ```
 
-- [ ] **Step 2: Commit**
-
+**Commit command:**
 ```bash
-git add src/lib/api.js
-git commit -m "fix: handle array responses in api parseJson"
+git add package.json pnpm-lock.yaml src/components/layout.jsx
+git commit -m "feat: add sonner toast + Toaster to layout"
 ```
-
----
-
