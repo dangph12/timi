@@ -1,32 +1,58 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAtomValue } from "jotai";
-import { orderAtom } from "@/store/order";
+import { orderAtom, orderPublicIdAtom } from "@/store/order";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Loader2 } from "lucide-react";
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { createTransaction } from "@/services/payments";
+import { toast } from "sonner";
 import EstimatedDelivery from "@/components/estimated-delivery";
-
-const removeDiacritics = (str) => {
-  if (!str) return "";
-  return str
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "D");
-};
 
 export default function PaymentPage() {
   const order = useAtomValue(orderAtom);
+  const publicId = useAtomValue(orderPublicIdAtom);
   const customer = order?.customer;
   const item = order?.item;
   const navigate = useNavigate();
 
+  const [isPaid, setIsPaid] = useState(false);
+  const [sseStatus, setSseStatus] = useState("connecting");
+
   useEffect(() => {
     if (!order) navigate("/", { replace: true });
   }, [order, navigate]);
+
+  useEffect(() => {
+    if (!publicId) return;
+
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+    const url = `${baseUrl}/sse/orders/${publicId}`;
+    const eventSource = new EventSource(url);
+
+    eventSource.addEventListener("payment-status", (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.status === "PAID") {
+          setIsPaid(true);
+          setSseStatus("paid");
+          toast.success("Payment confirmed!");
+        }
+      } catch (e) {
+        console.error("Failed to parse SSE event:", e);
+      }
+    });
+
+    eventSource.onerror = () => {
+      setSseStatus("error");
+    };
+
+    eventSource.onopen = () => {
+      setSseStatus("connected");
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [publicId]);
 
   const [copiedAccount, setCopiedAccount] = useState(false);
   const [copiedContent, setCopiedContent] = useState(false);
@@ -35,22 +61,7 @@ export default function PaymentPage() {
   const displayTotal = totalAmount.toLocaleString("vi-VN") + "đ";
   const displaySubtotal = (order?.cart?.subtotal ?? 0).toLocaleString("vi-VN") + "đ";
 
-  const rawContent = customer
-    ? `${customer.name} ${customer.phone}`
-    : "NGUYEN VAN A 0912345678";
-  const paymentContent = removeDiacritics(rawContent).toUpperCase();
-
-  const qrUrl = `https://img.vietqr.io/image/970418-4333998899-qr_only.png?amount=${totalAmount}&addInfo=${encodeURIComponent(paymentContent)}&accountName=NGUYEN%20THUY%20CHI`;
-
-  const transactionMutation = useMutation({
-    mutationFn: createTransaction,
-    onSuccess: () => {
-      navigate("/finish");
-    },
-    onError: (error) => {
-      console.error("Error creating transaction:", error);
-    },
-  });
+  const qrUrl = `https://vietqr.app/img?bank=TPBank&acc=00000120630&template=compact&amount=${totalAmount}&des=${encodeURIComponent(publicId || "")}&showinfo=true&holder=PHAN%20HAI%20DANG`;
 
   const handleCopyAccount = () => {
     navigator.clipboard.writeText("4333998899");
@@ -59,21 +70,18 @@ export default function PaymentPage() {
   };
 
   const handleCopyContent = () => {
-    navigator.clipboard.writeText(paymentContent);
+    navigator.clipboard.writeText(publicId || "");
     setCopiedContent(true);
     setTimeout(() => setCopiedContent(false), 2000);
   };
 
-  const handleComplete = () => {
-    transactionMutation.mutate({
-      orderId: order.id,
-      amount: totalAmount,
-    });
+  const handleFinish = () => {
+    navigate("/finish");
   };
 
   const title = "Payment - Tỉ Mỉ";
   const description =
-    "Bank transfer payment instructions for your Tỉ Mỉ order. Complete your purchase with BIDV bank transfer.";
+    "Bank transfer payment instructions for your Tỉ Mỉ order. Complete your purchase with TP bank transfer.";
 
   if (!order) return null;
 
@@ -93,8 +101,8 @@ export default function PaymentPage() {
                   Payment instructions
                 </h1>
                 <p className="text-sm md:text-base leading-snug">
-                  Please transfer the payment to the following account and click
-                  the "Complete Order" button. Tỉ Mỉ workshop will call to confirm
+                  Please transfer the payment to the following account and wait
+                  for confirmation. Tỉ Mỉ workshop will call to confirm
                   your order as soon as possible.
                 </p>
                 <p className="text-xs md:text-sm italic font-medium pt-1">
@@ -108,15 +116,14 @@ export default function PaymentPage() {
                   <div className="w-2 h-2 rounded-full bg-primary" />
                 </div>
                 <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Logo_Bidv_m%E1%BB%9Bi.svg/1920px-Logo_Bidv_m%E1%BB%9Bi.svg.png"
-                  alt="BIDV Logo"
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Logo_TPBank.svg/960px-Logo_TPBank.png"
+                  alt="TPBank Logo"
                   className="h-6 md:h-8 object-contain shrink-0"
                 />
                 <span className="text-xs md:text-sm font-bold leading-tight">
-                  BIDV Bank{" "}
+                  TP Bank{" "}
                   <span className="font-normal hidden xl:inline">
-                    (Joint Stock Commercial Bank for Investment and Development of
-                    Vietnam)
+                    (Ngân hàng Thương mại Cổ phần Tiên Phong)
                   </span>
                 </span>
               </div>
@@ -124,7 +131,7 @@ export default function PaymentPage() {
               <div className="rounded-xl border p-4 mb-4">
                 <div className="grid grid-cols-[120px_1fr] md:grid-cols-[140px_1fr] gap-y-2 md:gap-y-3 text-sm">
                   <span className="font-bold">Bank</span>
-                  <span>BIDV Bank</span>
+                  <span>TP Bank</span>
 
                   <span className="font-bold">Account number</span>
                   <div className="flex items-center gap-2">
@@ -150,7 +157,7 @@ export default function PaymentPage() {
 
                   <span className="font-bold">Content</span>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold">{paymentContent}</span>
+                    <span className="font-mono font-bold">{publicId || ""}</span>
                     <button
                       onClick={handleCopyContent}
                       aria-label="Copy content"
@@ -175,8 +182,8 @@ export default function PaymentPage() {
                 <div className="flex flex-col items-center justify-center flex-1 space-y-1">
                   <div className="flex gap-2 mb-1 items-center">
                     <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Logo_Bidv_m%E1%BB%9Bi.svg/1920px-Logo_Bidv_m%E1%BB%9Bi.svg.png"
-                      alt="BIDV Logo"
+                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Logo_TPBank.svg/960px-Logo_TPBank.png"
+                      alt="TPBank Logo"
                       className="h-4 md:h-5 object-contain"
                     />
                     <img
@@ -186,11 +193,11 @@ export default function PaymentPage() {
                     />
                   </div>
                   <p className="font-bold text-base md:text-lg">
-                    NGUYEN THUY CHI
+                    PHAN HAI DANG
                   </p>
-                  <p className="text-lg md:text-xl">4333998899</p>
+                  <p className="text-lg md:text-xl">00000120630</p>
                   <p className="text-xs md:text-sm text-gray-500 font-medium">
-                    BIDV - CN TU SON
+                    TPBank
                   </p>
                 </div>
               </section>
@@ -258,18 +265,31 @@ export default function PaymentPage() {
                   </div>
                 </div>
 
+                {sseStatus === "error" && !isPaid && (
+                  <p className="text-xs text-amber-600 text-center mt-2">
+                    Connection issue — refresh page if you've paid
+                  </p>
+                )}
+
+                {sseStatus === "connecting" && !isPaid && (
+                  <p className="text-xs text-muted-foreground text-center mt-2 flex items-center justify-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Waiting for payment confirmation...
+                  </p>
+                )}
+
                 <Button
-                  onClick={handleComplete}
-                  disabled={transactionMutation.isPending}
-                  className="w-full h-12 md:h-14 mt-4 bg-linear-to-r from-[#eb129d] to-[#5543f5] hover:opacity-90 text-white text-base md:text-lg font-bold rounded-full border-0 shrink-0"
+                  onClick={handleFinish}
+                  disabled={!isPaid}
+                  className="w-full h-12 md:h-14 mt-4 bg-linear-to-r from-[#eb129d] to-[#5543f5] hover:opacity-90 text-white text-base md:text-lg font-bold rounded-full border-0 shrink-0 disabled:opacity-40"
                 >
-                  {transactionMutation.isPending ? (
+                  {isPaid ? (
+                    "Continue →"
+                  ) : (
                     <span className="flex items-center gap-2">
                       <Loader2 className="h-5 w-5 animate-spin" />
-                      Processing...
+                      Waiting for payment...
                     </span>
-                  ) : (
-                    "COMPLETE ORDER"
                   )}
                 </Button>
               </div>
