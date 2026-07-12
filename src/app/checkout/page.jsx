@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
-import { orderIdAtom } from "@/store/order";
+import { orderIdAtom, orderAtom } from "@/store/order";
 import { capturedCharacterAtom, designIdAtom, designNameAtom } from "@/store/design";
 import { selectedSkuAtom, skuSelectionsAtom } from "@/store/sku";
 import { useNavigate } from "react-router";
@@ -18,11 +18,11 @@ import {
   FieldError,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import Header from "@/components/header";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CheckoutPage() {
   const setOrderId = useSetAtom(orderIdAtom);
+  const setOrder = useSetAtom(orderAtom);
   const navigate = useNavigate();
   const capturedCharacter = useAtomValue(capturedCharacterAtom);
   const designId = useAtomValue(designIdAtom);
@@ -69,6 +69,7 @@ export default function CheckoutPage() {
     mutationFn: createOrder,
     onSuccess: (data) => {
       setOrderId(data.id);
+      setOrder((prev) => ({ ...prev, id: data.id }));
       navigate("/payment");
     },
     onError: (error) => {
@@ -80,6 +81,12 @@ export default function CheckoutPage() {
     const fullAddress = [data.address, selectedWard?.name, selectedProvince?.name]
       .filter(Boolean)
       .join(", ");
+
+    setOrder({
+      customer: { name: data.name, phone: data.phone, email: data.email, address: fullAddress },
+      item: { designName, image: capturedCharacter, category: selectedSku?.category?.name, size: selectedSku?.size?.name, price, quantity },
+      cart: { subtotal, total: subtotal },
+    });
 
     orderMutation.mutate({
       name: data.name,
@@ -107,8 +114,7 @@ export default function CheckoutPage() {
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content="website" />
-      <div className="flex flex-col h-screen">
-        <Header />
+      <div className="flex flex-col h-full">
         <div className="grid grid-cols-1 flex-1 min-h-0 md:grid-cols-2">
           <form
             id="checkout-form"
