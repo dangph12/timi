@@ -13,3 +13,5 @@ export const customerAtom = atom(
 );
 
 export const orderIdAtom = atom(null);
+
+export const orderPublicIdAtom = atom(null);
