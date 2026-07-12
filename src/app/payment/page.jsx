@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAtomValue } from "jotai";
 import { orderAtom, orderPublicIdAtom } from "@/store/order";
 import { useNavigate } from "react-router";
@@ -16,6 +16,7 @@ export default function PaymentPage() {
 
   const [isPaid, setIsPaid] = useState(false);
   const [sseStatus, setSseStatus] = useState("connecting");
+  const paidRef = useRef(false);
 
   useEffect(() => {
     if (!order) navigate("/", { replace: true });
@@ -31,7 +32,8 @@ export default function PaymentPage() {
     eventSource.addEventListener("payment-status", (event) => {
       try {
         const data = JSON.parse(event.data);
-        if (data.status === "PAID") {
+        if (data.status === "PAID" && !paidRef.current) {
+          paidRef.current = true;
           setIsPaid(true);
           setSseStatus("paid");
           toast.success("Payment confirmed!");
@@ -82,8 +84,6 @@ export default function PaymentPage() {
   const title = "Payment - Tỉ Mỉ";
   const description =
     "Bank transfer payment instructions for your Tỉ Mỉ order. Complete your purchase with TP bank transfer.";
-
-  if (!order) return null;
 
   return (
     <>
