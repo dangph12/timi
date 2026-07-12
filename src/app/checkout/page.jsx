@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
-import { orderIdAtom, orderAtom } from "@/store/order";
+import { orderIdAtom, orderAtom, orderPublicIdAtom } from "@/store/order";
 import { capturedCharacterAtom, designIdAtom, designNameAtom } from "@/store/design";
 import { selectedSkuAtom, skuSelectionsAtom } from "@/store/sku";
 import { useNavigate } from "react-router";
@@ -23,6 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function CheckoutPage() {
   const setOrderId = useSetAtom(orderIdAtom);
   const setOrder = useSetAtom(orderAtom);
+  const setOrderPublicId = useSetAtom(orderPublicIdAtom);
   const navigate = useNavigate();
   const capturedCharacter = useAtomValue(capturedCharacterAtom);
   const designId = useAtomValue(designIdAtom);
@@ -69,7 +70,8 @@ export default function CheckoutPage() {
     mutationFn: createOrder,
     onSuccess: (data) => {
       setOrderId(data.id);
-      setOrder((prev) => ({ ...prev, id: data.id }));
+      setOrderPublicId(data.publicId);
+      setOrder((prev) => ({ ...prev, id: data.id, publicId: data.publicId }));
       navigate("/payment");
     },
     onError: (error) => {
