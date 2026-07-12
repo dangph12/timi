@@ -85,6 +85,8 @@ export default function PaymentPage() {
   const description =
     "Bank transfer payment instructions for your Tỉ Mỉ order. Complete your purchase with TP bank transfer.";
 
+  if (!order) return null;
+
   return (
     <>
       <title>{title}</title>
