@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { useAtomValue } from "jotai";
-import { orderAtom, orderPublicIdAtom } from "@/store/order";
+import { useAtomValue, useSetAtom } from "jotai";
+import { orderAtom, orderPublicIdAtom, paymentMethodAtom } from "@/store/order";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Loader2 } from "lucide-react";
@@ -18,6 +18,8 @@ export default function PaymentPage() {
   const [isPaid, setIsPaid] = useState(false);
   const [sseStatus, setSseStatus] = useState("connecting");
   const paidRef = useRef(false);
+  const setPaymentMethod = useSetAtom(paymentMethodAtom);
+  const [selectedMethod, setSelectedMethod] = useState("QR");
 
   useEffect(() => {
     if (!order) navigate("/", { replace: true });
@@ -128,96 +130,141 @@ export default function PaymentPage() {
                 </p>
               </section>
 
-              <div className="flex items-center gap-3 border rounded-xl p-2 md:p-3 mb-3">
-                <div className="flex items-center justify-center w-4 h-4 rounded-full border-2 border-primary bg-background shrink-0 ml-1">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                </div>
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Logo_TPBank.svg/960px-Logo_TPBank.png"
-                  alt="TPBank Logo"
-                  className="h-6 md:h-8 object-contain shrink-0"
-                />
-                <span className="text-xs md:text-sm font-bold leading-tight">
-                  TP Bank{" "}
-                  <span className="font-normal hidden xl:inline">
-                    (Ngân hàng Thương mại Cổ phần Tiên Phong)
-                  </span>
-                </span>
+              {/* Payment method selector */}
+              <div className="flex gap-2 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedMethod("QR");
+                    setPaymentMethod("QR");
+                  }}
+                  className={`flex-1 py-2 px-4 rounded-lg border text-sm font-bold transition-colors ${
+                    selectedMethod === "QR"
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground hover:border-primary/50"
+                  }`}
+                >
+                  Bank Transfer (QR)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedMethod("COD");
+                    setPaymentMethod("COD");
+                  }}
+                  className={`flex-1 py-2 px-4 rounded-lg border text-sm font-bold transition-colors ${
+                    selectedMethod === "COD"
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground hover:border-primary/50"
+                  }`}
+                >
+                  Cash on Delivery
+                </button>
               </div>
 
-              <div className="rounded-xl border p-4 mb-4">
-                <div className="grid grid-cols-[120px_1fr] md:grid-cols-[140px_1fr] gap-y-2 md:gap-y-3 text-sm">
-                  <span className="font-bold">Bank</span>
-                  <span>TP Bank</span>
-
-                  <span className="font-bold">Account number</span>
-                  <div className="flex items-center gap-2">
-                    <span>4333998899</span>
-                    <button
-                      onClick={handleCopyAccount}
-                      aria-label="Copy account number"
-                      className="hover:opacity-70 transition-opacity flex items-center gap-1 text-primary"
-                    >
-                      {copiedAccount ? (
-                        <Check className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-
-                  <span className="font-bold">Account holder</span>
-                  <span>NGUYEN THUY CHI</span>
-
-                  <span className="font-bold">Amount</span>
-                  <span>{displayTotal}</span>
-
-                  <span className="font-bold">Content</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold">{publicId || ""}</span>
-                    <button
-                      onClick={handleCopyContent}
-                      aria-label="Copy content"
-                      className="hover:opacity-70 transition-opacity flex items-center gap-1 text-primary"
-                    >
-                      {copiedContent ? (
-                        <Check className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <section className="flex items-center gap-6 mt-auto shrink-0">
-                <img
-                  src={qrUrl}
-                  alt="VietQR Payment Code"
-                  className="h-28 w-28 md:h-32 md:w-32 bg-white object-contain shrink-0 border rounded-lg p-1 shadow-sm"
-                />
-                <div className="flex flex-col items-center justify-center flex-1 space-y-1">
-                  <div className="flex gap-2 mb-1 items-center">
+              {selectedMethod === "QR" && (
+                <>
+                  <div className="flex items-center gap-3 border rounded-xl p-2 md:p-3 mb-3">
+                    <div className="flex items-center justify-center w-4 h-4 rounded-full border-2 border-primary bg-background shrink-0 ml-1">
+                      <div className="w-2 h-2 rounded-full bg-primary" />
+                    </div>
                     <img
                       src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Logo_TPBank.svg/960px-Logo_TPBank.png"
                       alt="TPBank Logo"
-                      className="h-4 md:h-5 object-contain"
+                      className="h-6 md:h-8 object-contain shrink-0"
                     />
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/7/77/VietQR_Logo.png"
-                      alt="VietQR Logo"
-                      className="h-4 md:h-5 object-contain"
-                    />
+                    <span className="text-xs md:text-sm font-bold leading-tight">
+                      TP Bank{" "}
+                      <span className="font-normal hidden xl:inline">
+                        (Ngân hàng Thương mại Cổ phần Tiên Phong)
+                      </span>
+                    </span>
                   </div>
-                  <p className="font-bold text-base md:text-lg">
-                    PHAN HAI DANG
-                  </p>
-                  <p className="text-lg md:text-xl">00000120630</p>
-                  <p className="text-xs md:text-sm text-gray-500 font-medium">
-                    TPBank
+
+                  <div className="rounded-xl border p-4 mb-4">
+                    <div className="grid grid-cols-[120px_1fr] md:grid-cols-[140px_1fr] gap-y-2 md:gap-y-3 text-sm">
+                      <span className="font-bold">Bank</span>
+                      <span>TP Bank</span>
+
+                      <span className="font-bold">Account number</span>
+                      <div className="flex items-center gap-2">
+                        <span>4333998899</span>
+                        <button
+                          onClick={handleCopyAccount}
+                          aria-label="Copy account number"
+                          className="hover:opacity-70 transition-opacity flex items-center gap-1 text-primary"
+                        >
+                          {copiedAccount ? (
+                            <Check className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+
+                      <span className="font-bold">Account holder</span>
+                      <span>NGUYEN THUY CHI</span>
+
+                      <span className="font-bold">Amount</span>
+                      <span>{displayTotal}</span>
+
+                      <span className="font-bold">Content</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold">{publicId || ""}</span>
+                        <button
+                          onClick={handleCopyContent}
+                          aria-label="Copy content"
+                          className="hover:opacity-70 transition-opacity flex items-center gap-1 text-primary"
+                        >
+                          {copiedContent ? (
+                            <Check className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <section className="flex items-center gap-6 mt-auto shrink-0">
+                    <img
+                      src={qrUrl}
+                      alt="VietQR Payment Code"
+                      className="h-28 w-28 md:h-32 md:w-32 bg-white object-contain shrink-0 border rounded-lg p-1 shadow-sm"
+                    />
+                    <div className="flex flex-col items-center justify-center flex-1 space-y-1">
+                      <div className="flex gap-2 mb-1 items-center">
+                        <img
+                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Logo_TPBank.svg/960px-Logo_TPBank.png"
+                          alt="TPBank Logo"
+                          className="h-4 md:h-5 object-contain"
+                        />
+                        <img
+                          src="https://upload.wikimedia.org/wikipedia/commons/7/77/VietQR_Logo.png"
+                          alt="VietQR Logo"
+                          className="h-4 md:h-5 object-contain"
+                        />
+                      </div>
+                      <p className="font-bold text-base md:text-lg">
+                        PHAN HAI DANG
+                      </p>
+                      <p className="text-lg md:text-xl">00000120630</p>
+                      <p className="text-xs md:text-sm text-gray-500 font-medium">
+                        TPBank
+                      </p>
+                    </div>
+                  </section>
+                </>
+              )}
+
+              {selectedMethod === "COD" && (
+                <div className="rounded-xl border p-4 mb-4 bg-muted/30">
+                  <p className="font-bold text-base">Cash on Delivery</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    You selected Cash on Delivery. Pay when you receive your order.
                   </p>
                 </div>
-              </section>
+              )}
             </div>
           </main>
 
