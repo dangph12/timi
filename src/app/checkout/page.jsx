@@ -122,7 +122,7 @@ export default function CheckoutPage() {
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content="website" />
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full relative">
         <div className="grid grid-cols-1 flex-1 min-h-0 md:grid-cols-2">
           <form
             id="checkout-form"
@@ -349,6 +349,20 @@ export default function CheckoutPage() {
               </Button>
             </div>
           </aside>
+        </div>
+        {/* Cancel order button — bottom-left */}
+        <div className="absolute bottom-4 left-4">
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm("Are you sure you want to cancel? Your order will not be created.")) {
+                navigate(-1);
+              }
+            }}
+            className="text-sm text-muted-foreground hover:text-destructive transition-colors underline underline-offset-2"
+          >
+            Cancel order
+          </button>
         </div>
       </div>
     </>
