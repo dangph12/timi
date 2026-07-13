@@ -20,13 +20,15 @@ export default function PaymentPage() {
   const paidRef = useRef(false);
   const setPaymentMethod = useSetAtom(paymentMethodAtom);
   const [selectedMethod, setSelectedMethod] = useState("QR");
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [isExpired, setIsExpired] = useState(false);
 
   useEffect(() => {
     if (!order) navigate("/", { replace: true });
   }, [order, navigate]);
 
   useEffect(() => {
-    if (!publicId) return;
+    if (!publicId || isExpired) return;
 
     const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
     const url = `${baseUrl}/sse/orders/${publicId}`;
@@ -57,7 +59,23 @@ export default function PaymentPage() {
     return () => {
       eventSource.close();
     };
-  }, [publicId]);
+  }, [publicId, isExpired]);
+
+  useEffect(() => {
+    if (!order?.expiresAt) return;
+
+    const updateTimer = () => {
+      const now = Date.now();
+      const expiresAt = new Date(order.expiresAt).getTime();
+      const remaining = Math.max(0, Math.floor((expiresAt - now) / 1000));
+      setTimeLeft(remaining);
+      if (remaining <= 0) setIsExpired(true);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [order?.expiresAt]);
 
   const [copiedAccount, setCopiedAccount] = useState(false);
   const [copiedContent, setCopiedContent] = useState(false);
@@ -65,6 +83,12 @@ export default function PaymentPage() {
   const totalAmount = order?.cart?.total ?? 0;
   const displayTotal = totalAmount.toLocaleString("vi-VN") + "đ";
   const displaySubtotal = (order?.cart?.subtotal ?? 0).toLocaleString("vi-VN") + "đ";
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
 
   const qrUrl = `https://vietqr.app/img?bank=TPBank&acc=00000120630&template=compact&amount=${totalAmount}&des=${encodeURIComponent(publicId || "")}&showinfo=true&holder=PHAN%20HAI%20DANG`;
 
@@ -230,7 +254,9 @@ export default function PaymentPage() {
                     <img
                       src={qrUrl}
                       alt="VietQR Payment Code"
-                      className="h-28 w-28 md:h-32 md:w-32 bg-white object-contain shrink-0 border rounded-lg p-1 shadow-sm"
+                      className={`h-28 w-28 md:h-32 md:w-32 bg-white object-contain shrink-0 border rounded-lg p-1 shadow-sm ${
+                        isExpired ? "opacity-30" : ""
+                      }`}
                     />
                     <div className="flex flex-col items-center justify-center flex-1 space-y-1">
                       <div className="flex gap-2 mb-1 items-center">
@@ -254,6 +280,19 @@ export default function PaymentPage() {
                       </p>
                     </div>
                   </section>
+
+                  {/* Countdown timer */}
+                  {timeLeft !== null && (
+                    <div className={`text-center mt-2 ${isExpired ? "text-destructive" : "text-muted-foreground"}`}>
+                      {isExpired ? (
+                        <span className="text-sm font-medium">QR code expired. Please switch to COD.</span>
+                      ) : (
+                        <span className="text-sm font-medium">
+                          QR expires in <span className="font-bold">{formatTime(timeLeft)}</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
 
