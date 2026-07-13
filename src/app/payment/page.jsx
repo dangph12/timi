@@ -4,6 +4,7 @@ import { orderAtom, orderPublicIdAtom } from "@/store/order";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Loader2 } from "lucide-react";
+import { cancelOrder } from "@/services/orders";
 import { toast } from "sonner";
 import EstimatedDelivery from "@/components/estimated-delivery";
 
@@ -81,6 +82,20 @@ export default function PaymentPage() {
     navigate("/finish");
   };
 
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  const handleCancel = async () => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) return;
+    setIsCancelling(true);
+    try {
+      await cancelOrder(publicId);
+      navigate(-1);
+    } catch {
+      toast.error("Failed to cancel order. Please try again.");
+      setIsCancelling(false);
+    }
+  };
+
   const title = "Payment - Tỉ Mỉ";
   const description =
     "Bank transfer payment instructions for your Tỉ Mỉ order. Complete your purchase with TP bank transfer.";
@@ -94,7 +109,7 @@ export default function PaymentPage() {
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content="website" />
-      <div className="h-full">
+      <div className="h-full relative">
         <div className="grid grid-cols-1 md:h-full md:grid-cols-[45%_55%]">
           <main className="px-8 py-4 md:px-12 md:py-8 lg:px-20 flex flex-col md:h-full md:overflow-y-auto">
             <div className="flex-1 flex flex-col justify-center min-h-0">
@@ -298,6 +313,13 @@ export default function PaymentPage() {
             </div>
           </aside>
         </div>
+        <button
+          onClick={handleCancel}
+          disabled={isCancelling}
+          className="absolute bottom-4 left-4 text-sm text-muted-foreground hover:text-destructive transition-colors underline underline-offset-2 disabled:opacity-50"
+        >
+          {isCancelling ? "Cancelling..." : "Cancel order"}
+        </button>
       </div>
     </>
   );
