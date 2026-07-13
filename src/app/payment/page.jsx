@@ -69,7 +69,10 @@ export default function PaymentPage() {
       const expiresAt = new Date(order.expiresAt).getTime();
       const remaining = Math.max(0, Math.floor((expiresAt - now) / 1000));
       setTimeLeft(remaining);
-      if (remaining <= 0) setIsExpired(true);
+      if (remaining <= 0) {
+        setIsExpired(true);
+        toast.warning("QR code expired. Please switch to COD.");
+      }
     };
 
     updateTimer();
@@ -112,6 +115,7 @@ export default function PaymentPage() {
 
   const handleCancel = async () => {
     if (!window.confirm("Are you sure you want to cancel this order?")) return;
+    if (!publicId) { toast.error("No order found"); return; }
     setIsCancelling(true);
     try {
       await cancelOrder(publicId);
@@ -126,6 +130,7 @@ export default function PaymentPage() {
 
   const handleContinue = async () => {
     if (selectedMethod === "COD") {
+      if (!publicId) { toast.error("No order found"); return; }
       setIsConfirmingCod(true);
       try {
         await confirmCodPayment(publicId);
