@@ -4,7 +4,7 @@ import { orderAtom, orderPublicIdAtom, paymentMethodAtom } from "@/store/order";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Loader2 } from "lucide-react";
-import { cancelOrder } from "@/services/orders";
+import { cancelOrder, confirmCodPayment } from "@/services/orders";
 import { toast } from "sonner";
 import EstimatedDelivery from "@/components/estimated-delivery";
 
@@ -28,7 +28,7 @@ export default function PaymentPage() {
   }, [order, navigate]);
 
   useEffect(() => {
-    if (!publicId || isExpired) return;
+    if (!publicId || selectedMethod !== "QR" || isExpired) return;
 
     const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
     const url = `${baseUrl}/sse/orders/${publicId}`;
@@ -59,7 +59,7 @@ export default function PaymentPage() {
     return () => {
       eventSource.close();
     };
-  }, [publicId, isExpired]);
+  }, [publicId, selectedMethod, isExpired]);
 
   useEffect(() => {
     if (!order?.expiresAt) return;
@@ -119,6 +119,23 @@ export default function PaymentPage() {
     } catch {
       toast.error("Failed to cancel order. Please try again.");
       setIsCancelling(false);
+    }
+  };
+
+  const [isConfirmingCod, setIsConfirmingCod] = useState(false);
+
+  const handleContinue = async () => {
+    if (selectedMethod === "COD") {
+      setIsConfirmingCod(true);
+      try {
+        await confirmCodPayment(publicId);
+        navigate("/finish");
+      } catch {
+        toast.error("Failed to confirm payment. Please try again.");
+        setIsConfirmingCod(false);
+      }
+    } else {
+      handleFinish();
     }
   };
 
@@ -381,20 +398,37 @@ export default function PaymentPage() {
                   </p>
                 )}
 
-                <Button
-                  onClick={handleFinish}
-                  disabled={!isPaid}
-                  className="w-full h-12 md:h-14 mt-4 bg-linear-to-r from-[#eb129d] to-[#5543f5] hover:opacity-90 text-white text-base md:text-lg font-bold rounded-full border-0 shrink-0 disabled:opacity-40"
-                >
-                  {isPaid ? (
-                    "Continue →"
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Waiting for payment...
-                    </span>
-                  )}
-                </Button>
+                {selectedMethod === "QR" ? (
+                  <Button
+                    onClick={handleFinish}
+                    disabled={!isPaid}
+                    className="w-full h-12 md:h-14 mt-4 bg-linear-to-r from-[#eb129d] to-[#5543f5] hover:opacity-90 text-white text-base md:text-lg font-bold rounded-full border-0 shrink-0 disabled:opacity-40"
+                  >
+                    {isPaid ? (
+                      "Continue →"
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Waiting for payment...
+                      </span>
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleContinue}
+                    disabled={isConfirmingCod}
+                    className="w-full h-12 md:h-14 mt-4 bg-linear-to-r from-[#eb129d] to-[#5543f5] hover:opacity-90 text-white text-base md:text-lg font-bold rounded-full border-0 shrink-0 disabled:opacity-40"
+                  >
+                    {isConfirmingCod ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Confirming...
+                      </span>
+                    ) : (
+                      "Continue →"
+                    )}
+                  </Button>
+                )}
               </div>
             </div>
           </aside>
