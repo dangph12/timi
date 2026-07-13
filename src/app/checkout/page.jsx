@@ -71,7 +71,12 @@ export default function CheckoutPage() {
     onSuccess: (data) => {
       setOrderId(data.id);
       setOrderPublicId(data.publicId);
-      setOrder((prev) => ({ ...prev, id: data.id, publicId: data.publicId }));
+      setOrder((prev) => ({
+        ...prev,
+        id: data.id,
+        publicId: data.publicId,
+        expiresAt: data.expiresAt,
+      }));
       navigate("/payment");
     },
     onError: (error) => {
@@ -88,6 +93,7 @@ export default function CheckoutPage() {
       customer: { name: data.name, phone: data.phone, email: data.email, address: fullAddress },
       item: { designName, image: capturedCharacter, category: selectedSku?.category?.name, size: selectedSku?.size?.name, price, quantity },
       cart: { subtotal, total: subtotal },
+      expiresAt: null,
     });
 
     orderMutation.mutate({
