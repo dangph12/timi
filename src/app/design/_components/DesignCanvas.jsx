@@ -75,7 +75,9 @@ const DesignCanvas = memo(forwardRef(function DesignCanvas({ width, height, sele
           y={0}
           width={width}
           height={height}
-          fill="#FFFFFF"
+          fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+          fillLinearGradientEndPoint={{ x: width, y: height }}
+          fillLinearGradientColorStops={[0, '#5B7B9A', 1, '#8BAAC4']}
         />
         {layers}
       </Layer>
