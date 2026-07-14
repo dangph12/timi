@@ -6,8 +6,8 @@ import Layout from '@/components/layout';
 const HomePage = lazy(() => import('@/app/page'));
 const DesignPage = lazy(() => import('@/app/design/page'));
 const CheckoutPage = lazy(() => import('@/app/checkout/page'));
-const PaymentPage = lazy(() => import('@/app/payment/page'));
-const FinishPage = lazy(() => import('@/app/finish/page'));
+const PaymentPage = lazy(() => import('@/app/[publicId]/payment/page'));
+const FinishPage = lazy(() => import('@/app/[publicId]/finish/page'));
 
 const router = createBrowserRouter([
   {
@@ -16,9 +16,8 @@ const router = createBrowserRouter([
       { index: true, Component: HomePage },
       { path: 'design', Component: DesignPage },
       { path: 'checkout', Component: CheckoutPage },
-      { path: 'payment', Component: PaymentPage },
       { path: ':publicId/payment', Component: PaymentPage },
-      { path: 'finish', Component: FinishPage },
+      { path: ':publicId/finish', Component: FinishPage },
     ],
   },
 ]);

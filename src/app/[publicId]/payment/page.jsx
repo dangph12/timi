@@ -133,7 +133,7 @@ export default function PaymentPage() {
   const qrUrl = `https://vietqr.app/img?bank=TPBank&acc=00000120630&template=compact2&amount=${totalAmount}&des=${encodeURIComponent(publicId || "")}&showinfo=true&holder=PHAN%20HAI%20DANG`;
 
   const handleFinish = () => {
-    navigate("/finish");
+    navigate(`/${publicId}/finish`);
   };
 
   const [isCancelling, setIsCancelling] = useState(false);
@@ -159,7 +159,7 @@ export default function PaymentPage() {
       setIsConfirmingCod(true);
       try {
         await confirmCodPayment(publicId);
-        navigate("/finish");
+        navigate(`/${publicId}/finish`);
       } catch {
         toast.error("Failed to confirm payment. Please try again.");
         setIsConfirmingCod(false);
