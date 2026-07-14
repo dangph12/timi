@@ -369,39 +369,21 @@ export default function PaymentPage() {
               </div>
 
               {selectedMethod === "QR" ? (
-                <Button
+                <PayButton
                   onClick={handleFinish}
                   disabled={!isPaid && !isPaidAlready}
-                  className="w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2"
-                >
-                  {isPaidAlready ? (
-                    "Paid"
-                  ) : isPaid ? (
-                    "Done"
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Waiting for payment...
-                    </span>
-                  )}
-                </Button>
+                  loading={!isPaidAlready && !isPaid}
+                  label={isPaidAlready ? "Paid" : "Done"}
+                  loadingLabel="Waiting for payment..."
+                />
               ) : (
-                <Button
+                <PayButton
                   onClick={handleContinue}
                   disabled={isConfirmingCod || isCodProcessed}
-                  className="w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2"
-                >
-                  {isCodProcessed ? (
-                    "Confirmed"
-                  ) : isConfirmingCod ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Confirming...
-                    </span>
-                  ) : (
-                    "Continue"
-                  )}
-                </Button>
+                  loading={isConfirmingCod}
+                  label={isCodProcessed ? "Confirmed" : "Continue"}
+                  loadingLabel="Confirming..."
+                />
               )}
             </div>
           </aside>
@@ -409,5 +391,24 @@ export default function PaymentPage() {
 
       </div>
     </>
+  );
+}
+
+function PayButton({ onClick, disabled, loading, label, loadingLabel }) {
+  return (
+    <Button
+      onClick={onClick}
+      disabled={disabled}
+      className="w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2"
+    >
+      {loading ? (
+        <span className="flex items-center gap-2">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          {loadingLabel}
+        </span>
+      ) : (
+        label
+      )}
+    </Button>
   );
 }
