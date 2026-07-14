@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { orderAtom, orderPublicIdAtom, paymentMethodAtom } from "@/store/order";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
-import { cancelOrder, confirmCodPayment } from "@/services/orders";
+import { Loader2, ArrowLeft } from "lucide-react";
+import { cancelOrder, confirmCodPayment, getOrder } from "@/services/orders";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -18,10 +19,17 @@ import {
 } from "@/components/ui/dialog";
 
 export default function PaymentPage() {
+  const { publicId: urlPublicId } = useParams();
   const order = useAtomValue(orderAtom);
-  const publicId = useAtomValue(orderPublicIdAtom);
+  const atomPublicId = useAtomValue(orderPublicIdAtom);
+  const setOrder = useSetAtom(orderAtom);
+  const setOrderPublicId = useSetAtom(orderPublicIdAtom);
+  const publicId = urlPublicId || atomPublicId;
   const customer = order?.customer;
   const item = order?.item;
+  const currentStatus = order?.currentStatus;
+  const isPaidAlready = currentStatus === "PAID";
+  const isCodProcessed = currentStatus === "PROCESSING";
   const navigate = useNavigate();
 
   const [isPaid, setIsPaid] = useState(false);
@@ -32,12 +40,33 @@ export default function PaymentPage() {
   const [timeLeft, setTimeLeft] = useState(null);
   const [isExpired, setIsExpired] = useState(false);
 
-  useEffect(() => {
-    if (!order) navigate("/", { replace: true });
-  }, [order, navigate]);
+  const { data: fetchedOrder } = useQuery({
+    queryKey: ["order", publicId],
+    queryFn: () => getOrder(publicId),
+    enabled: !!publicId && !order,
+  });
 
   useEffect(() => {
-    if (!publicId || selectedMethod !== "QR" || isExpired) return;
+    if (fetchedOrder) {
+      setOrder(fetchedOrder);
+      setOrderPublicId(publicId);
+    }
+  }, [fetchedOrder, publicId, setOrder, setOrderPublicId]);
+
+  useEffect(() => {
+    if (fetchedOrder?.currentPaymentStatus === "PAID" && !paidRef.current) {
+      paidRef.current = true;
+      setIsPaid(true);
+      setSseStatus("paid");
+    }
+  }, [fetchedOrder]);
+
+  useEffect(() => {
+    if (!order && !urlPublicId) navigate("/", { replace: true });
+  }, [order, urlPublicId, navigate]);
+
+  useEffect(() => {
+    if (!publicId || selectedMethod !== "QR" || isExpired || isPaidAlready) return;
 
     const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
     const url = `${baseUrl}/sse/orders/${publicId}`;
@@ -68,7 +97,7 @@ export default function PaymentPage() {
     return () => {
       eventSource.close();
     };
-  }, [publicId, selectedMethod, isExpired]);
+  }, [publicId, selectedMethod, isExpired, isPaidAlready]);
 
   useEffect(() => {
     if (!order?.expiresAt) return;
@@ -125,6 +154,7 @@ export default function PaymentPage() {
 
   const handleContinue = async () => {
     if (selectedMethod === "COD") {
+      if (isCodProcessed) return;
       if (!publicId) { toast.error("No order found"); return; }
       setIsConfirmingCod(true);
       try {
@@ -134,14 +164,18 @@ export default function PaymentPage() {
         toast.error("Failed to confirm payment. Please try again.");
         setIsConfirmingCod(false);
       }
-    } else {
-      handleFinish();
     }
   };
 
   const title = "Payment - Tỉ Mỉ";
   const description =
     "Bank transfer payment instructions for your Tỉ Mỉ order. Complete your purchase with TP bank transfer.";
+
+  if (!order && urlPublicId) return (
+    <div className="h-full flex items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+    </div>
+  );
 
   if (!order) return null;
 
@@ -197,11 +231,12 @@ export default function PaymentPage() {
                     setSelectedMethod("QR");
                     setPaymentMethod("QR");
                   }}
-                  className={`flex-1 py-2 px-4 rounded-lg border text-sm font-bold transition-colors ${
+                  className={`flex-1 py-2 px-4 rounded-lg border text-sm font-bold transition-colors disabled:opacity-50 ${
                     selectedMethod === "QR"
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border text-muted-foreground hover:border-primary/50"
                   }`}
+                  disabled={isPaidAlready || isCodProcessed}
                 >
                   Bank Transfer (QR)
                 </button>
@@ -211,11 +246,12 @@ export default function PaymentPage() {
                     setSelectedMethod("COD");
                     setPaymentMethod("COD");
                   }}
-                  className={`flex-1 py-2 px-4 rounded-lg border text-sm font-bold transition-colors ${
+                  className={`flex-1 py-2 px-4 rounded-lg border text-sm font-bold transition-colors disabled:opacity-50 ${
                     selectedMethod === "COD"
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border text-muted-foreground hover:border-primary/50"
                   }`}
+                  disabled={isPaidAlready || isCodProcessed}
                 >
                   Cash on Delivery
                 </button>
@@ -235,9 +271,9 @@ export default function PaymentPage() {
                     <img
                       src={qrUrl}
                       alt="VietQR Payment Code"
-                      className={`h-44 w-44 md:h-56 md:w-56 bg-white object-contain border rounded-lg p-1 shadow-sm ${
-                        isExpired ? "opacity-30" : ""
-                      }`}
+                       className={`h-44 w-44 md:h-56 md:w-56 bg-white object-contain border rounded-lg p-1 shadow-sm ${
+                         isExpired || isPaidAlready || isCodProcessed ? "opacity-30" : ""
+                       }`}
                     />
 
                     {timeLeft !== null && (
@@ -335,14 +371,13 @@ export default function PaymentPage() {
               {selectedMethod === "QR" ? (
                 <Button
                   onClick={handleFinish}
-                  disabled={!isPaid}
+                  disabled={!isPaid && !isPaidAlready}
                   className="w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2"
                 >
-                  {isPaid ? (
-                    <span className="flex items-center gap-2">
-                      Done
-                      <ArrowRight className="h-5 w-5" />
-                    </span>
+                  {isPaidAlready ? (
+                    "Paid"
+                  ) : isPaid ? (
+                    "Done"
                   ) : (
                     <span className="flex items-center gap-2">
                       <Loader2 className="h-5 w-5 animate-spin" />
@@ -353,19 +388,18 @@ export default function PaymentPage() {
               ) : (
                 <Button
                   onClick={handleContinue}
-                  disabled={isConfirmingCod}
+                  disabled={isConfirmingCod || isCodProcessed}
                   className="w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2"
                 >
-                  {isConfirmingCod ? (
+                  {isCodProcessed ? (
+                    "Confirmed"
+                  ) : isConfirmingCod ? (
                     <span className="flex items-center gap-2">
                       <Loader2 className="h-5 w-5 animate-spin" />
                       Confirming...
                     </span>
                   ) : (
-                    <span className="flex items-center gap-2">
-                      Continue
-                      <ArrowRight className="h-5 w-5" />
-                    </span>
+                    "Continue"
                   )}
                 </Button>
               )}

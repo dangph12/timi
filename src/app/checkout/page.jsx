@@ -87,7 +87,7 @@ export default function CheckoutPage() {
         publicId: data.publicId,
         expiresAt: data.expiresAt,
       }));
-      navigate("/payment");
+      navigate(`/${data.publicId}/payment`);
     },
     onError: (error) => {
       console.error("Error creating order:", error);

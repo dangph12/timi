@@ -17,6 +17,7 @@ const router = createBrowserRouter([
       { path: 'design', Component: DesignPage },
       { path: 'checkout', Component: CheckoutPage },
       { path: 'payment', Component: PaymentPage },
+      { path: ':publicId/payment', Component: PaymentPage },
       { path: 'finish', Component: FinishPage },
     ],
   },
