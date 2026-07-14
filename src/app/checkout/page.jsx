@@ -10,7 +10,7 @@ import { createOrder } from "@/services/orders";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { checkoutFormSchema } from "@/schemas";
 import { Button } from "@/components/ui/button";
-import { Loader2, ChevronDown } from "lucide-react";
+import { Loader2, ChevronDown, ArrowLeft } from "lucide-react";
 import {
   Field,
   FieldLabel,
@@ -19,6 +19,16 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 export default function CheckoutPage() {
   const setOrderId = useSetAtom(orderIdAtom);
@@ -130,6 +140,38 @@ export default function CheckoutPage() {
             className="px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-y-auto"
           >
             <div className="flex-1 flex flex-col min-h-0">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex items-center gap-3 text-base font-semibold text-foreground hover:bg-muted px-3 py-2 -ml-3 rounded-lg transition-colors mb-2"
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                    Back
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Cancel order?</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to cancel? Your order will not be created.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Keep editing</Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                      <Button
+                        variant="destructive"
+                        onClick={() => navigate(-1)}
+                      >
+                        Yes, cancel
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
               <section className="space-y-2">
                 <h1 className="text-3xl font-black">Contact</h1>
                 <FieldGroup>
@@ -175,10 +217,6 @@ export default function CheckoutPage() {
                     )}
                   />
                 </FieldGroup>
-                <div className="pt-1 text-sm italic font-medium leading-tight cursor-pointer no-wrap">
-                  I confirm that I am at least 18 years of age and that I have
-                  read and agreed to the privacy policy.
-                </div>
               </section>
 
               <section className="mt-4 space-y-2">
@@ -350,20 +388,7 @@ export default function CheckoutPage() {
             </div>
           </aside>
         </div>
-        {/* Cancel order button — bottom-left */}
-        <div className="absolute bottom-4 left-4">
-          <button
-            type="button"
-            onClick={() => {
-              if (window.confirm("Are you sure you want to cancel? Your order will not be created.")) {
-                navigate(-1);
-              }
-            }}
-            className="text-sm text-muted-foreground hover:text-destructive transition-colors underline underline-offset-2"
-          >
-            Cancel order
-          </button>
-        </div>
+
       </div>
     </>
   );
