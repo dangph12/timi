@@ -83,7 +83,7 @@ export default function FinishPage() {
 
             <div className="space-y-3 shrink-0 mt-6">
               <h3 className="font-bold text-sm md:text-base border-b border-black/10 pb-2">
-Đơn hàng
+                Đơn hàng
               </h3>
               {item && (
                 <div className="flex items-center justify-between text-xs md:text-sm">
