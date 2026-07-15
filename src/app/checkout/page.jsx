@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
 import { orderIdAtom, orderAtom, orderPublicIdAtom } from "@/store/order";
 import { capturedCharacterAtom, designIdAtom, designNameAtom } from "@/store/design";
@@ -40,6 +40,10 @@ export default function CheckoutPage() {
   const designName = useAtomValue(designNameAtom);
   const selectedSku = useAtomValue(selectedSkuAtom);
   const skuSelections = useAtomValue(skuSelectionsAtom);
+
+  useEffect(() => {
+    if (!capturedCharacter) navigate("/design", { replace: true });
+  }, [capturedCharacter, navigate]);
 
   const price = selectedSku?.price ?? 0;
   const quantity = skuSelections?.quantity ?? 1;
