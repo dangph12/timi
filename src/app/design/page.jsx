@@ -22,6 +22,7 @@ import DesignCanvas from "./_components/DesignCanvas";
 import { useParts } from "@/app/design/_hooks/usePartsData";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loading from "@/components/loading";
+import { toast } from "sonner";
 
 export default function DesignPage() {
   const [activeStep, setActiveStep] = useState(1);
@@ -54,8 +55,9 @@ export default function DesignPage() {
       setDesignId(data.id);
       navigate("/checkout");
     },
-    onError: (error) => {
-      console.error("Error creating design:", error);
+    onError: async (error) => {
+      const { getErrorMessage } = await import('@/lib/api');
+      toast.error(await getErrorMessage(error));
     },
   });
 
@@ -118,15 +120,15 @@ export default function DesignPage() {
     designMutation,
   ]);
 
-  const title = "Design Your Character - Tỉ Mỉ";
+  const title = "Thiết kế nhân vật - Tỉ Mỉ";
   const description =
-    "Customize your DIY box with unique hair, eyes, clothes, and accessories. Create your perfect character design.";
+    "Tùy chỉnh hộp DIY của bạn với kiểu tóc, mắt, quần áo và phụ kiện độc đáo. Tạo thiết kế nhân vật hoàn hảo.";
 
   if (partsLoading) {
     return (
       <>
         <title>{title}</title>
-        <div className="flex h-full flex-col font-sans">
+        <div className="flex h-full flex-col font-body">
           <div className="flex-1 p-8 flex items-center justify-center">
             <Skeleton className="w-64 h-8 rounded" />
           </div>
@@ -139,9 +141,9 @@ export default function DesignPage() {
     return (
       <>
         <title>{title}</title>
-        <div className="flex h-full flex-col font-sans">
-          <div className="flex-1 p-8 flex items-center justify-center text-red-500 text-sm">
-            Failed to load design options. Please try again later.
+        <div className="flex h-full flex-col font-body">
+          <div className="flex-1 p-8 flex items-center justify-center text-destructive text-sm">
+            Không thể tải tùy chọn thiết kế. Vui lòng thử lại sau.
           </div>
         </div>
       </>
@@ -155,7 +157,7 @@ export default function DesignPage() {
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content="website" />
-      <div className="flex h-full flex-col font-sans">
+      <div className="flex h-full flex-col font-body">
         <div className="flex flex-col md:flex-row flex-1 w-full min-h-0 overflow-hidden">
           {/* Left Sidebar */}
           <div className="w-full md:w-1/3 p-4 pb-28 md:pb-4 overflow-y-auto border-t md:border-t-0 md:border-r border-border order-2 md:order-1 flex-1">
@@ -181,13 +183,13 @@ export default function DesignPage() {
                     <CollapsibleTrigger
                       className={`w-full p-4 font-bold text-left flex items-center gap-2 ${
                         isCompleted || isActive
-                          ? "text-[#0000D0]"
+                          ? "text-primary"
                           : "text-muted-foreground"
                       }`}
                       disabled={stepNum > activeStep}
                     >
                       {isActive || isCompleted ? (
-                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#0000D0] text-white text-sm font-extrabold shrink-0">
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-white text-sm font-extrabold shrink-0">
                           {stepNum}
                         </span>
                       ) : (
@@ -205,7 +207,7 @@ export default function DesignPage() {
                       )}
                       {isCompleted && !isActive && (
                         <p className="text-xs text-muted-foreground">
-                          Completed
+                          Hoàn tất
                         </p>
                       )}
                     </CollapsibleContent>
@@ -230,13 +232,13 @@ export default function DesignPage() {
                 <CollapsibleTrigger
                   className={`w-full p-4 font-bold text-left flex items-center gap-2 ${
                     activeStep >= skuStep
-                      ? "text-[#0000D0]"
+                      ? "text-primary"
                       : "text-muted-foreground"
                   }`}
                   disabled={skuStep > activeStep}
                 >
                   {activeStep >= skuStep ? (
-                    <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#0000D0] text-white text-sm font-extrabold shrink-0">
+                    <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-white text-sm font-extrabold shrink-0">
                       {skuStep}
                     </span>
                   ) : (
@@ -256,7 +258,7 @@ export default function DesignPage() {
                     />
                   )}
                   {activeStep > skuStep && (
-                    <p className="text-xs text-muted-foreground">Completed</p>
+                    <p className="text-xs text-muted-foreground">Hoàn tất</p>
                   )}
                 </CollapsibleContent>
               </Collapsible>
@@ -283,9 +285,9 @@ export default function DesignPage() {
 
       {designMutation.isPending && (
         <div className="fixed inset-0 z-[60] bg-white flex flex-col items-center justify-center">
-          <Loading className="h-12 w-12 text-[#0000D0]" />
-          <p className="mt-6 text-sm font-bold tracking-wide text-[#0000D0]">
-            Creating your character...
+          <Loading className="h-12 w-12 text-primary" />
+          <p className="mt-6 text-sm font-bold tracking-wide text-primary">
+            Đang tạo nhân vật...
           </p>
         </div>
       )}

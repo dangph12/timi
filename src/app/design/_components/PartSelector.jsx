@@ -97,8 +97,8 @@ export default function PartSelector({ part, onContinue }) {
 
   if (error) {
     return (
-      <div className="text-center py-8 text-red-500 text-sm">
-        Failed to load options. Please try again.
+      <div className="text-center py-8 text-destructive text-sm">
+        Không thể tải tùy chọn. Vui lòng thử lại.
       </div>
     );
   }
@@ -110,21 +110,21 @@ export default function PartSelector({ part, onContinue }) {
     <>
       <p className="text-xs text-muted-foreground font-semibold mb-4 tracking-wide">
         {showNotAvailable
-          ? 'Select body first'
+          ? 'Chọn body trước'
           : noOptions
-            ? 'No options for this style'
+            ? 'Không có tùy chọn cho kiểu này'
             : part.allowMultiSelect
-              ? 'Choose (Optional)'
-              : 'Choose one'}
+              ? 'Chọn (Không bắt buộc)'
+              : 'Chọn một'}
       </p>
 
       {showNotAvailable ? (
         <div className="text-center py-4 text-muted-foreground text-sm">
-          Please select a body option first.
+          Vui lòng chọn body trước.
         </div>
       ) : noOptions ? (
         <div className="text-center py-4 text-muted-foreground text-sm">
-          No options available for this part with the current style.
+          Không có tùy chọn cho phần này với kiểu hiện tại.
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-3 mb-4">
@@ -134,16 +134,16 @@ export default function PartSelector({ part, onContinue }) {
               onClick={handleDeselect}
               className={`group relative flex-1 bg-white border-2 rounded-xl overflow-hidden transition-all duration-200 outline-none flex flex-col ${
                 !isSelected
-                  ? 'border-[#0000D0] shadow-md shadow-blue-100'
-                  : 'border-slate-200 hover:border-slate-300'
+                  ? 'border-primary shadow-md shadow-primary/10'
+                  : 'border-border hover:border-foreground/20'
               }`}
             >
-              <div className="aspect-4/3 w-full relative overflow-hidden shrink-0 flex items-center justify-center bg-slate-50">
-                <Ban className="w-10 h-10 text-slate-300" />
+              <div className="aspect-4/3 w-full relative overflow-hidden shrink-0 flex items-center justify-center bg-muted">
+                <Ban className="w-10 h-10 text-muted-foreground/50" />
               </div>
-              <div className="p-3 bg-white text-center w-full border-t border-slate-100 mt-auto">
+              <div className="p-3 bg-white text-center w-full border-t border-border mt-auto">
                 <p className={`text-[11px] font-black tracking-wider uppercase transition-colors ${
-                  !isSelected ? 'text-[#0000D0]' : 'text-slate-600'
+                  !isSelected ? 'text-primary' : 'text-muted-foreground'
                 }`}>
                   Không
                 </p>
@@ -171,7 +171,7 @@ export default function PartSelector({ part, onContinue }) {
       <StepContinue
         disabled={!noOptions && !isSelected && !part.allowMultiSelect && isBody}
         onClick={onContinue}
-        label="CONTINUE →"
+        label="TIẾP →"
       />
     </>
   );

@@ -117,8 +117,8 @@ export default function SkuSelector({ onContinue, isPending = false }) {
 
   if (error) {
     return (
-      <div className="text-center py-8 text-red-500 text-sm">
-        Failed to load product options. Please try again.
+      <div className="text-center py-8 text-destructive text-sm">
+        Không thể tải tùy chọn sản phẩm. Vui lòng thử lại.
       </div>
     );
   }
@@ -130,18 +130,18 @@ export default function SkuSelector({ onContinue, isPending = false }) {
     <>
       <div className="mb-6">
         <p className="text-xs text-muted-foreground font-semibold mb-2 tracking-wide">
-          Character design name
+          Tên nhân vật
         </p>
         <Input
           value={designName}
           onChange={(e) => setDesignName(e.target.value)}
           className="h-11 rounded-lg"
-          placeholder="My Character"
+          placeholder="Nhân vật của tôi"
         />
       </div>
 
       <p className="text-xs text-muted-foreground font-semibold mb-4 tracking-wide">
-        Choose category
+        Chọn danh mục
       </p>
       <div className="grid grid-cols-2 gap-3 mb-6">
         {categories.map((cat) => (
@@ -158,7 +158,7 @@ export default function SkuSelector({ onContinue, isPending = false }) {
       </div>
 
       <p className="text-xs text-muted-foreground font-semibold mb-4 tracking-wide">
-        Choose size
+        Chọn kích thước
       </p>
       <div className="flex flex-wrap gap-2 mb-6">
         {sizes.map((s) => {
@@ -173,8 +173,8 @@ export default function SkuSelector({ onContinue, isPending = false }) {
               disabled={isDisabled}
               className={`px-4 py-2 rounded-lg border-2 text-sm font-bold tracking-wider uppercase transition-all duration-200 ${
                 isSelected
-                  ? 'border-[#0000D0] text-[#0000D0] bg-blue-50/50'
-                  : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                  ? 'border-primary text-primary bg-primary/5'
+                  : 'border-border text-muted-foreground hover:border-foreground/20'
               } ${isDisabled ? 'opacity-40 pointer-events-none' : ''}`}
             >
               {s.name}
@@ -199,7 +199,7 @@ export default function SkuSelector({ onContinue, isPending = false }) {
       <StepContinue
         disabled={!canContinue}
         onClick={onContinue}
-        label="CHECKOUT"
+        label="THANH TOÁN"
         isPending={isPending}
       />
     </>
