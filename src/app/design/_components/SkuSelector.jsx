@@ -185,7 +185,7 @@ export default function SkuSelector({ onContinue, isPending = false }) {
 
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs text-muted-foreground font-semibold tracking-wide uppercase">
-          Quantity
+          Số lượng
         </span>
         <QuantityInput
           value={quantity}
