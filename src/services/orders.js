@@ -1,9 +1,29 @@
 import { api } from '@/lib/api';
 
-export const createOrder = (data) => api.post('v1/orders', { json: data }).json();
+let createOrderKey = crypto.randomUUID();
 
-export const confirmCodPayment = (publicId) =>
-  api.post(`v1/orders/${publicId}/confirm-payment`).json();
+export const createOrder = async (data) => {
+  const result = await api
+    .post('v1/orders', { json: data, headers: { 'Idempotency-Key': createOrderKey } })
+    .json();
+  createOrderKey = crypto.randomUUID();
+  return result;
+};
+
+const codPaymentKeys = new Map();
+
+export const confirmCodPayment = async (publicId) => {
+  if (!codPaymentKeys.has(publicId)) {
+    codPaymentKeys.set(publicId, crypto.randomUUID());
+  }
+  const result = await api
+    .post(`v1/orders/${publicId}/confirm-payment`, {
+      headers: { 'Idempotency-Key': codPaymentKeys.get(publicId) },
+    })
+    .json();
+  codPaymentKeys.delete(publicId);
+  return result;
+};
 
 export const cancelOrder = (publicId) =>
   api.post(`v1/orders/${publicId}/cancel`).json();
