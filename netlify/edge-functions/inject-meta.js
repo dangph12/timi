@@ -42,11 +42,11 @@ function matchMeta(pathname) {
 
 export default async (request, context) => {
   const url = new URL(request.url);
-  const accept = request.headers.get('accept') || '';
-  if (!accept.includes('text/html')) return context.next();
+  const response = await context.next();
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('text/html')) return response;
 
   const meta = matchMeta(url.pathname);
-  const response = await context.next();
   const page = await response.text();
 
   const tags =
@@ -63,6 +63,8 @@ export default async (request, context) => {
 
   const withLang = page.replace('<html', '<html lang="vi"');
   return new Response(withLang.replace('</head>', tags + '</head>'), {
-    headers: { 'content-type': 'text/html; charset=utf-8' }
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
   });
 };
