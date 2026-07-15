@@ -29,6 +29,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const setOrderId = useSetAtom(orderIdAtom);
@@ -91,10 +92,12 @@ export default function CheckoutPage() {
         publicId: data.publicId,
         expiresAt: data.expiresAt,
       }));
+      toast.success('Đã tạo đơn hàng thành công!');
       navigate(`/${data.publicId}/payment`);
     },
-    onError: (error) => {
-      console.error("Error creating order:", error);
+    onError: async (error) => {
+      const { getErrorMessage } = await import('@/lib/api');
+      toast.error(await getErrorMessage(error));
     },
   });
 
@@ -125,9 +128,9 @@ export default function CheckoutPage() {
     });
   };
 
-  const title = "Checkout - Tỉ Mỉ";
+  const title = "Thanh toán - Tỉ Mỉ";
   const description =
-    "Complete your order for the Tỉ Mỉ DIY character box. Provide your contact and delivery information.";
+    "Hoàn tất đơn hàng hộp DIY Tỉ Mỉ của bạn. Vui lòng cung cấp thông tin liên hệ và giao hàng.";
 
   return (
     <>
@@ -151,40 +154,40 @@ export default function CheckoutPage() {
                     className="flex items-center gap-3 text-base font-semibold text-foreground hover:bg-muted px-3 py-2 -ml-3 rounded-lg transition-colors mb-2"
                   >
                     <ArrowLeft className="h-5 w-5" />
-                    Back
+                    Quay lại
                   </button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Cancel order?</DialogTitle>
+                    <DialogTitle>Hủy đơn hàng?</DialogTitle>
                     <DialogDescription>
-                      Are you sure you want to cancel? Your order will not be created.
+                      Bạn có chắc muốn hủy? Đơn hàng sẽ không được tạo.
                     </DialogDescription>
                   </DialogHeader>
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button variant="outline">Keep editing</Button>
+                      <Button variant="outline">Tiếp tục chỉnh sửa</Button>
                     </DialogClose>
                     <DialogClose asChild>
                       <Button
                         variant="destructive"
                         onClick={() => navigate(-1)}
                       >
-                        Yes, cancel
+                        Có, hủy
                       </Button>
                     </DialogClose>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
               <section className="space-y-2">
-                <h1 className="text-3xl font-black">Contact</h1>
+                <h1 className="text-3xl font-black">Liên hệ</h1>
                 <FieldGroup>
                   <Controller
                     name="name"
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <Field>
-                        <FieldLabel className="text-base">Full name</FieldLabel>
+                        <FieldLabel className="text-base">Họ và tên</FieldLabel>
                         <Input className="h-11 rounded-lg" {...field} />
                         {fieldState.invalid && (
                           <FieldError errors={[fieldState.error]} />
@@ -198,7 +201,7 @@ export default function CheckoutPage() {
                     render={({ field, fieldState }) => (
                       <Field>
                         <FieldLabel className="text-base">
-                          Phone number
+                          Số điện thoại
                         </FieldLabel>
                         <Input className="h-11 rounded-lg" {...field} />
                         {fieldState.invalid && (
@@ -224,11 +227,11 @@ export default function CheckoutPage() {
               </section>
 
               <section className="mt-4 space-y-2">
-                <h2 className="text-3xl font-black">Delivery</h2>
+                <h2 className="text-3xl font-black">Giao hàng</h2>
                 <FieldGroup>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Field>
-                      <FieldLabel className="text-base">Province / City</FieldLabel>
+                      <FieldLabel className="text-base">Tỉnh / Thành phố</FieldLabel>
                       <div className="relative">
                         <select
                           value={selectedProvince?.code ?? ""}
@@ -242,7 +245,7 @@ export default function CheckoutPage() {
                           }}
                           className="h-11 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 appearance-none"
                         >
-                          <option value="">Select province / city</option>
+                          <option value="">Chọn tỉnh / thành phố</option>
                           {provincesQuery.data?.map((p) => (
                             <option key={p.code} value={p.code}>
                               {p.name}
@@ -254,7 +257,7 @@ export default function CheckoutPage() {
                     </Field>
 
                     <Field>
-                      <FieldLabel className="text-base">Ward</FieldLabel>
+                      <FieldLabel className="text-base">Phường / Xã</FieldLabel>
                       <div className="relative">
                         <select
                           value={selectedWard?.code ?? ""}
@@ -269,7 +272,7 @@ export default function CheckoutPage() {
                           className="h-11 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 appearance-none"
                         >
                           <option value="">
-                            {selectedProvince ? "Select ward" : "Select province first"}
+                            {selectedProvince ? "Chọn phường / xã" : "Chọn tỉnh / thành phố trước"}
                           </option>
                           {wardsQuery.data?.wards?.map((w) => (
                             <option key={w.code} value={w.code}>
@@ -287,7 +290,7 @@ export default function CheckoutPage() {
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <Field>
-                        <FieldLabel className="text-base">Address</FieldLabel>
+                        <FieldLabel className="text-base">Địa chỉ</FieldLabel>
                         <Input className="h-11 rounded-lg" {...field} />
                         {fieldState.invalid && (
                           <FieldError errors={[fieldState.error]} />
@@ -302,7 +305,7 @@ export default function CheckoutPage() {
                     render={({ field, fieldState }) => (
                       <Field>
                         <FieldLabel className="text-base">
-                          Delivery notes
+                          Ghi chú giao hàng
                         </FieldLabel>
                         <Input className="h-11 rounded-lg" {...field} />
                         {fieldState.invalid && (
@@ -369,7 +372,7 @@ export default function CheckoutPage() {
             <div className="shrink-0 space-y-4 mt-6 pt-4 border-t border-border/50">
               <div className="space-y-2">
                 <div className="flex justify-between text-2xl md:text-3xl font-black">
-                  <span>Total</span>
+                  <span>Tổng cộng</span>
                   <span>{subtotal.toLocaleString('vi-VN')}đ</span>
                 </div>
               </div>
@@ -383,10 +386,10 @@ export default function CheckoutPage() {
                 {orderMutation.isPending ? (
                   <span className="flex items-center gap-2">
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    Submitting...
+                    Đang xử lý...
                   </span>
                 ) : (
-                  "PAY NOW"
+                  "THANH TOÁN NGAY"
                 )}
               </Button>
             </div>
