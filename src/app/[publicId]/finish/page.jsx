@@ -36,9 +36,9 @@ export default function FinishPage() {
   const displaySubtotal = (order?.cart?.subtotal ?? 0).toLocaleString("vi-VN") + "đ";
   const displayTotal = (order?.cart?.total ?? 0).toLocaleString("vi-VN") + "đ";
 
-  const title = "Order Confirmed - Tỉ Mỉ";
+  const title = "Đã xác nhận đơn hàng - Tỉ Mỉ";
   const description =
-    "Thank you for your order at Tỉ Mỉ workshop. Your custom DIY character is being prepared.";
+    "Cảm ơn bạn đã đặt hàng tại xưởng Tỉ Mỉ. Nhân vật DIY của bạn đang được chuẩn bị.";
 
   if (!order && urlPublicId) return (
     <div className="h-full flex items-center justify-center">
@@ -55,36 +55,35 @@ export default function FinishPage() {
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content="website" />
-      <div className="h-full bg-[#f7f7f7] flex flex-col overflow-y-auto">
+      <div className="h-full bg-muted flex flex-col overflow-y-auto">
         <main className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 w-full min-h-0 py-8">
           <div className="w-full max-w-3xl mb-6 shrink-0 px-4 md:px-0">
             <h1 className="text-2xl md:text-4xl font-black tracking-tight mb-2">
-              Thank you for your order
+              Cảm ơn bạn đã đặt hàng
             </h1>
             <p className="text-sm md:text-lg">
-              <span className="text-primary font-bold">Tỉ Mỉ workshop</span> will
-              call to confirm your order as soon as possible.
+              <span className="text-primary font-bold">Xưởng Tỉ Mỉ</span> sẽ gọi xác nhận đơn hàng của bạn trong thời gian sớm nhất.
             </p>
           </div>
 
           <div className="bg-background rounded-xl p-6 md:p-8 shadow-sm w-full max-w-3xl flex flex-col min-h-0">
             <div className="grid grid-cols-[110px_1fr] md:grid-cols-[160px_1fr] gap-y-3 text-xs md:text-sm shrink-0">
-              <span className="font-bold">Order ID</span>
+              <span className="font-bold">Mã đơn hàng</span>
               <span>{order.publicId}</span>
 
-              <span className="font-bold">Receiver</span>
+              <span className="font-bold">Người nhận</span>
               <span>{customer?.name}</span>
 
-              <span className="font-bold">Phone number</span>
+              <span className="font-bold">Số điện thoại</span>
               <span>{customer?.phone}</span>
 
-              <span className="font-bold">Delivery address</span>
+              <span className="font-bold">Địa chỉ giao hàng</span>
               <span className="leading-relaxed">{customer?.address}</span>
             </div>
 
             <div className="space-y-3 shrink-0 mt-6">
               <h3 className="font-bold text-sm md:text-base border-b border-black/10 pb-2">
-                Order
+Đơn hàng
               </h3>
               {item && (
                 <div className="flex items-center justify-between text-xs md:text-sm">
@@ -112,11 +111,11 @@ export default function FinishPage() {
 
             <div className="space-y-2 border-t border-black/10 pt-3 shrink-0 mt-4">
               <div className="flex justify-between text-xs md:text-sm font-bold">
-                <span>Subtotal</span>
+                <span>Tạm tính</span>
                 <span>{displaySubtotal}</span>
               </div>
               <div className="flex justify-between text-xl md:text-3xl font-black pt-2 md:pt-3">
-                <span>Total</span>
+                <span>Tổng cộng</span>
                 <span>{displayTotal}</span>
               </div>
             </div>

@@ -2,8 +2,8 @@ import { Info } from 'lucide-react';
 
 export default function EstimatedDelivery() {
   return (
-    <div className="relative border-[2px] border-[#0B57D0] bg-[#E1F2FA] rounded-lg p-3 flex flex-col md:flex-row items-center w-full shadow-sm">
-      <div className="absolute top-2 right-2 text-[#0B57D0] cursor-pointer">
+    <div className="relative border-[2px] border-primary bg-primary/10 rounded-lg p-3 flex flex-col md:flex-row items-center w-full shadow-sm">
+      <div className="absolute top-2 right-2 text-primary cursor-pointer">
         <Info size={18} strokeWidth={2} />
       </div>
 
@@ -17,7 +17,7 @@ export default function EstimatedDelivery() {
         </svg>
 
         <div className="flex flex-col">
-          <span className="text-gray-800 text-[13px] font-medium leading-tight">Estimated Delivery</span>
+          <span className="text-muted-foreground text-[13px] font-medium leading-tight">Thời gian giao hàng dự kiến</span>
           <span className="font-black text-[22px] leading-tight mt-0.5">JUN 5-8</span>
         </div>
       </div>
@@ -29,10 +29,10 @@ export default function EstimatedDelivery() {
             <path d="M8 10.5a4 4 0 0 0 8 0" />
           </svg>
           <div className="font-black text-[13px] leading-none mb-1">MAY 21</div>
-          <div className="text-[11px] text-gray-800 leading-tight text-center">Order placed</div>
+          <div className="text-[11px] text-muted-foreground leading-tight text-center">Đã đặt hàng</div>
         </div>
 
-        <div className="w-4 md:w-8 h-[1.5px] bg-gray-400 rounded-full mb-6 shrink-0"></div>
+        <div className="w-4 md:w-8 h-[1.5px] bg-muted-foreground/30 rounded-full mb-6 shrink-0"></div>
 
         <div className="flex flex-col items-center w-[100px]">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-1 shrink-0">
@@ -40,10 +40,10 @@ export default function EstimatedDelivery() {
             <circle cx="12" cy="12" r="3.5" fill="none" stroke="#4B5563" strokeWidth="1.5" />
           </svg>
           <div className="font-black text-[13px] leading-none mb-1">JUN 2-4</div>
-          <div className="text-[11px] text-gray-800 leading-tight text-center">Making your items</div>
+          <div className="text-[11px] text-muted-foreground leading-tight text-center">Đang sản xuất</div>
         </div>
 
-        <div className="w-4 md:w-8 h-[1.5px] bg-gray-400 rounded-full mb-6 shrink-0"></div>
+        <div className="w-4 md:w-8 h-[1.5px] bg-muted-foreground/30 rounded-full mb-6 shrink-0"></div>
 
         <div className="flex flex-col items-center w-[80px]">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-1.5 shrink-0">
@@ -52,7 +52,7 @@ export default function EstimatedDelivery() {
             <line x1="12" y1="22.08" x2="12" y2="12" />
           </svg>
           <div className="font-black text-[13px] leading-none mb-1">JUN 5-8</div>
-          <div className="text-[11px] text-gray-800 leading-tight text-center">Delivered!</div>
+          <div className="text-[11px] text-muted-foreground leading-tight text-center">Đã giao!</div>
         </div>
       </div>
     </div>
