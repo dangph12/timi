@@ -3,8 +3,6 @@ import { orderAtom } from '@/store/order';
 import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Copy, Check } from 'lucide-react';
-import { addDoc } from 'firebase/firestore';
-import { ordersCollection } from '@/lib/firebase';
 import { Order } from '@/models/orders';
 import { useState } from 'react';
 import EstimatedDelivery from '@/components/estimated-delivery';
@@ -57,15 +55,9 @@ export default function PaymentPage() {
     setTimeout(() => setCopiedContent(false), 2000);
   };
 
-  const handleComplete = async () => {
-    try {
-      const orderData = new Order({ ...order, payment: { status: 'paid' } });
-      await addDoc(ordersCollection, orderData.toFirestore());
-      setOrder(prev => ({ ...prev, paid: true }));
-      navigate('/finish');
-    } catch (e) {
-      console.error('Error adding order: ', e);
-    }
+  const handleComplete = () => {
+    setOrder(prev => ({ ...prev, paid: true }));
+    navigate('/finish');
   };
   const title = 'Payment - Tỉ Mỉ';
   const description = 'Bank transfer payment instructions for your Tỉ Mỉ order. Complete your purchase with BIDV bank transfer.';
