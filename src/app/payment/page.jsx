@@ -3,7 +3,6 @@ import { orderAtom } from '@/store/order';
 import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Copy, Check } from 'lucide-react';
-import { Order } from '@/models/orders';
 import { useState } from 'react';
 import EstimatedDelivery from '@/components/estimated-delivery';
 
