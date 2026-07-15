@@ -13,3 +13,13 @@ export const api = ky.create({
     return { ...data, status, message };
   }
 });
+
+export async function getErrorMessage(error) {
+  if (error?.response) {
+    try {
+      const body = await error.response.clone().json();
+      return body.message || 'Đã xảy ra lỗi';
+    } catch {}
+  }
+  return error?.message || 'Đã xảy ra lỗi';
+}
