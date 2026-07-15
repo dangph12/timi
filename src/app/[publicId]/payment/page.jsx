@@ -181,7 +181,7 @@ export default function PaymentPage() {
 
   const title = "Thanh toán - Tỉ Mỉ";
   const description =
-    "Hướng dẫn thanh toán chuyển khoản cho đơn hàng Tỉ Mỉ của bạn. Hoàn tất giao dịch qua TPBank.";
+    "Thanh toán đơn hàng của bạn";
 
   if (!order && urlPublicId) return (
     <div className="h-full flex items-center justify-center">

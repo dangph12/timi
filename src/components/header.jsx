@@ -5,25 +5,23 @@ import { Link } from 'react-router';
 export default function Header() {
   return (
     <header className='flex items-center justify-between px-4 md:px-8 py-3 md:py-4 bg-white sticky top-0 z-50 shadow-sm'>
-      <button className='lg:hidden p-2 -ml-2 text-muted-foreground hover:text-primary transition-colors'>
-        <Menu size={20} strokeWidth={2.5} />
-      </button>
-      <div className='absolute left-1/2 -translate-x-1/2 flex items-center justify-center h-full'>
-        <Link
-          to='/'
-          className='hover:opacity-80 transition-opacity flex items-center justify-center'
-        >
-          <img
-            src='/timilogo.png'
-            alt='Tỉ Mỉ logo'
-            className='h-6 md:h-8 lg:h-10 w-auto object-contain'
-          />
-        </Link>
-      </div>
+      <Link
+        to='/'
+        className='hover:opacity-80 transition-opacity flex items-center justify-center'
+      >
+        <img
+          src='/timilogo.png'
+          alt='Tỉ Mỉ logo'
+          className='h-6 md:h-8 lg:h-10 w-auto object-contain'
+        />
+      </Link>
 
-      <div className='flex items-center gap-4 lg:gap-6'>
+      <div className='flex items-center gap-2 lg:gap-4'>
+        <button className='lg:hidden p-2 text-muted-foreground hover:text-primary transition-colors'>
+          <Menu size={20} strokeWidth={2.5} />
+        </button>
         <Button
-          className='bg-linear-to-r from-btn-gradient-from to-btn-gradient-to hover:opacity-90 transition-opacity text-white font-black rounded-full px-4 py-2 md:px-5 md:py-2.5 lg:px-6 border-0 text-xs md:text-sm tracking-wide shadow-sm h-auto'
+          className='bg-linear-to-r from-btn-gradient-from to-btn-gradient-to hover:opacity-90 transition-opacity text-white font-black rounded-full px-5 py-2.5 md:px-6 md:py-3 lg:px-8 lg:py-3.5 border-0 text-sm md:text-base tracking-wide shadow-sm h-auto'
           asChild
         >
           <Link to='/design'>

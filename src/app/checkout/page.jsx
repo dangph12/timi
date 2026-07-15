@@ -130,7 +130,7 @@ export default function CheckoutPage() {
 
   const title = "Thanh toán - Tỉ Mỉ";
   const description =
-    "Hoàn tất đơn hàng hộp DIY Tỉ Mỉ của bạn. Vui lòng cung cấp thông tin liên hệ và giao hàng.";
+    "Hoàn tất đơn hàng Tỉ Mỉ của bạn. Vui lòng cung cấp thông tin liên hệ và giao hàng.";
 
   return (
     <>
@@ -166,14 +166,14 @@ export default function CheckoutPage() {
                   </DialogHeader>
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button variant="outline">Tiếp tục chỉnh sửa</Button>
+                      <Button variant="outline">Không, quay trở lại</Button>
                     </DialogClose>
                     <DialogClose asChild>
                       <Button
                         variant="destructive"
                         onClick={() => navigate(-1)}
                       >
-                        Có, hủy
+                        Có, hủy đơn hàng
                       </Button>
                     </DialogClose>
                   </DialogFooter>
@@ -290,7 +290,7 @@ export default function CheckoutPage() {
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <Field>
-                        <FieldLabel className="text-base">Địa chỉ</FieldLabel>
+                        <FieldLabel className="text-base">Số nhà, ngõ</FieldLabel>
                         <Input className="h-11 rounded-lg" {...field} />
                         {fieldState.invalid && (
                           <FieldError errors={[fieldState.error]} />
@@ -322,7 +322,7 @@ export default function CheckoutPage() {
           <aside className="bg-aside px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-hidden">
             <div className="flex-1 md:min-h-0 md:overflow-y-auto">
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[350px]">
+                <table className="w-full text-left border-collapse min-w-87.5">
                   <thead>
                     <tr className="border-b border-border/50">
                       <th className="pb-4 font-semibold text-muted-foreground whitespace-nowrap">Tên sản phẩm</th>
