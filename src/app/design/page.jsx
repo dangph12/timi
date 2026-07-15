@@ -46,9 +46,7 @@ export default function DesignPage() {
 
   const designMutation = useMutation({
     mutationFn: async ({ name, dataUrl, partSelections }) => {
-      const imageUrl = dataUrl
-        ? await uploadCharacterDesign(dataUrl)
-        : "";
+      const imageUrl = dataUrl ? await uploadCharacterDesign(dataUrl) : "";
       setCapturedCharacter(imageUrl);
       return createDesign({ name, imageUrl, partSelections });
     },
@@ -99,8 +97,7 @@ export default function DesignPage() {
         });
       });
 
-      const dataUrl =
-        designCanvasRef.current?.getCharacterDataUrl() ?? "";
+      const dataUrl = designCanvasRef.current?.getCharacterDataUrl() ?? "";
 
       designMutation.mutate({
         name: designName,
@@ -199,7 +196,7 @@ export default function DesignPage() {
                         </span>
                       )}
                       <span className="tracking-wide uppercase text-sm font-black">
-                        {part.name}
+                        Chọn {part.name}
                       </span>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="p-4 bg-muted/20 border-t border-border/40">
@@ -259,9 +256,7 @@ export default function DesignPage() {
                     />
                   )}
                   {activeStep > skuStep && (
-                    <p className="text-xs text-muted-foreground">
-                      Completed
-                    </p>
+                    <p className="text-xs text-muted-foreground">Completed</p>
                   )}
                 </CollapsibleContent>
               </Collapsible>
