@@ -27,14 +27,13 @@ export default function PaymentPage() {
   const publicId = urlPublicId || atomPublicId;
   const customer = order?.customer;
   const item = order?.item;
-  const currentStatus = order?.currentStatus;
-  const isPaidAlready = currentStatus === "PAID";
-  const isCodProcessed = currentStatus === "PROCESSING";
+  const isPaymentDone = order?.currentPaymentStatus === "PAID" || order?.currentStatus === "PROCESSING";
   const navigate = useNavigate();
 
   const [isPaid, setIsPaid] = useState(false);
   const [sseStatus, setSseStatus] = useState("connecting");
   const paidRef = useRef(false);
+  const redirectedRef = useRef(false);
   const setPaymentMethod = useSetAtom(paymentMethodAtom);
   const [selectedMethod, setSelectedMethod] = useState("QR");
   const [timeLeft, setTimeLeft] = useState(null);
@@ -62,11 +61,20 @@ export default function PaymentPage() {
   }, [fetchedOrder]);
 
   useEffect(() => {
+    if (redirectedRef.current) return;
+    if (!publicId) return;
+    if (order?.currentPaymentStatus === "PAID" || order?.currentStatus === "PROCESSING") {
+      redirectedRef.current = true;
+      navigate(`/${publicId}/finish`, { replace: true });
+    }
+  }, [order, publicId, navigate]);
+
+  useEffect(() => {
     if (!order && !urlPublicId) navigate("/", { replace: true });
   }, [order, urlPublicId, navigate]);
 
   useEffect(() => {
-    if (!publicId || selectedMethod !== "QR" || isExpired || isPaidAlready) return;
+    if (!publicId || selectedMethod !== "QR" || isExpired || isPaymentDone) return;
 
     const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
     const url = `${baseUrl}/sse/orders/${publicId}`;
@@ -97,7 +105,7 @@ export default function PaymentPage() {
     return () => {
       eventSource.close();
     };
-  }, [publicId, selectedMethod, isExpired, isPaidAlready]);
+  }, [publicId, selectedMethod, isExpired, isPaymentDone]);
 
   useEffect(() => {
     if (!order?.expiresAt) return;
@@ -115,10 +123,10 @@ export default function PaymentPage() {
   }, [order?.expiresAt]);
 
   useEffect(() => {
-    if (isExpired) {
+    if (isExpired && !isPaymentDone) {
       toast.warning("QR code expired. Please switch to COD.");
     }
-  }, [isExpired]);
+  }, [isExpired, isPaymentDone]);
 
   const totalAmount = order?.cart?.total ?? 0;
   const displayTotal = totalAmount.toLocaleString("vi-VN") + "đ";
@@ -154,7 +162,7 @@ export default function PaymentPage() {
 
   const handleContinue = async () => {
     if (selectedMethod === "COD") {
-      if (isCodProcessed) return;
+      if (isPaymentDone) return;
       if (!publicId) { toast.error("No order found"); return; }
       setIsConfirmingCod(true);
       try {
@@ -236,7 +244,7 @@ export default function PaymentPage() {
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border text-muted-foreground hover:border-primary/50"
                   }`}
-                  disabled={isPaidAlready || isCodProcessed}
+                  disabled={isPaymentDone}
                 >
                   Bank Transfer (QR)
                 </button>
@@ -251,7 +259,7 @@ export default function PaymentPage() {
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border text-muted-foreground hover:border-primary/50"
                   }`}
-                  disabled={isPaidAlready || isCodProcessed}
+                  disabled={isPaymentDone}
                 >
                   Cash on Delivery
                 </button>
@@ -272,7 +280,7 @@ export default function PaymentPage() {
                       src={qrUrl}
                       alt="VietQR Payment Code"
                        className={`h-44 w-44 md:h-56 md:w-56 bg-white object-contain border rounded-lg p-1 shadow-sm ${
-                         isExpired || isPaidAlready || isCodProcessed ? "opacity-30" : ""
+                         isExpired || isPaymentDone ? "opacity-30" : ""
                        }`}
                     />
 
@@ -371,17 +379,17 @@ export default function PaymentPage() {
               {selectedMethod === "QR" ? (
                 <PayButton
                   onClick={handleFinish}
-                  disabled={!isPaid && !isPaidAlready}
-                  loading={!isPaidAlready && !isPaid}
-                  label={isPaidAlready ? "Paid" : "Done"}
+                  disabled={!isPaid && !isPaymentDone}
+                  loading={!isPaymentDone && !isPaid}
+                  label={isPaymentDone ? "Paid" : "Done"}
                   loadingLabel="Waiting for payment..."
                 />
               ) : (
                 <PayButton
                   onClick={handleContinue}
-                  disabled={isConfirmingCod || isCodProcessed}
+                  disabled={isConfirmingCod || isPaymentDone}
                   loading={isConfirmingCod}
-                  label={isCodProcessed ? "Confirmed" : "Continue"}
+                  label={isPaymentDone ? "Confirmed" : "Continue"}
                   loadingLabel="Confirming..."
                 />
               )}
