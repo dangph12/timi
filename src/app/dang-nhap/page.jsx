@@ -27,7 +27,9 @@ export default function LoginPage() {
     try {
       await login(data.email, data.password);
       navigate('/');
-    } catch {}
+    } catch {
+      // Errors handled by useAuth toast
+    }
   };
 
   const title = 'Đăng nhập - Tỉ Mỉ';

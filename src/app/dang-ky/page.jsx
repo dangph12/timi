@@ -29,7 +29,9 @@ export default function RegisterPage() {
     try {
       await doRegister(data);
       navigate('/');
-    } catch {}
+    } catch {
+      // Errors handled by useAuth toast
+    }
   };
 
   const title = 'Đăng ký - Tỉ Mỉ';

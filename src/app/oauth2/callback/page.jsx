@@ -10,14 +10,14 @@ export default function OAuthCallbackPage() {
   const navigate = useNavigate();
   const setAccessToken = useSetAtom(accessTokenAtom);
   const setUser = useSetAtom(userAtom);
-  const [error, setError] = useState(null);
+  const token = searchParams.get('accessToken');
+
+  const [error, setError] = useState(
+    token ? null : 'Không tìm thấy token xác thực'
+  );
 
   useEffect(() => {
-    const token = searchParams.get('accessToken');
-    if (!token) {
-      setError('Không tìm thấy token xác thực');
-      return;
-    }
+    if (!token) return;
 
     setAccessToken(token);
 
@@ -37,7 +37,7 @@ export default function OAuthCallbackPage() {
         setAccessToken(null);
         setError('Xác thực thất bại');
       });
-  }, [searchParams, navigate, setAccessToken, setUser]);
+  }, [token, navigate, setAccessToken, setUser]);
 
   if (error) {
     return (
