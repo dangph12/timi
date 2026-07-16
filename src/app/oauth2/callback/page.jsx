@@ -37,7 +37,7 @@ export default function OAuthCallbackPage() {
         setAccessToken(null);
         setError('Xác thực thất bại');
       });
-  }, []);
+  }, [searchParams, navigate, setAccessToken, setUser]);
 
   if (error) {
     return (

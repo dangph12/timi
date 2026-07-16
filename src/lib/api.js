@@ -50,10 +50,12 @@ export const api = ky.create({
           const queue = pendingRequests;
           pendingRequests = [];
           queue.forEach(({ request: req, options: opts, resolve }) => {
-            resolve(ky(req.url, { ...opts, headers: { ...opts.headers, Authorization: `Bearer ${newToken}` } }));
+            const h = new Headers(opts.headers || {});
+            h.set('Authorization', `Bearer ${newToken}`);
+            resolve(ky(req.url, { ...opts, headers: h }));
           });
 
-          return ky(request.url, { ...options, headers: { ...options.headers, Authorization: `Bearer ${newToken}` } });
+          return api(request.url, { ...options, headers: { ...options.headers, Authorization: `Bearer ${newToken}` } });
         } catch {
           jotaiStore.set(accessTokenAtom, null);
           jotaiStore.set(userAtom, null);
