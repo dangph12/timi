@@ -5,6 +5,7 @@ import { accessTokenAtom, userAtom } from '@/store/auth';
 const jotaiStore = getDefaultStore();
 
 let isRefreshing = false;
+let pendingRequests = [];
 
 export const api = ky.create({
   prefix: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
@@ -31,19 +32,35 @@ export const api = ky.create({
       async (request, options, response) => {
         if (response.status !== 401) return;
         if (request.url.includes('/auth/refresh')) return;
-        if (isRefreshing) return;
+
+        if (isRefreshing) {
+          return new Promise((resolve, reject) => {
+            pendingRequests.push({ request, options, resolve, reject });
+          });
+        }
 
         isRefreshing = true;
         try {
           const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
-          const refreshRes = await ky.post(`${baseUrl}/auth/refresh`);
+          const refreshRes = await ky.post(`${baseUrl}/auth/refresh`, { credentials: 'include' });
           const { data } = await refreshRes.json();
-          jotaiStore.set(accessTokenAtom, data.accessToken);
-          request.headers.set('Authorization', `Bearer ${data.accessToken}`);
-          return ky(request);
+          const newToken = data.accessToken;
+          jotaiStore.set(accessTokenAtom, newToken);
+
+          const queue = pendingRequests;
+          pendingRequests = [];
+          queue.forEach(({ request: req, options: opts, resolve }) => {
+            resolve(ky(req.url, { ...opts, headers: { ...opts.headers, Authorization: `Bearer ${newToken}` } }));
+          });
+
+          return ky(request.url, { ...options, headers: { ...options.headers, Authorization: `Bearer ${newToken}` } });
         } catch {
           jotaiStore.set(accessTokenAtom, null);
           jotaiStore.set(userAtom, null);
+
+          const queue = pendingRequests;
+          pendingRequests = [];
+          queue.forEach(({ reject }) => reject(response));
         } finally {
           isRefreshing = false;
         }
