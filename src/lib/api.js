@@ -5,12 +5,58 @@ import { accessTokenAtom, userAtom } from '@/store/auth';
 const jotaiStore = getDefaultStore();
 
 let isRefreshing = false;
+let refreshPromise = null;
 let pendingRequests = [];
+let hasRefreshFailed = false;
+
+function getApiBaseUrl() {
+  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+}
+
+async function refreshAccessToken() {
+  if (hasRefreshFailed) {
+    throw new Error('Authentication refresh is unavailable');
+  }
+
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    isRefreshing = true;
+
+    try {
+      const refreshRes = await ky.post(`${getApiBaseUrl()}/auth/refresh`, {
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const { data } = await refreshRes.json();
+      const newToken = data?.accessToken;
+
+      if (!newToken) {
+        throw new Error('Refresh response did not include an access token');
+      }
+
+      hasRefreshFailed = false;
+      jotaiStore.set(accessTokenAtom, newToken);
+      return newToken;
+    } catch (error) {
+      hasRefreshFailed = true;
+      jotaiStore.set(accessTokenAtom, null);
+      jotaiStore.set(userAtom, null);
+      throw error;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
 
 export const api = ky.create({
-  prefix: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+  prefix: getApiBaseUrl(),
+  credentials: 'include',
   headers: { 'Content-Type': 'application/json' },
-  parseJson: (text) => {
+  parseJson: text => {
     const parsed = JSON.parse(text);
     if (Array.isArray(parsed)) return parsed;
     const { status, message, data } = parsed;
@@ -28,59 +74,76 @@ export const api = ky.create({
     beforeRequest: [
       ({ request }) => {
         const token = jotaiStore.get(accessTokenAtom);
-        if (token) {
+        const isRefreshRequest = request.url.includes('/auth/refresh');
+
+        if (token && !isRefreshRequest) {
           request.headers.set('Authorization', `Bearer ${token}`);
         }
-      },
+      }
     ],
     afterResponse: [
       async ({ request, options, response }) => {
         if (!response || response.status !== 401) return;
         if (request.url.includes('/auth/refresh')) return;
 
+        if (request.headers.get('X-Auth-Retried') === '1') {
+          return;
+        }
+
+        if (hasRefreshFailed) {
+          throw new Error('Authentication refresh is unavailable');
+        }
+
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
-            pendingRequests.push({ request: request.clone(), options, resolve, reject });
+            pendingRequests.push({
+              request: request.clone(),
+              options,
+              resolve,
+              reject
+            });
           });
         }
 
-        isRefreshing = true;
         try {
-          const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
-          const refreshRes = await ky.post(`${baseUrl}/auth/refresh`, { credentials: 'include' });
-          const { data } = await refreshRes.json();
-          const newToken = data.accessToken;
-          jotaiStore.set(accessTokenAtom, newToken);
+          const newToken = await refreshAccessToken();
 
           const queue = pendingRequests;
           pendingRequests = [];
-          queue.forEach(({ request: req, options: opts, resolve }) => {
-            const h = new Headers(opts.headers || {});
-            h.set('Authorization', `Bearer ${newToken}`);
-            resolve(ky(req.url, { ...opts, headers: h }));
+          queue.forEach(({ request: req, resolve, reject }) => {
+            try {
+              const retryReq = req.clone();
+              retryReq.headers.set('Authorization', `Bearer ${newToken}`);
+              retryReq.headers.set('X-Auth-Retried', '1');
+              resolve(ky(retryReq));
+            } catch (error) {
+              reject(error);
+            }
           });
 
-          return api(request.url, { ...options, headers: { ...options.headers, Authorization: `Bearer ${newToken}` } });
-        } catch {
-          jotaiStore.set(accessTokenAtom, null);
-          jotaiStore.set(userAtom, null);
-
+          const retryReq = request.clone();
+          retryReq.headers.set('Authorization', `Bearer ${newToken}`);
+          retryReq.headers.set('X-Auth-Retried', '1');
+          return ky(retryReq);
+        } catch (error) {
           const queue = pendingRequests;
           pendingRequests = [];
-          queue.forEach(({ reject }) => reject(response));
-        } finally {
-          isRefreshing = false;
+          queue.forEach(({ reject }) => reject(error));
+          throw error;
         }
-      },
-    ],
-  },
+      }
+    ]
+  }
 });
 
 export function refreshToken() {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
-  return ky.post(`${baseUrl}/auth/refresh`, { credentials: 'include' })
+  return ky
+    .post(`${getApiBaseUrl()}/auth/refresh`, {
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' }
+    })
     .json()
-    .then((res) => res.data);
+    .then(res => res.data);
 }
 
 export async function getErrorMessage(error) {
@@ -91,7 +154,9 @@ export async function getErrorMessage(error) {
     try {
       const body = await error.response.clone().json();
       return body.message || 'Đã xảy ra lỗi';
-    } catch {}
+    } catch (parseError) {
+      void parseError;
+    }
   }
   return error?.message || 'Đã xảy ra lỗi';
 }
