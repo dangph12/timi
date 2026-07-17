@@ -4,10 +4,12 @@ import { orderIdAtom, orderAtom, orderPublicIdAtom } from "@/store/order";
 import { capturedCharacterAtom, designIdAtom, designNameAtom } from "@/store/design";
 import { selectedSkuAtom, skuSelectionsAtom } from "@/store/sku";
 import { userAtom } from "@/store/auth";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createOrder } from "@/services/orders";
+import { useCart } from "@/hooks/useCart";
+import { checkoutCart } from "@/services/cart";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { checkoutFormSchema } from "@/schemas";
 import { Button } from "@/components/ui/button";
@@ -43,10 +45,12 @@ export default function CheckoutPage() {
   const selectedSku = useAtomValue(selectedSkuAtom);
   const skuSelections = useAtomValue(skuSelectionsAtom);
   const user = useAtomValue(userAtom);
+  const location = useLocation();
+  const fromCart = location.state?.fromCart;
 
-  useEffect(() => {
-    if (!capturedCharacter) navigate("/thiet-ke", { replace: true });
-  }, [capturedCharacter, navigate]);
+  // useEffect(() => {
+  //   if (!capturedCharacter) navigate("/thiet-ke", { replace: true });
+  // }, [capturedCharacter, navigate]);
 
   const price = selectedSku?.price ?? 0;
   const quantity = skuSelections?.quantity ?? 1;
@@ -62,6 +66,14 @@ export default function CheckoutPage() {
       note: "",
     },
   });
+
+  useEffect(() => {
+    if (user) {
+      form.setValue('name', user.fullName || '');
+      form.setValue('phone', user.phone || '');
+      form.setValue('email', user.email || '');
+    }
+  }, [user]);
 
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedWard, setSelectedWard] = useState(null);
@@ -83,8 +95,30 @@ export default function CheckoutPage() {
     staleTime: Infinity,
   });
 
+  const cartQuery = useCart();
+
   const orderMutation = useMutation({
     mutationFn: createOrder,
+    onSuccess: (data) => {
+      setOrderId(data.id);
+      setOrderPublicId(data.publicId);
+      setOrder((prev) => ({
+        ...prev,
+        id: data.id,
+        publicId: data.publicId,
+        expiresAt: data.expiresAt,
+      }));
+      toast.success('Đã tạo đơn hàng thành công!');
+      navigate(`/${data.publicId}/thanh-toan`);
+    },
+    onError: async (error) => {
+      const { getErrorMessage } = await import('@/lib/api');
+      toast.error(await getErrorMessage(error));
+    },
+  });
+
+  const cartCheckoutMutation = useMutation({
+    mutationFn: checkoutCart,
     onSuccess: (data) => {
       setOrderId(data.id);
       setOrderPublicId(data.publicId);
@@ -108,27 +142,44 @@ export default function CheckoutPage() {
       .filter(Boolean)
       .join(", ");
 
-    setOrder({
-      customer: { name: data.name, phone: data.phone, email: data.email, address: fullAddress },
-      item: { designName, image: capturedCharacter, category: selectedSku?.category?.name, size: selectedSku?.size?.name, price, quantity },
-      cart: { subtotal, total: subtotal },
-      expiresAt: null,
-    });
+    if (fromCart) {
+      setOrder({
+        customer: { name: data.name, phone: data.phone, email: data.email, address: fullAddress },
+        cart: { subtotal: 0, total: 0 },
+        expiresAt: null,
+      });
 
-    orderMutation.mutate({
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      address: fullAddress,
-      accountId: user?.accountId,
-      items: [
-        {
-          skuId: selectedSku?.id,
-          characterDesignId: designId,
-          quantity: quantity,
-        },
-      ],
-    });
+      cartCheckoutMutation.mutate({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        address: fullAddress,
+        accountId: user?.accountId,
+        note: data.note,
+      });
+    } else {
+      setOrder({
+        customer: { name: data.name, phone: data.phone, email: data.email, address: fullAddress },
+        item: { designName, image: capturedCharacter, category: selectedSku?.category?.name, size: selectedSku?.size?.name, price, quantity },
+        cart: { subtotal, total: subtotal },
+        expiresAt: null,
+      });
+
+      orderMutation.mutate({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        address: fullAddress,
+        accountId: user?.accountId,
+        items: [
+          {
+            skuId: selectedSku?.id,
+            characterDesignId: designId,
+            quantity: quantity,
+          },
+        ],
+      });
+    }
   };
 
   const title = "Thanh toán - Tỉ Mỉ";
@@ -334,39 +385,81 @@ export default function CheckoutPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="py-4 pr-4">
-                        <div className="flex items-center gap-4">
-                          {capturedCharacter ? (
-                            <img
-                              src={capturedCharacter}
-                              alt={designName}
-                              className="h-16 w-12 object-contain bg-foreground shrink-0"
-                            />
-                          ) : (
-                            <Skeleton className="h-16 w-12 shrink-0 rounded-none bg-foreground" />
-                          )}
-                          <div className="flex flex-col">
-                            <span className="text-sm md:text-base font-bold text-foreground">
-                              {designName}
-                            </span>
-                            <span className="text-xs md:text-sm text-muted-foreground mt-0.5">
-                              {selectedSku?.category?.name}{" "}
-                              {selectedSku?.category?.name && selectedSku?.size?.name ? "·" : ""}{" "}
-                              {selectedSku?.size?.name}
-                            </span>
+                    {fromCart
+                      ? cartQuery.data?.content?.map((item) => {
+                          const unitPrice =
+                            item.priceAtPurchase ?? item.sku?.price ?? 0;
+                          return (
+                            <tr key={item.id}>
+                              <td className="py-4 pr-4">
+                                <div className="flex items-center gap-4">
+                                  <img
+                                    src={item.characterDesign?.imageUrl}
+                                    alt={item.characterDesign?.name}
+                                    className="h-16 w-12 object-contain bg-foreground shrink-0"
+                                  />
+                                  <div className="flex flex-col">
+                                    <span className="text-sm md:text-base font-bold text-foreground">
+                                      {item.characterDesign?.name}
+                                    </span>
+                                    <span className="text-xs md:text-sm text-muted-foreground mt-0.5">
+                                      {item.sku?.category?.name}
+                                      {item.sku?.category?.name && item.sku?.size?.name
+                                        ? ' · '
+                                        : ''}
+                                      {item.sku?.size?.name}
+                                    </span>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-4 text-center align-middle">
+                                <span className="text-sm text-foreground">
+                                  {item.quantity}
+                                </span>
+                              </td>
+                              <td className="py-4 text-right align-middle">
+                                <span className="text-sm text-foreground whitespace-nowrap">
+                                  {unitPrice.toLocaleString('vi-VN')}đ
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      : (
+                      <tr>
+                        <td className="py-4 pr-4">
+                          <div className="flex items-center gap-4">
+                            {capturedCharacter ? (
+                              <img
+                                src={capturedCharacter}
+                                alt={designName}
+                                className="h-16 w-12 object-contain bg-foreground shrink-0"
+                              />
+                            ) : (
+                              <Skeleton className="h-16 w-12 shrink-0 rounded-none bg-foreground" />
+                            )}
+                            <div className="flex flex-col">
+                              <span className="text-sm md:text-base font-bold text-foreground">
+                                {designName}
+                              </span>
+                              <span className="text-xs md:text-sm text-muted-foreground mt-0.5">
+                                {selectedSku?.category?.name}{" "}
+                                {selectedSku?.category?.name && selectedSku?.size?.name ? "·" : ""}{" "}
+                                {selectedSku?.size?.name}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="py-4 text-center align-middle">
-                        <span className="text-sm text-foreground">{quantity}</span>
-                      </td>
-                      <td className="py-4 text-right align-middle">
-                        <span className="text-sm text-foreground whitespace-nowrap">
-                          {price.toLocaleString('vi-VN')}đ
-                        </span>
-                      </td>
-                    </tr>
+                        </td>
+                        <td className="py-4 text-center align-middle">
+                          <span className="text-sm text-foreground">{quantity}</span>
+                        </td>
+                        <td className="py-4 text-right align-middle">
+                          <span className="text-sm text-foreground whitespace-nowrap">
+                            {price.toLocaleString('vi-VN')}đ
+                          </span>
+                        </td>
+                      </tr>
+                      )}
                   </tbody>
                 </table>
               </div>
@@ -376,17 +469,27 @@ export default function CheckoutPage() {
               <div className="space-y-2">
                 <div className="flex justify-between text-2xl md:text-3xl font-black">
                   <span>Tổng cộng</span>
-                  <span>{subtotal.toLocaleString('vi-VN')}đ</span>
+                  <span>
+                    {fromCart
+                      ? (cartQuery.data?.content?.reduce(
+                          (sum, item) =>
+                            sum +
+                            (item.priceAtPurchase ?? item.sku?.price ?? 0) *
+                              item.quantity,
+                          0
+                        ) ?? 0).toLocaleString('vi-VN')
+                      : subtotal.toLocaleString('vi-VN')}đ
+                  </span>
                 </div>
               </div>
 
               <Button
                 type="submit"
                 form="checkout-form"
-                disabled={orderMutation.isPending}
+                disabled={orderMutation.isPending || cartCheckoutMutation.isPending}
                 className="w-full h-14 rounded-full bg-btn-muted text-white text-lg font-bold hover:bg-btn-muted/80 mt-2"
               >
-                {orderMutation.isPending ? (
+                {orderMutation.isPending || cartCheckoutMutation.isPending ? (
                   <span className="flex items-center gap-2">
                     <Loader2 className="h-5 w-5 animate-spin" />
                     Đang xử lý...
