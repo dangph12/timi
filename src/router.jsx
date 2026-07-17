@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router';
-import Layout from '@/components/layout';
+import Layout from '@/components/Layout';
 import ProfileLayout from '@/components/ProfileLayout';
 
 const HomePage = lazy(() => import('@/app/page'));

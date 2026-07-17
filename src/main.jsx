@@ -4,8 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css';
 import App from './App.jsx';
 
-import { ThemeProvider } from '@/components/theme-provider';
-import AuthInitializer from '@/components/auth-initializer';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import AuthInitializer from '@/components/AuthInitializer';
 
 const queryClient = new QueryClient();
 

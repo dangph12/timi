@@ -23,7 +23,7 @@ import SkuSelector from "./_components/SkuSelector";
 import DesignCanvas from "./_components/DesignCanvas";
 import { useParts } from "@/app/thiet-ke/_hooks/usePartsData";
 import { Skeleton } from "@/components/ui/skeleton";
-import Loading from "@/components/loading";
+import Loading from "@/components/Loading";
 import { toast } from "sonner";
 
 export default function DesignPage() {
