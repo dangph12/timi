@@ -2,12 +2,11 @@ import { Button } from '@/components/ui/button';
 import { Menu, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAuth } from '@/hooks/useAuth';
-import { useCart } from '@/hooks/useCart';
+import { useCartCount } from '@/hooks/useCartCount';
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
-  const { data: cartData } = useCart();
-  const totalElements = cartData?.totalElements ?? 0;
+  const { data: totalElements = 0 } = useCartCount();
 
   return (
     <header className='flex items-center justify-between px-4 md:px-8 py-3 md:py-4 bg-white sticky top-0 z-50 shadow-sm'>

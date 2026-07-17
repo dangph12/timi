@@ -1,11 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import {
   cartItemsAtom,
   cartPageAtom,
   cartTotalElementsAtom,
   cartTotalPagesAtom,
 } from '@/store/cart';
+import { isAuthenticatedAtom } from '@/store/auth';
 import {
   getCart,
   addCartItem,
@@ -15,6 +16,7 @@ import {
 } from '@/services/cart';
 
 export function useCart() {
+  const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const [page] = useAtom(cartPageAtom);
   const [, setItems] = useAtom(cartItemsAtom);
   const [, setTotalElements] = useAtom(cartTotalElementsAtom);
@@ -24,6 +26,7 @@ export function useCart() {
     queryKey: ['cart', page],
     queryFn: () => getCart(page),
     staleTime: 30_000,
+    enabled: isAuthenticated,
   });
 
   if (query.data) {

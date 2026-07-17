@@ -14,3 +14,6 @@ export const removeCartItem = (itemId) =>
 
 export const checkoutCart = (data) =>
   api.post('v1/cart/checkout', { json: data }).json();
+
+export const getCartCount = () =>
+  api.get('v1/cart/count').text().then(t => JSON.parse(t).data);
