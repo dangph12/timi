@@ -26,7 +26,7 @@ export const api = ky.create({
   },
   hooks: {
     beforeRequest: [
-      (request) => {
+      ({ request }) => {
         const token = jotaiStore.get(accessTokenAtom);
         if (token) {
           request.headers.set('Authorization', `Bearer ${token}`);
@@ -34,13 +34,13 @@ export const api = ky.create({
       },
     ],
     afterResponse: [
-      async (request, options, response) => {
+      async ({ request, options, response }) => {
         if (!response || response.status !== 401) return;
         if (request.url.includes('/auth/refresh')) return;
 
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
-            pendingRequests.push({ request, options, resolve, reject });
+            pendingRequests.push({ request: request.clone(), options, resolve, reject });
           });
         }
 
@@ -84,6 +84,9 @@ export function refreshToken() {
 }
 
 export async function getErrorMessage(error) {
+  if (error?.data) {
+    return error.data.message || 'Đã xảy ra lỗi';
+  }
   if (error?.response) {
     try {
       const body = await error.response.clone().json();

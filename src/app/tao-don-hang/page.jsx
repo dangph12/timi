@@ -3,6 +3,7 @@ import { useSetAtom, useAtomValue } from "jotai";
 import { orderIdAtom, orderAtom, orderPublicIdAtom } from "@/store/order";
 import { capturedCharacterAtom, designIdAtom, designNameAtom } from "@/store/design";
 import { selectedSkuAtom, skuSelectionsAtom } from "@/store/sku";
+import { userAtom } from "@/store/auth";
 import { useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -41,6 +42,7 @@ export default function CheckoutPage() {
   const designName = useAtomValue(designNameAtom);
   const selectedSku = useAtomValue(selectedSkuAtom);
   const skuSelections = useAtomValue(skuSelectionsAtom);
+  const user = useAtomValue(userAtom);
 
   useEffect(() => {
     if (!capturedCharacter) navigate("/thiet-ke", { replace: true });
@@ -118,6 +120,7 @@ export default function CheckoutPage() {
       email: data.email,
       phone: data.phone,
       address: fullAddress,
+      accountId: user?.accountId,
       items: [
         {
           skuId: selectedSku?.id,

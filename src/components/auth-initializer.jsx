@@ -20,10 +20,7 @@ export default function AuthInitializer({ children }) {
           phone: null,
         });
       })
-      .catch(() => {
-        setAccessToken(null);
-        setUser(null);
-      })
+      .catch(() => {})
       .finally(() => setReady(true));
   }, [setAccessToken, setUser]);
 
