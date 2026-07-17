@@ -10,5 +10,20 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src')
     }
+  },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: 'konva',
+              test: /[\\/]node_modules[\\/](konva|react-konva)[\\/]/,
+              priority: 2
+            }
+          ]
+        }
+      }
+    }
   }
 });
