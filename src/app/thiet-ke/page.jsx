@@ -11,6 +11,8 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { createDesign } from "@/services/designs";
 import { uploadCharacterDesign } from "@/services/cloudinary";
+import { selectedSkuAtom, skuSelectionsAtom } from "@/store/sku";
+import { addCartItem } from "@/services/cart";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -36,6 +38,8 @@ export default function DesignPage() {
   const setDesignId = useSetAtom(designIdAtom);
   const setCapturedCharacter = useSetAtom(capturedCharacterAtom);
   const designName = useAtomValue(designNameAtom);
+  const selectedSku = useAtomValue(selectedSkuAtom);
+  const skuSelections = useAtomValue(skuSelectionsAtom);
 
   const {
     data: parts,
@@ -54,6 +58,35 @@ export default function DesignPage() {
     onSuccess: (data) => {
       setDesignId(data.id);
       navigate("/tao-don-hang");
+    },
+    onError: async (error) => {
+      const { getErrorMessage } = await import('@/lib/api');
+      toast.error(await getErrorMessage(error));
+    },
+  });
+
+  const addToCartMutation = useMutation({
+    mutationFn: async () => {
+      const partSelections = [];
+      Object.entries(designSelections.selections).forEach(([, val]) => {
+        const ids = Array.isArray(val) ? val : [val];
+        ids.forEach((id) => {
+          if (id != null) partSelections.push({ partOptionId: id });
+        });
+      });
+      const dataUrl = designCanvasRef.current?.getCharacterDataUrl() ?? "";
+      const imageUrl = dataUrl ? await uploadCharacterDesign(dataUrl) : "";
+      setCapturedCharacter(imageUrl);
+      const design = await createDesign({ name: designName, imageUrl, partSelections });
+      setDesignId(design.id);
+      await addCartItem({
+        skuId: selectedSku?.id,
+        characterDesignId: design.id,
+        quantity: skuSelections?.quantity ?? 1,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Đã thêm vào giỏ hàng");
     },
     onError: async (error) => {
       const { getErrorMessage } = await import('@/lib/api');
@@ -255,6 +288,8 @@ export default function DesignPage() {
                     <SkuSelector
                       onContinue={handleContinue}
                       isPending={designMutation.isPending}
+                      onAddToCart={() => addToCartMutation.mutate()}
+                      isAddingToCart={addToCartMutation.isPending}
                     />
                   )}
                   {activeStep > skuStep && (
