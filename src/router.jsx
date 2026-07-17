@@ -4,6 +4,7 @@ import { createBrowserRouter } from 'react-router';
 import Layout from '@/components/layout';
 
 const HomePage = lazy(() => import('@/app/page'));
+const CartPage = lazy(() => import('@/app/gio-hang/page'));
 const DesignPage = lazy(() => import('@/app/thiet-ke/page'));
 const CheckoutPage = lazy(() => import('@/app/tao-don-hang/page'));
 const PaymentPage = lazy(() => import('@/app/[publicId]/thanh-toan/page'));
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
     Component: Layout,
     children: [
       { index: true, Component: HomePage },
+      { path: 'gio-hang', Component: CartPage },
       { path: 'thiet-ke', Component: DesignPage },
       { path: 'tao-don-hang', Component: CheckoutPage },
       { path: ':publicId/thanh-toan', Component: PaymentPage },
