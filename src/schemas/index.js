@@ -17,10 +17,10 @@ export const orderItemSchema = yup.object({
 });
 
 export const checkoutFormSchema = yup.object().shape({
-  name: yup.string().required("Required"),
-  phone: yup.string().required("Required"),
-  email: yup.string().email("Invalid email").required("Required"),
-  address: yup.string().required("Required"),
+  name: yup.string().required('Vui lòng nhập họ và tên'),
+  phone: yup.string().required('Vui lòng nhập số điện thoại'),
+  email: yup.string().email('Email không hợp lệ').required('Vui lòng nhập email'),
+  address: yup.string().required('Vui lòng nhập địa chỉ'),
   note: yup.string(),
 });
 

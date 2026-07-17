@@ -17,6 +17,9 @@ export const authApi = {
 
   getMe: () =>
     api.get(`${BASE}/me`).json(),
+
+  updateProfile: (data) =>
+    api.put(`${BASE}/me`, { json: data }).json(),
 };
 
 export const GOOGLE_OAUTH_URL = `${

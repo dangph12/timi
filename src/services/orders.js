@@ -25,6 +25,12 @@ export const confirmCodPayment = async (publicId) => {
   return result;
 };
 
+export const getOrders = (params = {}) =>
+  api.get('v1/orders', { searchParams: params }).json();
+
+export const getOrderDetail = (publicId) =>
+  api.get(`v1/orders/${publicId}`).json();
+
 export const cancelOrder = (publicId) =>
   api.post(`v1/orders/${publicId}/cancel`).json();
 

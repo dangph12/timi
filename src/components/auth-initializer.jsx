@@ -17,7 +17,7 @@ export default function AuthInitializer({ children }) {
           email: data.email,
           fullName: data.fullName,
           role: data.role,
-          phone: null,
+          phone: data.phone || null,
         });
       })
       .catch(() => {})
