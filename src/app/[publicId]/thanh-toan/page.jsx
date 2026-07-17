@@ -65,7 +65,7 @@ export default function PaymentPage() {
     if (!publicId) return;
     if (order?.currentPaymentStatus === "PAID" || order?.currentStatus === "PROCESSING") {
       redirectedRef.current = true;
-      navigate(`/${publicId}/finish`, { replace: true });
+      navigate(`/${publicId}/hoan-tat`, { replace: true });
     }
   }, [order, publicId, navigate]);
 
@@ -141,7 +141,7 @@ export default function PaymentPage() {
   const qrUrl = `https://vietqr.app/img?bank=TPBank&acc=00000120630&template=compact2&amount=${totalAmount}&des=${encodeURIComponent(publicId || "")}&showinfo=true&holder=PHAN%20HAI%20DANG`;
 
   const handleFinish = () => {
-    navigate(`/${publicId}/finish`);
+    navigate(`/${publicId}/hoan-tat`);
   };
 
   const [isCancelling, setIsCancelling] = useState(false);
@@ -170,7 +170,7 @@ export default function PaymentPage() {
       try {
         await confirmCodPayment(publicId);
         toast.success("Xác nhận thanh toán thành công!");
-        navigate(`/${publicId}/finish`);
+        navigate(`/${publicId}/hoan-tat`);
       } catch (error) {
         const { getErrorMessage } = await import('@/lib/api');
         toast.error(await getErrorMessage(error));

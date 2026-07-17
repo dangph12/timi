@@ -19,7 +19,7 @@ import {
 import PartSelector from "./_components/PartSelector";
 import SkuSelector from "./_components/SkuSelector";
 import DesignCanvas from "./_components/DesignCanvas";
-import { useParts } from "@/app/design/_hooks/usePartsData";
+import { useParts } from "@/app/thiet-ke/_hooks/usePartsData";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loading from "@/components/loading";
 import { toast } from "sonner";
@@ -53,7 +53,7 @@ export default function DesignPage() {
     },
     onSuccess: (data) => {
       setDesignId(data.id);
-      navigate("/checkout");
+      navigate("/tao-don-hang");
     },
     onError: async (error) => {
       const { getErrorMessage } = await import('@/lib/api');

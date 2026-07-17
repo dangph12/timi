@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { designSelectionsAtom, partOptionsAtom } from '@/store/design';
-import { usePartOptions } from '@/app/design/_hooks/usePartsData';
+import { usePartOptions } from '@/app/thiet-ke/_hooks/usePartsData';
 import OptionCard from './OptionCard';
 import StepContinue from './StepContinue';
 import { Skeleton } from '@/components/ui/skeleton';

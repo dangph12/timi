@@ -43,7 +43,7 @@ export default function CheckoutPage() {
   const skuSelections = useAtomValue(skuSelectionsAtom);
 
   useEffect(() => {
-    if (!capturedCharacter) navigate("/design", { replace: true });
+    if (!capturedCharacter) navigate("/thiet-ke", { replace: true });
   }, [capturedCharacter, navigate]);
 
   const price = selectedSku?.price ?? 0;
@@ -93,7 +93,7 @@ export default function CheckoutPage() {
         expiresAt: data.expiresAt,
       }));
       toast.success('Đã tạo đơn hàng thành công!');
-      navigate(`/${data.publicId}/payment`);
+      navigate(`/${data.publicId}/thanh-toan`);
     },
     onError: async (error) => {
       const { getErrorMessage } = await import('@/lib/api');

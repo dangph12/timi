@@ -4,21 +4,21 @@ const META = {
     description:
       'Tự tay thiết kế nhân vật độc đáo của riêng bạn cùng Tỉ Mỉ.',
   },
-  '/design': {
+  '/thiet-ke': {
     title: 'Thiết kế nhân vật - Tỉ Mỉ',
     description:
       'Tùy chỉnh hộp DIY của bạn với kiểu tóc, mắt, quần áo và phụ kiện độc đáo. Tạo thiết kế nhân vật hoàn hảo.',
   },
-  '/checkout': {
+  '/tao-don-hang': {
     title: 'Thanh toán - Tỉ Mỉ',
     description:
       'Hoàn tất đơn hàng Tỉ Mỉ của bạn. Vui lòng cung cấp thông tin liên hệ và giao hàng.',
   },
-  '/payment': {
+  '/thanh-toan': {
     title: 'Thanh toán - Tỉ Mỉ',
     description: 'Thanh toán đơn hàng của bạn',
   },
-  '/finish': {
+  '/hoan-tat': {
     title: 'Đã xác nhận đơn hàng - Tỉ Mỉ',
     description: 'Cảm ơn bạn đã đặt hàng tại shop Tỉ Mỉ.',
   },
@@ -33,10 +33,10 @@ const OG_IMAGE = 'https://timishop.netlify.app/og-image.jpg';
 
 function matchMeta(pathname) {
   if (pathname === '/') return META['/'];
-  if (pathname === '/design') return META['/design'];
-  if (pathname === '/checkout') return META['/checkout'];
-  if (pathname.includes('/payment')) return META['/payment'];
-  if (pathname.includes('/finish')) return META['/finish'];
+  if (pathname === '/thiet-ke') return META['/thiet-ke'];
+  if (pathname === '/tao-don-hang') return META['/tao-don-hang'];
+  if (pathname.includes('/thanh-toan')) return META['/thanh-toan'];
+  if (pathname.includes('/hoan-tat')) return META['/hoan-tat'];
   return FALLBACK;
 }
 

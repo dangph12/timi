@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { skuSelectionsAtom, selectedSkuAtom } from '@/store/sku';
 import { designNameAtom } from '@/store/design';
-import { useSkus } from '@/app/design/_hooks/useSkusData';
+import { useSkus } from '@/app/thiet-ke/_hooks/useSkusData';
 import OptionCard from './OptionCard';
 import QuantityInput from './QuantityInput';
 import StepContinue from './StepContinue';

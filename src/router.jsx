@@ -4,10 +4,10 @@ import { createBrowserRouter } from 'react-router';
 import Layout from '@/components/layout';
 
 const HomePage = lazy(() => import('@/app/page'));
-const DesignPage = lazy(() => import('@/app/design/page'));
-const CheckoutPage = lazy(() => import('@/app/checkout/page'));
-const PaymentPage = lazy(() => import('@/app/[publicId]/payment/page'));
-const FinishPage = lazy(() => import('@/app/[publicId]/finish/page'));
+const DesignPage = lazy(() => import('@/app/thiet-ke/page'));
+const CheckoutPage = lazy(() => import('@/app/tao-don-hang/page'));
+const PaymentPage = lazy(() => import('@/app/[publicId]/thanh-toan/page'));
+const FinishPage = lazy(() => import('@/app/[publicId]/hoan-tat/page'));
 const LoginPage = lazy(() => import('@/app/dang-nhap/page'));
 const RegisterPage = lazy(() => import('@/app/dang-ky/page'));
 const ProfilePage = lazy(() => import('@/app/ho-so/page'));
@@ -18,10 +18,10 @@ const router = createBrowserRouter([
     Component: Layout,
     children: [
       { index: true, Component: HomePage },
-      { path: 'design', Component: DesignPage },
-      { path: 'checkout', Component: CheckoutPage },
-      { path: ':publicId/payment', Component: PaymentPage },
-      { path: ':publicId/finish', Component: FinishPage },
+      { path: 'thiet-ke', Component: DesignPage },
+      { path: 'tao-don-hang', Component: CheckoutPage },
+      { path: ':publicId/thanh-toan', Component: PaymentPage },
+      { path: ':publicId/hoan-tat', Component: FinishPage },
       { path: 'dang-nhap', Component: LoginPage },
       { path: 'dang-ky', Component: RegisterPage },
       { path: 'ho-so', Component: ProfilePage },

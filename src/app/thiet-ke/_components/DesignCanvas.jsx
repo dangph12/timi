@@ -1,9 +1,9 @@
 import { memo, forwardRef, useImperativeHandle, useRef, useMemo } from 'react';
 import { Stage, Layer, Rect } from 'react-konva';
 import useImage from 'use-image';
-import { useLayerProps } from '@/app/design/_hooks/useLayerProps';
+import { useLayerProps } from '@/app/thiet-ke/_hooks/useLayerProps';
 import { renderLayers } from '@/components/LayerRenderers';
-import { useParts } from '@/app/design/_hooks/usePartsData';
+import { useParts } from '@/app/thiet-ke/_hooks/usePartsData';
 
 const DesignCanvas = memo(forwardRef(function DesignCanvas({ width, height, selections, partOptions }, ref) {
   const stageRef = useRef(null);

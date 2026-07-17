@@ -38,7 +38,7 @@ export function Page() {
             >
               Cá nhân hoá phụ kiện cho bạn
             </h1>
-            <Link to="/design">
+            <Link to="/thiet-ke">
               <Button className="bg-primary hover:bg-primary/75 text-white border-[3px] md:border-4 border-white rounded-full px-5 py-3 md:px-8 md:py-6 text-sm md:text-lg font-black tracking-widest shadow-none mt-2 md:mt-4 lg:mt-6">
                 XEM NGAY
               </Button>
