@@ -11,13 +11,18 @@ export const api = ky.create({
   prefix: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
   headers: { 'Content-Type': 'application/json' },
   parseJson: (text) => {
-    const { status, message, data } = JSON.parse(text);
-    if (Array.isArray(data)) {
-      data.status = status;
-      data.message = message;
-      return data;
+    const parsed = JSON.parse(text);
+    if (Array.isArray(parsed)) return parsed;
+    const { status, message, data } = parsed;
+    if (data != null) {
+      if (Array.isArray(data)) {
+        data.status = status;
+        data.message = message;
+        return data;
+      }
+      return { ...data, status, message };
     }
-    return { ...data, status, message };
+    return parsed;
   },
   hooks: {
     beforeRequest: [
@@ -30,7 +35,7 @@ export const api = ky.create({
     ],
     afterResponse: [
       async (request, options, response) => {
-        if (response.status !== 401) return;
+        if (!response || response.status !== 401) return;
         if (request.url.includes('/auth/refresh')) return;
 
         if (isRefreshing) {
@@ -70,6 +75,13 @@ export const api = ky.create({
     ],
   },
 });
+
+export function refreshToken() {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+  return ky.post(`${baseUrl}/auth/refresh`, { credentials: 'include' })
+    .json()
+    .then((res) => res.data);
+}
 
 export async function getErrorMessage(error) {
   if (error?.response) {

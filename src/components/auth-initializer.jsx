@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSetAtom } from 'jotai';
-import { authApi } from '@/services/auth';
+import { refreshToken } from '@/lib/api';
 import { accessTokenAtom, userAtom } from '@/store/auth';
 
 export default function AuthInitializer({ children }) {
@@ -9,8 +9,7 @@ export default function AuthInitializer({ children }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    authApi
-      .refresh()
+    refreshToken()
       .then((data) => {
         setAccessToken(data.accessToken);
         setUser({
