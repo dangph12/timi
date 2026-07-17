@@ -9,9 +9,6 @@ export const authApi = {
   register: (body) =>
     api.post(`${BASE}/register`, { json: body }).json(),
 
-  refresh: () =>
-    api.post(`${BASE}/refresh`).json(),
-
   logout: () =>
     api.post(`${BASE}/logout`).json(),
 

@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useSetAtom } from 'jotai';
-import { refreshToken } from '@/lib/api';
-import { accessTokenAtom, userAtom } from '@/store/auth';
+import { refreshAccessToken } from '@/lib/api';
+import { userAtom } from '@/store/auth';
 
 export default function AuthInitializer({ children }) {
-  const setAccessToken = useSetAtom(accessTokenAtom);
   const setUser = useSetAtom(userAtom);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    refreshToken()
+    refreshAccessToken()
       .then((data) => {
-        setAccessToken(data.accessToken);
         setUser({
           accountId: data.accountId,
           email: data.email,
@@ -22,7 +20,7 @@ export default function AuthInitializer({ children }) {
       })
       .catch(() => {})
       .finally(() => setReady(true));
-  }, [setAccessToken, setUser]);
+  }, [setUser]);
 
   if (!ready) return null;
 

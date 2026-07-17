@@ -2,7 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useState } from 'react';
 import { authApi } from '@/services/auth';
 import { accessTokenAtom, userAtom, isAuthenticatedAtom } from '@/store/auth';
-import { getErrorMessage } from '@/lib/api';
+import { getErrorMessage, resetAuthState } from '@/lib/api';
 import { toast } from 'sonner';
 
 function normalizeUser(data) {
@@ -25,6 +25,7 @@ export function useAuth() {
     setLoading(true);
     try {
       const data = await authApi.login(email, password);
+      resetAuthState();
       setAccessToken(data.accessToken);
       setUser(normalizeUser(data));
       toast.success(data.message || 'Đăng nhập thành công');
@@ -42,6 +43,7 @@ export function useAuth() {
     setLoading(true);
     try {
       const data = await authApi.register(body);
+      resetAuthState();
       setAccessToken(data.accessToken);
       setUser({ ...normalizeUser(data), phone: body.phone || null });
       toast.success(data.message || 'Đăng ký thành công');
