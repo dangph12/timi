@@ -1,6 +1,6 @@
 import { api } from '@/lib/api';
 
-export const getCart = (page = 0) =>
+export const getCart = ({ page = 0 } = {}) =>
   api.get('v1/cart', { searchParams: { page } }).json();
 
 export const addCartItem = (data) =>
@@ -16,4 +16,4 @@ export const checkoutCart = (data) =>
   api.post('v1/cart/checkout', { json: data }).json();
 
 export const getCartCount = () =>
-  api.get('v1/cart/count').text().then(t => JSON.parse(t).data);
+  api.get('v1/cart/count').json().then(r => r.count);
