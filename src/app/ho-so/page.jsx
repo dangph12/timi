@@ -64,51 +64,56 @@ export default function ProfilePage() {
   return (
     <>
       <title>{title}</title>
-      <div className="mx-auto max-w-lg">
-        <h1 className="text-2xl font-black mb-6">Thông tin cá nhân</h1>
+      <div className="mx-auto max-w-xl px-4">
+        <h1 className="text-4xl font-black font-heading tracking-tight border-b-2 border-primary/20 pb-4 mb-8">
+          Thông tin cá nhân
+        </h1>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FieldGroup>
-            <Field>
-              <FieldLabel>Email</FieldLabel>
-              <Input value={user.email} readOnly />
-            </Field>
-            <Controller
-              name="fullName"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel>Họ và tên</FieldLabel>
-                  <Input {...field} />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              name="phone"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel>Số điện thoại</FieldLabel>
-                  <Input {...field} value={field.value || ''} />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              name="address"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel>Địa chỉ</FieldLabel>
-                  <Input {...field} value={field.value || ''} />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-          </FieldGroup>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <Field>
+            <FieldLabel className="font-heading font-semibold">Email</FieldLabel>
+            <Input value={user.email} readOnly className="bg-muted/50" />
+          </Field>
 
-          <Button type="submit" disabled={form.formState.isSubmitting}>
+          <div className="border-t border-border/50 pt-6">
+            <FieldGroup>
+              <Controller
+                name="fullName"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel className="font-heading font-semibold">Họ và tên</FieldLabel>
+                    <Input {...field} />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="phone"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel className="font-heading font-semibold">Số điện thoại</FieldLabel>
+                    <Input {...field} value={field.value || ''} />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="address"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel className="font-heading font-semibold">Địa chỉ</FieldLabel>
+                    <Input {...field} value={field.value || ''} />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+            </FieldGroup>
+          </div>
+
+          <Button type="submit" size="lg" className="w-full" disabled={form.formState.isSubmitting}>
             {form.formState.isSubmitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (

@@ -2,34 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router';
 import { getOrderDetail } from '@/services/orders';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Package } from 'lucide-react';
+import { STATUS, STATUS_COLORS, formatCurrency, formatDate } from '@/constants/order';
 
-const statusLabels = {
-  CREATED: 'Đã tạo',
-  PROCESSING: 'Đang xử lý',
-  SHIPPED: 'Đang giao',
-  DELIVERED: 'Đã giao',
-  COMPLETED: 'Hoàn thành',
-  CANCELLED: 'Đã hủy',
-};
-
-function formatCurrency(amount) {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(amount);
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return '—';
-  return new Date(dateStr).toLocaleDateString('vi-VN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+function Label({ children }) {
+  return <span className="text-sm text-muted-foreground">{children}</span>;
 }
 
 export default function OrderDetailPage() {
@@ -48,7 +26,7 @@ export default function OrderDetailPage() {
   return (
     <>
       <title>{title}</title>
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-2xl px-4 pb-8">
         <Button
           variant="ghost"
           className="mb-4 -ml-2"
@@ -59,120 +37,143 @@ export default function OrderDetailPage() {
         </Button>
 
         {isLoading ? (
-          <p className="text-muted-foreground">Đang tải...</p>
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-3/4" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+          </div>
         ) : !order ? (
-          <p className="text-muted-foreground">Không tìm thấy đơn hàng</p>
+          <div className="flex flex-col items-center gap-4 py-20 text-center">
+            <Package className="h-16 w-16 text-muted-foreground/50" />
+            <p className="text-xl font-semibold text-muted-foreground">
+              Không tìm thấy đơn hàng
+            </p>
+            <Button variant="outline" onClick={() => navigate('/don-hang')}>
+              Quay lại danh sách
+            </Button>
+          </div>
         ) : (
-          <div className="space-y-6">
-            {/* Order header */}
+          <div className="space-y-8">
+            {/* Header */}
             <div>
-              <h1 className="text-2xl font-black">
-                Đơn hàng {publicId}
-              </h1>
-              <span className="mt-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                {statusLabels[order.currentStatus] || order.currentStatus}
-              </span>
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <h1 className="text-xl sm:text-2xl font-black font-heading tracking-tight break-all">
+                  {publicId}
+                </h1>
+                <span className={`shrink-0 inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold whitespace-nowrap ${STATUS_COLORS[order.currentStatus] || 'bg-primary/10 text-primary'}`}>
+                  {STATUS[order.currentStatus] || order.currentStatus}
+                </span>
+              </div>
+              {order.createdAt && (
+                <p className="text-sm text-muted-foreground">{formatDate(order.createdAt)}</p>
+              )}
             </div>
 
-            <Separator />
-
             {/* Customer info */}
-            <section>
-              <h2 className="text-lg font-semibold mb-2">Thông tin khách hàng</h2>
-              <div className="space-y-1 text-sm">
-                <p><span className="text-muted-foreground">Tên:</span> {order.account?.fullName}</p>
-                <p><span className="text-muted-foreground">Email:</span> {order.email}</p>
-                <p><span className="text-muted-foreground">SĐT:</span> {order.account?.phone}</p>
-                <p><span className="text-muted-foreground">Địa chỉ:</span> {order.address}</p>
-                {order.note && (
-                  <p><span className="text-muted-foreground">Ghi chú:</span> {order.note}</p>
-                )}
+            <section className="border-t border-border pt-6">
+              <h2 className="text-base font-black font-heading mb-4">Thông tin khách hàng</h2>
+              <div className="space-y-2 text-sm leading-relaxed">
+                <p><Label>Tên:</Label> {order.account?.fullName || '—'}</p>
+                <p><Label>Email:</Label> {order.email || '—'}</p>
+                <p><Label>SĐT:</Label> {order.account?.phone || '—'}</p>
+                <p><Label>Địa chỉ:</Label> {order.address || '—'}</p>
+                {order.note && <p><Label>Ghi chú:</Label> {order.note}</p>}
               </div>
             </section>
 
-            <Separator />
-
             {/* Order info */}
-            <section>
-              <h2 className="text-lg font-semibold mb-2">Chi tiết đơn hàng</h2>
-              <div className="space-y-1 text-sm">
+            <section className="border-t border-border pt-6">
+              <h2 className="text-base font-black font-heading mb-4">Chi tiết đơn hàng</h2>
+              <div className="space-y-2 text-sm leading-relaxed">
                 <p>
-                  <span className="text-muted-foreground">Phương thức thanh toán:</span>{' '}
+                  <Label>Phương thức TT:</Label>{' '}
                   {order.paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng' : order.paymentMethod}
                 </p>
                 <p>
-                  <span className="text-muted-foreground">Trạng thái thanh toán:</span>{' '}
+                  <Label>Tình trạng TT:</Label>{' '}
                   {order.currentPaymentStatus === 'PENDING' ? 'Chờ thanh toán' : order.currentPaymentStatus}
                 </p>
-                <p>
-                  <span className="text-muted-foreground">Tổng tiền:</span>{' '}
-                  <span className="font-semibold">{formatCurrency(order.totalAmount)}</span>
-                </p>
-                <p><span className="text-muted-foreground">Ngày tạo:</span> {formatDate(order.createdAt)}</p>
+                <p><Label>Ngày tạo:</Label> {formatDate(order.createdAt)}</p>
                 {order.expiresAt && (
-                  <p><span className="text-muted-foreground">Hết hạn:</span> {formatDate(order.expiresAt)}</p>
+                  <p><Label>Hết hạn:</Label> {formatDate(order.expiresAt)}</p>
                 )}
               </div>
             </section>
 
-            <Separator />
+            {/* Total */}
+            <div className="border-t border-border pt-6 flex items-baseline justify-between">
+              <span className="text-base font-black font-heading">Tổng cộng</span>
+              <span className="text-xl sm:text-2xl font-black text-primary tabular-nums">
+                {formatCurrency(order.totalAmount)}
+              </span>
+            </div>
 
-            {/* Items */}
-            <section>
-              <h2 className="text-lg font-semibold mb-3">Sản phẩm</h2>
-              <div className="space-y-3">
-                {order.items?.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex gap-4 rounded-lg border p-3"
-                  >
-                    {item.characterDesign?.imageUrl ? (
-                      <img
-                        src={item.characterDesign.imageUrl}
-                        alt={item.characterDesign.name}
-                        className="h-20 w-20 rounded-md object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-20 w-20 items-center justify-center rounded-md bg-muted">
-                        <Package className="h-8 w-8 text-muted-foreground" />
+            {/* Products */}
+            <section className="border-t border-border pt-6">
+              <h2 className="text-base font-black font-heading mb-4">Sản phẩm</h2>
+              <div className="divide-y divide-border">
+                {order.items?.map((item) => {
+                  const unitPrice = item.priceAtPurchase || item.sku?.price || 0;
+                  return (
+                    <div key={item.id} className="flex gap-3 sm:gap-4 py-4 first:pt-0 last:pb-0">
+                      {item.characterDesign?.imageUrl ? (
+                        <img
+                          src={item.characterDesign.imageUrl}
+                          alt={item.characterDesign.name}
+                          className="h-20 w-14 sm:h-24 sm:w-16 rounded-md object-cover shrink-0 bg-muted"
+                        />
+                      ) : (
+                        <div className="flex h-20 w-14 sm:h-24 sm:w-16 shrink-0 items-center justify-center rounded-md bg-muted">
+                          <Package className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <p className="font-heading font-bold text-sm sm:text-base truncate">
+                          {item.characterDesign?.name || 'Thiết kế'}
+                        </p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          {item.sku?.category?.name}
+                          {item.sku?.category?.name && item.sku?.size?.name ? ' — ' : ''}
+                          {item.sku?.size?.name}
+                        </p>
+                        <div className="flex items-center justify-between pt-1">
+                          <p className="text-xs text-muted-foreground">SL: {item.quantity}</p>
+                          <p className="text-sm sm:text-base font-black tabular-nums">
+                            {formatCurrency(unitPrice * item.quantity)}
+                          </p>
+                        </div>
+                        <p className="text-xs text-muted-foreground/60">
+                          {formatCurrency(unitPrice)} × {item.quantity}
+                        </p>
                       </div>
-                    )}
-                    <div className="flex-1 space-y-1 text-sm">
-                      <p className="font-medium">{item.characterDesign?.name || 'Thiết kế'}</p>
-                      <p className="text-muted-foreground">
-                        {item.sku?.category?.name} — {item.sku?.size?.name}
-                      </p>
-                      <p className="text-muted-foreground">SL: {item.quantity}</p>
-                      <p className="font-semibold">
-                        {formatCurrency(item.priceAtPurchase || item.sku?.price)}
-                      </p>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
 
-            <Separator />
-
-            {/* Status history */}
-            <section>
-              <h2 className="text-lg font-semibold mb-3">Lịch sử đơn hàng</h2>
-              <div className="space-y-3">
-                {order.statusHistory?.map((entry) => (
-                  <div key={entry.id} className="flex gap-3">
+            {/* Timeline */}
+            <section className="border-t border-border pt-6">
+              <h2 className="text-base font-black font-heading mb-4">Lịch sử đơn hàng</h2>
+              <div className="space-y-0">
+                {order.statusHistory?.map((entry, index) => (
+                  <div key={entry.id} className="flex gap-4 pb-6 last:pb-0 relative">
                     <div className="flex flex-col items-center">
-                      <div className="h-2 w-2 rounded-full bg-primary" />
-                      <div className="w-px flex-1 bg-border" />
+                      <div className={`h-3 w-3 rounded-full z-10 ring-2 ${index === 0 ? 'bg-primary ring-primary/20' : 'bg-border ring-border/50'}`} />
+                      {index < order.statusHistory.length - 1 && (
+                        <div className="w-0.5 flex-1 bg-border" />
+                      )}
                     </div>
-                    <div className="pb-3 text-sm">
-                      <p className="font-medium">
-                        {statusLabels[entry.status] || entry.status}
+                    <div className="text-sm pt-0.5">
+                      <p className={`font-semibold ${index === 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        {STATUS[entry.status] || entry.status}
                       </p>
-                      <p className="text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         {formatDate(entry.createdAt)}
                       </p>
                       {entry.note && (
-                        <p className="text-muted-foreground">{entry.note}</p>
+                        <p className="text-muted-foreground text-xs mt-1">{entry.note}</p>
                       )}
                     </div>
                   </div>

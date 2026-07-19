@@ -6,10 +6,15 @@ import { getCartCount } from '@/services/cart';
 export function useCartCount() {
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['cart', 'count'],
     queryFn: getCartCount,
     staleTime: 30_000,
     enabled: isAuthenticated,
   });
+
+  return {
+    ...query,
+    data: isAuthenticated ? query.data : 0,
+  };
 }

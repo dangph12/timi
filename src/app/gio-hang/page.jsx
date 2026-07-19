@@ -48,10 +48,10 @@ export default function CartPage() {
   return (
     <>
       <title>{title}</title>
-      <div className="max-w-4xl mx-auto px-4 py-8 font-body">
+      <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center gap-3 mb-8">
-          <ShoppingCart className="h-7 w-7" />
-          <h1 className="text-3xl font-black">Giỏ hàng</h1>
+          <ShoppingCart className="h-8 w-8" />
+          <h1 className="text-4xl font-black font-heading tracking-tight">Giỏ hàng</h1>
           {!isLoading && (
             <span className="text-sm text-muted-foreground font-semibold">
               ({totalElements} sản phẩm)
@@ -80,64 +80,76 @@ export default function CartPage() {
           </div>
         ) : (
           <>
-            <div className="space-y-3">
+            <div className="divide-y divide-border">
               {items.map((item) => {
                 const unitPrice = item.priceAtPurchase ?? item.sku?.price ?? 0;
                 return (
                   <div
                     key={item.id}
-                    className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card"
+                    className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-4 sm:py-5"
                   >
-                    <img
-                      src={item.characterDesign?.imageUrl}
-                      alt={item.characterDesign?.name}
-                      className="h-20 w-14 object-contain bg-foreground shrink-0 rounded"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-sm truncate">
-                        {item.characterDesign?.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {item.sku?.category?.name}
-                        {item.sku?.category?.name && item.sku?.size?.name ? ' · ' : ''}
-                        {item.sku?.size?.name}
-                      </p>
-                      <p className="text-sm font-bold mt-1">
-                        {unitPrice.toLocaleString('vi-VN')}đ
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <img
+                        src={item.characterDesign?.imageUrl}
+                        alt={item.characterDesign?.name}
+                        className="h-20 w-14 sm:h-24 sm:w-16 object-contain bg-foreground shrink-0 rounded"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-heading font-bold text-base truncate">
+                          {item.characterDesign?.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {item.sku?.category?.name}
+                          {item.sku?.category?.name && item.sku?.size?.name ? ' · ' : ''}
+                          {item.sku?.size?.name}
+                        </p>
+                        <p className="text-lg font-black tabular-nums mt-1">
+                          {unitPrice.toLocaleString('vi-VN')}đ
+                        </p>
+                      </div>
                       <button
                         type="button"
-                        onClick={() => handleQtyChange(item.id, item.quantity - 1)}
-                        disabled={item.quantity <= 1 || updateQty.isPending}
-                        className="w-7 h-7 rounded-full border border-border flex items-center justify-center disabled:opacity-40"
+                        onClick={() => handleRemove(item.id)}
+                        disabled={removeItem.isPending}
+                        className="p-3 sm:p-2 text-muted-foreground hover:text-destructive transition-colors sm:hidden"
                       >
-                        <Minus className="size-3 stroke-2" />
-                      </button>
-                      <span className="w-8 text-center text-sm font-bold tabular-nums">
-                        {item.quantity}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleQtyChange(item.id, item.quantity + 1)}
-                        disabled={updateQty.isPending}
-                        className="w-7 h-7 rounded-full border border-border flex items-center justify-center disabled:opacity-40"
-                      >
-                        <Plus className="size-3 stroke-2" />
+                        <Trash2 className="size-4" />
                       </button>
                     </div>
-                    <p className="text-sm font-bold w-24 text-right">
-                      {(unitPrice * item.quantity).toLocaleString('vi-VN')}đ
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => handleRemove(item.id)}
-                      disabled={removeItem.isPending}
-                      className="p-2 text-muted-foreground hover:text-destructive transition-colors"
-                    >
-                      <Trash2 className="size-4" />
-                    </button>
+                    <div className="flex items-center justify-between sm:justify-end sm:gap-4">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleQtyChange(item.id, item.quantity - 1)}
+                          disabled={item.quantity <= 1 || updateQty.isPending}
+                          className="w-11 h-11 sm:w-9 sm:h-9 rounded-full border border-border flex items-center justify-center bg-background hover:bg-muted transition-colors disabled:opacity-40"
+                        >
+                          <Minus className="size-3.5 stroke-2" />
+                        </button>
+                        <span className="w-8 text-center text-sm font-bold tabular-nums">
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleQtyChange(item.id, item.quantity + 1)}
+                          disabled={updateQty.isPending}
+                          className="w-11 h-11 sm:w-9 sm:h-9 rounded-full border border-border flex items-center justify-center bg-background hover:bg-muted transition-colors disabled:opacity-40"
+                        >
+                          <Plus className="size-3.5 stroke-2" />
+                        </button>
+                      </div>
+                      <p className="text-lg font-black tabular-nums">
+                        {(unitPrice * item.quantity).toLocaleString('vi-VN')}đ
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => handleRemove(item.id)}
+                        disabled={removeItem.isPending}
+                        className="p-2 text-muted-foreground hover:text-destructive transition-colors hidden sm:block"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -167,18 +179,18 @@ export default function CartPage() {
               </div>
             )}
 
-            <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
-              <p className="text-xl font-black">
-                Tổng cộng:{' '}
-                <span className="text-primary">
+            <div className="mt-8 border-t-2 border-border pt-6">
+              <div className="flex items-baseline justify-between">
+                <span className="text-lg font-black font-heading">Tổng cộng</span>
+                <span className="text-2xl font-black text-primary tabular-nums">
                   {subtotal.toLocaleString('vi-VN')}đ
                 </span>
-              </p>
+              </div>
               <Button
                 onClick={() =>
                   navigate('/tao-don-hang', { state: { fromCart: true } })
                 }
-                className="h-12 px-8 rounded-full bg-btn-muted text-white text-base font-bold hover:bg-btn-muted/80"
+                className="mt-5 h-12 w-full rounded-full bg-btn-muted text-white text-base font-bold hover:bg-btn-muted/80"
               >
                 THANH TOÁN
               </Button>

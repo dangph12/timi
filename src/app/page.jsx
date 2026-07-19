@@ -30,7 +30,7 @@ export function Page() {
 
           <div className="relative z-10 w-full flex flex-col items-start mb-12 sm:mb-16 md:mb-20 lg:mb-28 px-6 md:px-0 lg:px-8 xl:px-12">
             <h1
-              className="text-[1.5rem] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] font-black text-primary/50 tracking-wide"
+              className="text-[1.5rem] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] font-black text-primary/50 break-words tracking-normal sm:tracking-wide"
               style={{
                 WebkitTextStroke: "0.12em white",
                 paintOrder: "stroke fill",
