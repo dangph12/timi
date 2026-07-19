@@ -36,15 +36,13 @@ export default function OrderDetailPage() {
   const { publicId } = useParams();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useQuery({
+  const { data: order, isLoading } = useQuery({
     queryKey: ['order', publicId],
     queryFn: () => getOrderDetail(publicId),
   });
 
-  const order = data?.data;
-
   const title = order
-    ? `Đơn hàng ${order.publicId} - Tỉ Mỉ`
+    ? `Đơn hàng ${publicId} - Tỉ Mỉ`
     : 'Đơn hàng - Tỉ Mỉ';
 
   return (
@@ -69,7 +67,7 @@ export default function OrderDetailPage() {
             {/* Order header */}
             <div>
               <h1 className="text-2xl font-black">
-                Đơn hàng {order.publicId}
+                Đơn hàng {publicId}
               </h1>
               <span className="mt-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
                 {statusLabels[order.currentStatus] || order.currentStatus}
@@ -82,9 +80,9 @@ export default function OrderDetailPage() {
             <section>
               <h2 className="text-lg font-semibold mb-2">Thông tin khách hàng</h2>
               <div className="space-y-1 text-sm">
-                <p><span className="text-muted-foreground">Tên:</span> {order.name}</p>
+                <p><span className="text-muted-foreground">Tên:</span> {order.account?.fullName}</p>
                 <p><span className="text-muted-foreground">Email:</span> {order.email}</p>
-                <p><span className="text-muted-foreground">SĐT:</span> {order.phone}</p>
+                <p><span className="text-muted-foreground">SĐT:</span> {order.account?.phone}</p>
                 <p><span className="text-muted-foreground">Địa chỉ:</span> {order.address}</p>
                 {order.note && (
                   <p><span className="text-muted-foreground">Ghi chú:</span> {order.note}</p>

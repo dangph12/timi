@@ -1,5 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAtom, useAtomValue } from 'jotai';
+import { useEffect } from 'react';
 import {
   cartItemsAtom,
   cartPageAtom,
@@ -14,28 +15,29 @@ import {
   removeCartItem,
   checkoutCart,
 } from '@/services/cart';
+import { usePaginatedQuery } from './usePaginatedQuery';
 
 export function useCart() {
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
-  const [page] = useAtom(cartPageAtom);
+  const [page, setPage] = useAtom(cartPageAtom);
   const [, setItems] = useAtom(cartItemsAtom);
   const [, setTotalElements] = useAtom(cartTotalElementsAtom);
   const [, setTotalPages] = useAtom(cartTotalPagesAtom);
 
-  const query = useQuery({
-    queryKey: ['cart', page],
-    queryFn: () => getCart(page),
+  const paginated = usePaginatedQuery(['cart'], ({ page }) => getCart({ page }), {
+    page,
+    setPage,
     staleTime: 30_000,
     enabled: isAuthenticated,
   });
 
-  if (query.data) {
-    setItems(query.data.content || []);
-    setTotalElements(query.data.totalElements ?? 0);
-    setTotalPages(query.data.totalPages ?? 0);
-  }
+  useEffect(() => {
+    setItems(paginated.items);
+    setTotalElements(paginated.totalElements);
+    setTotalPages(paginated.totalPages);
+  }, [paginated.items, paginated.totalElements, paginated.totalPages, setItems, setTotalElements, setTotalPages]);
 
-  return query;
+  return paginated;
 }
 
 export function useAddCartItem() {

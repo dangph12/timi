@@ -29,7 +29,7 @@ export default function Header() {
           <ShoppingCart size={20} strokeWidth={2.5} />
           {totalElements > 0 && (
             <span className='absolute -top-0.5 -right-0.5 bg-destructive text-white text-[10px] font-bold leading-none min-w-[16px] h-4 flex items-center justify-center rounded-full px-1'>
-              {totalElements > 99 ? '99+' : totalElements}
+              {totalElements > 9 ? '9+' : totalElements}
             </span>
           )}
         </Link>

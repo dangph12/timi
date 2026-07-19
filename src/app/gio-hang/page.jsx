@@ -1,12 +1,5 @@
 import { useNavigate, Link } from 'react-router';
-import { useAtom } from 'jotai';
 import { ShoppingCart, Trash2, Plus, Minus } from 'lucide-react';
-import {
-  cartItemsAtom,
-  cartPageAtom,
-  cartTotalElementsAtom,
-  cartTotalPagesAtom,
-} from '@/store/cart';
 import {
   useCart,
   useUpdateCartItemQuantity,
@@ -18,11 +11,8 @@ import { toast } from 'sonner';
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const { isLoading, error } = useCart();
-  const [items] = useAtom(cartItemsAtom);
-  const [page, setPage] = useAtom(cartPageAtom);
-  const [totalElements] = useAtom(cartTotalElementsAtom);
-  const [totalPages] = useAtom(cartTotalPagesAtom);
+  const { items, page, setPage, totalElements, totalPages, isLoading, error } =
+    useCart();
   const updateQty = useUpdateCartItemQuantity();
   const removeItem = useRemoveCartItem();
 

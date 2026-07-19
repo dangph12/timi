@@ -1,9 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { getOrders } from '@/services/orders';
+import { usePaginatedQuery } from '@/hooks/usePaginatedQuery';
 import { Button } from '@/components/ui/button';
 import { Package, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
 
 const statusLabels = {
   CREATED: 'Đã tạo',
@@ -33,16 +32,10 @@ function formatDate(dateStr) {
 
 export default function OrderListPage() {
   const navigate = useNavigate();
-  const [page, setPage] = useState(0);
-  const size = 20;
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['orders', page],
-    queryFn: () => getOrders({ page, size }),
-  });
-
-  const orders = data?.data?.content ?? [];
-  const totalPages = data?.data?.page?.totalPages ?? 0;
+  const { items, totalPages, isLoading, page, setPage } = usePaginatedQuery(
+    ['orders'],
+    ({ page, size }) => getOrders({ page, size }),
+  );
 
   const title = 'Đơn hàng của tôi - Tỉ Mỉ';
 
@@ -54,7 +47,7 @@ export default function OrderListPage() {
 
         {isLoading ? (
           <p className="text-muted-foreground">Đang tải...</p>
-        ) : orders.length === 0 ? (
+        ) : items.length === 0 ? (
           <div className="flex flex-col items-center gap-4 py-16 text-muted-foreground">
             <Package className="h-12 w-12" />
             <p>Chưa có đơn hàng nào</p>
@@ -62,7 +55,7 @@ export default function OrderListPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {orders.map((order) => (
+            {items.map((order) => (
               <button
                 key={order.publicId}
                 onClick={() => navigate(`/don-hang/${order.publicId}`)}
