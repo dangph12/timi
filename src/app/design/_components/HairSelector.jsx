@@ -17,7 +17,7 @@ export default function HairSelector({ onContinue }) {
           <OptionCard
             key={hair.id}
             label={hair.label}
-            imageSrc={`/hair-top/${hair.id}.png`}
+            imageSrc={`/hair-select/${hair.id}.png`}
             isSelected={selections.hair === hair.id}
             onSelect={() =>
               setSelections((prev) => ({ ...prev, hair: hair.id }))

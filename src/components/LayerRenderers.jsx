@@ -2,7 +2,7 @@ import { CLOTHES } from '@/constants/clothes';
 import { HAIR_OPTIONS } from '@/constants/hair';
 import CanvasImageLayer from '@/components/CanvasImageLayer';
 
-const CLOTHES_CATEGORY_ORDER = { shirt: 0, pant: 1 };
+const CLOTHES_CATEGORY_ORDER = { shirt: 1, pant: 0, skirt: 2 };
 
 const CATEGORY_CONFIG = {
   hair_bottom: {

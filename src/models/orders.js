@@ -1,5 +1,3 @@
-import { serverTimestamp } from 'firebase/firestore';
-
 export class Order {
   constructor(data = {}) {
     this.customer = {
@@ -34,11 +32,7 @@ export class Order {
       status: data.payment?.status || 'pending'
     };
     this.timestamps = {
-      createdAt: data.timestamps?.createdAt || serverTimestamp()
+      createdAt: data.timestamps?.createdAt || new Date().toISOString()
     };
-  }
-
-  toFirestore() {
-    return { ...this };
   }
 }
