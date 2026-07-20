@@ -21,7 +21,7 @@ export const ACCESSORY_OFFSETS = {
     A08: { x: 0.02, y: -0.1, scale: 1 }
   },
   economy: {
-    A05: { x: 0, y: -0.4, scale: 1.3 },
+    A05: { x: 0, y: -0.24, scale: 1.33 },
     A06: { x: 0, y: -0.3, scale: 1.25 },
     A07: { x: 0.35, y: -0.32, scale: 0.3 },
     A08: { x: 0.02, y: 0.24, scale: 1.2 }
