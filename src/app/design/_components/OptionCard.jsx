@@ -2,10 +2,11 @@ import { Check } from 'lucide-react';
 
 export default function OptionCard({
   label,
+  subtitle,
   imageSrc,
   isSelected,
   onSelect,
-  imageScale = 105,
+  imageScale = 135,
   disabled = false,
   imageBgClass = ''
 }) {
@@ -47,6 +48,11 @@ export default function OptionCard({
         >
           {label}
         </p>
+        {subtitle && (
+          <p className={`text-[11px] mt-0.5 transition-colors ${isSelected ? 'text-[#0000D0]' : 'text-slate-400'}`}>
+            {subtitle}
+          </p>
+        )}
       </div>
     </button>
   );
