@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
 import { orderIdAtom, orderAtom, orderPublicIdAtom } from "@/store/order";
 import { capturedCharacterAtom, designIdAtom, designNameAtom } from "@/store/design";
@@ -6,12 +6,14 @@ import { selectedSkuAtom, skuSelectionsAtom } from "@/store/sku";
 import { userAtom } from "@/store/auth";
 import { useNavigate, useLocation } from "react-router";
 import { useForm, Controller } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { createOrder } from "@/services/orders";
 import { useCart } from "@/hooks/useCart";
 import { checkoutCart } from "@/services/cart";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { checkoutFormSchema } from "@/schemas";
+import { parseAddress, buildAddress } from "@/lib/address";
+import { useAddressSelection } from "@/hooks/useAddressSelection";
 import { Button } from "@/components/ui/button";
 import { Loader2, ChevronDown, ArrowLeft } from "lucide-react";
 import {
@@ -62,7 +64,7 @@ export default function CheckoutPage() {
       name: "",
       phone: "",
       email: "",
-      address: "",
+      street: "",
       note: "",
     },
   });
@@ -72,28 +74,20 @@ export default function CheckoutPage() {
       form.setValue('name', user.fullName || '');
       form.setValue('phone', user.phone || '');
       form.setValue('email', user.email || '');
+      const { street } = parseAddress(user.address || '');
+      form.setValue('street', street);
     }
-  }, [user]);
+  }, [user, form]);
 
-  const [selectedProvince, setSelectedProvince] = useState(null);
-  const [selectedWard, setSelectedWard] = useState(null);
-
-  const provincesQuery = useQuery({
-    queryKey: ["provinces"],
-    queryFn: () =>
-      fetch("https://provinces.open-api.vn/api/v2/p/").then((r) => r.json()),
-    staleTime: Infinity,
-  });
-
-  const wardsQuery = useQuery({
-    queryKey: ["wards", selectedProvince?.code],
-    queryFn: () =>
-      fetch(
-        `https://provinces.open-api.vn/api/v2/p/${selectedProvince.code}?depth=2`
-      ).then((r) => r.json()),
-    enabled: !!selectedProvince,
-    staleTime: Infinity,
-  });
+  const {
+    effectiveProvince,
+    effectiveWard,
+    setSelectedProvince,
+    setSelectedWard,
+    provincesQuery,
+    wardsQuery,
+  } = useAddressSelection(user?.address);
+  const [submitted, setSubmitted] = useState(false);
 
   const cartQuery = useCart();
 
@@ -138,9 +132,12 @@ export default function CheckoutPage() {
   });
 
   const onSubmit = (data) => {
-    const fullAddress = [data.address, selectedWard?.name, selectedProvince?.name]
-      .filter(Boolean)
-      .join(", ");
+    if (!effectiveProvince || !effectiveWard) {
+      setSubmitted(true);
+      toast.error('Vui lòng chọn tỉnh/thành phố và phường/xã');
+      return;
+    }
+    const fullAddress = buildAddress(data.street, effectiveWard?.name, effectiveProvince?.name);
 
     if (fromCart) {
       setOrder({
@@ -283,12 +280,12 @@ export default function CheckoutPage() {
               <section className="mt-4 space-y-2">
                 <h2 className="text-3xl font-black">Giao hàng</h2>
                 <FieldGroup>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Field>
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <Field className="md:col-span-2">
                       <FieldLabel className="text-base">Tỉnh / Thành phố</FieldLabel>
                       <div className="relative">
                         <select
-                          value={selectedProvince?.code ?? ""}
+                          value={effectiveProvince?.code ?? ""}
                           onChange={(e) => {
                             const code = Number(e.target.value);
                             const province = code
@@ -296,8 +293,11 @@ export default function CheckoutPage() {
                               : null;
                             setSelectedProvince(province);
                             setSelectedWard(null);
+                            setSubmitted(false);
                           }}
-                          className="h-11 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 appearance-none"
+                          className={`h-11 w-full rounded-lg border bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 appearance-none ${
+                            submitted && !effectiveProvince ? 'border-destructive' : 'border-input'
+                          }`}
                         >
                           <option value="">Chọn tỉnh / thành phố</option>
                           {provincesQuery.data?.map((p) => (
@@ -310,23 +310,26 @@ export default function CheckoutPage() {
                       </div>
                     </Field>
 
-                    <Field>
+                    <Field className="md:col-span-3">
                       <FieldLabel className="text-base">Phường / Xã</FieldLabel>
                       <div className="relative">
                         <select
-                          value={selectedWard?.code ?? ""}
+                          value={effectiveWard?.code ?? ""}
                           onChange={(e) => {
                             const code = Number(e.target.value);
                             const ward = code
                               ? wardsQuery.data?.wards?.find((w) => w.code === code)
                               : null;
                             setSelectedWard(ward);
+                            setSubmitted(false);
                           }}
-                          disabled={!selectedProvince || wardsQuery.isLoading}
-                          className="h-11 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 appearance-none"
+                          disabled={!effectiveProvince || wardsQuery.isLoading}
+                          className={`h-11 w-full rounded-lg border bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 appearance-none ${
+                            submitted && !effectiveWard ? 'border-destructive' : 'border-input'
+                          }`}
                         >
                           <option value="">
-                            {selectedProvince ? "Chọn phường / xã" : "Chọn tỉnh / thành phố trước"}
+                            {effectiveProvince ? "Chọn phường / xã" : "Chọn tỉnh / thành phố trước"}
                           </option>
                           {wardsQuery.data?.wards?.map((w) => (
                             <option key={w.code} value={w.code}>
@@ -340,7 +343,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <Controller
-                    name="address"
+                    name="street"
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <Field>

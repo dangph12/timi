@@ -12,6 +12,7 @@ function normalizeUser(data) {
     fullName: data.fullName,
     role: data.role,
     phone: data.phone || null,
+    address: data.address || null,
   };
 }
 
