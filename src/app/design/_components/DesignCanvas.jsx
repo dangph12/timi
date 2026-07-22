@@ -6,6 +6,7 @@ import {
   LAYER_ORDER,
   PACKAGING_SCENE_ITEMS,
   CHARACTER_PACKAGING_TRANSFORM,
+  ITEM_TYPE_PACKAGING_IMAGES,
   DIY_BOX_VERSION_IMAGES,
   DIY_BOX_BACKGROUND_POSITION,
   DIY_BOX_BODY_POSITION
@@ -158,18 +159,27 @@ const DesignCanvas = forwardRef(function DesignCanvas({ width, height, activeSte
 
   const isDiyBox = showPackaging && selections.packaging === 'diy-box';
 
+  const itemPackagingImage =
+    ITEM_TYPE_PACKAGING_IMAGES[selections.item?.type] ?? ITEM_TYPE_PACKAGING_IMAGES.keychain;
+  const applyItemPackagingImage = items =>
+    items.map(item =>
+      item.src === ITEM_TYPE_PACKAGING_IMAGES.keychain
+        ? { ...item, src: itemPackagingImage }
+        : item
+    );
+
   const packagingSceneItems = showPackaging
     ? isDiyBox
       ? (() => {
           const versionImages =
             DIY_BOX_VERSION_IMAGES[selections.version] ?? DIY_BOX_VERSION_IMAGES.standard;
           return [
-            ...(PACKAGING_SCENE_ITEMS['diy-box'] || []),
+            ...applyItemPackagingImage(PACKAGING_SCENE_ITEMS['diy-box'] || []),
             { src: versionImages.background, ...DIY_BOX_BACKGROUND_POSITION },
             { src: versionImages.body, ...DIY_BOX_BODY_POSITION }
           ];
         })()
-      : PACKAGING_SCENE_ITEMS[selections.packaging]
+      : applyItemPackagingImage(PACKAGING_SCENE_ITEMS[selections.packaging] || [])
     : null;
 
   const characterPivotX = characterWidth / 2;

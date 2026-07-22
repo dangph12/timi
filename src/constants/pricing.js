@@ -1,3 +1,5 @@
+import { ITEM_TYPE_PACKAGING_IMAGES } from '@/constants/positions';
+
 export const PACKAGING_OPTIONS = [
   {
     id: 'default-box',
@@ -32,8 +34,25 @@ export const VERSION_OPTIONS = {
   }
 };
 
-export const KEYRING_INCLUDED_ITEM = {
-  label: 'KEYRING',
-  price: 0,
-  imageSrc: '/packaging/10.png'
+export const INCLUDED_ITEM_OPTIONS = {
+  keychain: {
+    label: 'KEYCHAIN',
+    price: 0,
+    imageSrc: ITEM_TYPE_PACKAGING_IMAGES.keychain
+  },
+  magnet: {
+    label: 'MAGNET',
+    price: 0,
+    imageSrc: ITEM_TYPE_PACKAGING_IMAGES.magnet
+  },
+  badges: {
+    label: 'BADGES',
+    price: 0,
+    imageSrc: ITEM_TYPE_PACKAGING_IMAGES.badges
+  },
+  'luggage-tag': {
+    label: 'LUGGAGE TAG',
+    price: 0,
+    imageSrc: ITEM_TYPE_PACKAGING_IMAGES['luggage-tag']
+  }
 };

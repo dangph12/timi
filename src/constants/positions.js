@@ -36,8 +36,15 @@ export const POSITION_OFFSETS = {
 };
 
 export const CHARACTER_PACKAGING_TRANSFORM = {
-  yRatio: 0.2,
+  yRatio: 0.25,
   rotation: 18
+};
+
+export const ITEM_TYPE_PACKAGING_IMAGES = {
+  keychain: '/packaging/10.png',
+  magnet: '/packaging/11.png',
+  badges: '/packaging/13.png',
+  'luggage-tag': '/packaging/12.png'
 };
 
 export const DIY_BOX_VERSION_IMAGES = {

@@ -223,7 +223,7 @@ export default function PaymentPage() {
                 </div>
                 <div className='flex justify-between text-xs md:text-sm'>
                   <span>STANDARD VERSION</span>
-                  <span>120.000đ</span>
+                  <span>169.000đ</span>
                 </div>
                 <div className='flex justify-between text-xs md:text-sm'>
                   <span>KEYRING</span>

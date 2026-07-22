@@ -1,7 +1,8 @@
 import { useSetAtom, useAtomValue } from 'jotai';
+import { useState } from 'react';
 import { orderAtom } from '@/store/order';
 import { capturedCharacterAtom, designSelectionsAtom } from '@/store/design';
-import { PACKAGING_OPTIONS, VERSION_OPTIONS, KEYRING_INCLUDED_ITEM } from '@/constants/pricing';
+import { PACKAGING_OPTIONS, VERSION_OPTIONS, INCLUDED_ITEM_OPTIONS } from '@/constants/pricing';
 import { useNavigate } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,6 +17,12 @@ import {
 import { Input } from '@/components/ui/input';
 import EstimatedDelivery from '@/components/estimated-delivery';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tag } from 'lucide-react';
+
+const SHIPPING_FEE = 30000;
+const DISCOUNT_CODES = {
+  TIMIWELCOME: { shippingDiscountRatio: 0.5, label: '50% OFF SHIPPING FEES' }
+};
 
 const schema = yup.object().shape({
   fullName: yup.string().required('Required'),
@@ -33,10 +40,26 @@ export default function CheckoutPage() {
 
   const packagingOption = PACKAGING_OPTIONS.find(p => p.id === selections.packaging);
   const versionOption = VERSION_OPTIONS[selections.version];
+  const includedItem =
+    INCLUDED_ITEM_OPTIONS[selections.item?.type] ?? INCLUDED_ITEM_OPTIONS.keychain;
   const subtotal =
     (packagingOption?.price ?? 0) +
     (versionOption?.price ?? 0) +
-    KEYRING_INCLUDED_ITEM.price;
+    includedItem.price;
+
+  const [discountCode, setDiscountCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState(null);
+
+  const handleApplyDiscount = () => {
+    const normalized = discountCode.trim().toUpperCase();
+    setAppliedDiscount(DISCOUNT_CODES[normalized] ? normalized : null);
+  };
+
+  const discount = appliedDiscount ? DISCOUNT_CODES[appliedDiscount] : null;
+  const shipping = discount
+    ? SHIPPING_FEE * (1 - discount.shippingDiscountRatio)
+    : SHIPPING_FEE;
+  const total = subtotal + shipping;
 
   const form = useForm({
     resolver: yupResolver(schema),
@@ -213,16 +236,16 @@ export default function CheckoutPage() {
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-4'>
                   <img
-                    src={KEYRING_INCLUDED_ITEM.imageSrc}
-                    alt={KEYRING_INCLUDED_ITEM.label}
+                    src={includedItem.imageSrc}
+                    alt={includedItem.label}
                     className='h-12 w-12 object-contain rounded-md border border-[#0000D0] bg-white p-1'
                   />
                   <span className='text-sm tracking-wide'>
-                    {KEYRING_INCLUDED_ITEM.label}
+                    {includedItem.label}
                   </span>
                 </div>
                 <span className='text-sm'>
-                  {KEYRING_INCLUDED_ITEM.price.toLocaleString('vi-VN')}đ
+                  {includedItem.price.toLocaleString('vi-VN')}đ
                 </span>
               </div>
             </div>
@@ -250,10 +273,14 @@ export default function CheckoutPage() {
               <div className='flex gap-4'>
                 <Input
                   placeholder='Discount code'
+                  value={discountCode}
+                  onChange={e => setDiscountCode(e.target.value)}
                   className='h-12 bg-background rounded-lg text-base'
                 />
                 <Button
+                  type='button'
                   variant='secondary'
+                  onClick={handleApplyDiscount}
                   className='h-12 px-6 bg-btn-muted text-muted-foreground font-medium rounded-lg hover:bg-btn-muted/80'
                 >
                   Apply
@@ -267,11 +294,24 @@ export default function CheckoutPage() {
                 </div>
                 <div className='flex justify-between text-base'>
                   <span>Shipping</span>
-                  <span>0đ</span>
+                  <span className='flex items-center gap-2'>
+                    {discount && (
+                      <span className='line-through text-muted-foreground'>
+                        {SHIPPING_FEE.toLocaleString('vi-VN')}đ
+                      </span>
+                    )}
+                    {shipping.toLocaleString('vi-VN')}đ
+                  </span>
                 </div>
+                {discount && (
+                  <div className='flex items-center gap-1.5 text-sm text-[#0000D0] font-medium'>
+                    <Tag className='h-4 w-4' />
+                    <span>{discount.label}</span>
+                  </div>
+                )}
                 <div className='flex justify-between text-3xl font-black pt-2'>
                   <span>Total</span>
-                  <span>0đ</span>
+                  <span>{total.toLocaleString('vi-VN')}đ</span>
                 </div>
               </div>
 
