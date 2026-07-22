@@ -61,6 +61,14 @@ const DesignCanvas = memo(forwardRef(function DesignCanvas({ width, height, sele
     }
   }));
 
+  const canvasColors = useMemo(() => {
+    const s = getComputedStyle(document.documentElement);
+    return {
+      from: s.getPropertyValue('--canvas-from').trim(),
+      to: s.getPropertyValue('--canvas-to').trim(),
+    };
+  }, []);
+
   const layers = useMemo(
     () => renderLayers(selections, getLayerProps, parts, partOptions),
     [selections, getLayerProps, parts, partOptions]
@@ -77,7 +85,7 @@ const DesignCanvas = memo(forwardRef(function DesignCanvas({ width, height, sele
           height={height}
           fillLinearGradientStartPoint={{ x: 0, y: 0 }}
           fillLinearGradientEndPoint={{ x: width, y: height }}
-          fillLinearGradientColorStops={[0, '#5B7B9A', 1, '#8BAAC4']}
+          fillLinearGradientColorStops={[0, canvasColors.from, 1, canvasColors.to]}
         />
         {layers}
       </Layer>
