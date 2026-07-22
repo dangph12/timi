@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
 import { designSelectionsAtom } from '@/store/design';
+import { VERSION_OPTIONS } from '@/constants/pricing';
 import OptionCard from './OptionCard';
 import StepContinue from './StepContinue';
 
@@ -31,6 +32,7 @@ export default function VersionSelector({ onContinue }) {
           <OptionCard
             key={v.id}
             label={v.label}
+            subtitle={VERSION_OPTIONS[v.id]?.price.toLocaleString('vi-VN') + 'đ'}
             imageSrc={v.imageSrc}
             imageScale={v.imageScale}
             isSelected={selections.version === v.id}

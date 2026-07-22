@@ -1,6 +1,8 @@
 import { useSetAtom, useAtomValue } from 'jotai';
+import { useState } from 'react';
 import { orderAtom } from '@/store/order';
-import { capturedCharacterAtom } from '@/store/design';
+import { capturedCharacterAtom, designSelectionsAtom } from '@/store/design';
+import { PACKAGING_OPTIONS, VERSION_OPTIONS, INCLUDED_ITEM_OPTIONS } from '@/constants/pricing';
 import { useNavigate } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,6 +17,12 @@ import {
 import { Input } from '@/components/ui/input';
 import EstimatedDelivery from '@/components/estimated-delivery';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tag } from 'lucide-react';
+
+const SHIPPING_FEE = 30000;
+const DISCOUNT_CODES = {
+  TIMIWELCOME: { shippingDiscountRatio: 0.5, label: '50% OFF SHIPPING FEES' }
+};
 
 const schema = yup.object().shape({
   fullName: yup.string().required('Required'),
@@ -28,6 +36,30 @@ export default function CheckoutPage() {
   const setOrder = useSetAtom(orderAtom);
   const navigate = useNavigate();
   const capturedCharacter = useAtomValue(capturedCharacterAtom);
+  const selections = useAtomValue(designSelectionsAtom);
+
+  const packagingOption = PACKAGING_OPTIONS.find(p => p.id === selections.packaging);
+  const versionOption = VERSION_OPTIONS[selections.version];
+  const includedItem =
+    INCLUDED_ITEM_OPTIONS[selections.item?.type] ?? INCLUDED_ITEM_OPTIONS.keychain;
+  const subtotal =
+    (packagingOption?.price ?? 0) +
+    (versionOption?.price ?? 0) +
+    includedItem.price;
+
+  const [discountCode, setDiscountCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState(null);
+
+  const handleApplyDiscount = () => {
+    const normalized = discountCode.trim().toUpperCase();
+    setAppliedDiscount(DISCOUNT_CODES[normalized] ? normalized : null);
+  };
+
+  const discount = appliedDiscount ? DISCOUNT_CODES[appliedDiscount] : null;
+  const shipping = discount
+    ? SHIPPING_FEE * (1 - discount.shippingDiscountRatio)
+    : SHIPPING_FEE;
+  const total = subtotal + shipping;
 
   const form = useForm({
     resolver: yupResolver(schema),
@@ -165,28 +197,56 @@ export default function CheckoutPage() {
         <aside className='bg-aside px-8 py-4 md:px-20 md:py-6 flex flex-col md:h-full md:overflow-y-auto'>
           <div className='flex flex-col h-full'>
             <div className='space-y-4 shrink-0'>
-              <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-4'>
-                  <Skeleton className='h-12 w-12 rounded-none bg-foreground' />
-                  <span className='text-sm tracking-wide'>TỈ MỈ DIY BOX</span>
-                </div>
-                <span className='text-sm'>59.000đ</span>
-              </div>
-              <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-4'>
-                  <Skeleton className='h-12 w-12 rounded-none bg-foreground' />
-                  <span className='text-sm tracking-wide'>
-                    STANDARD VERSION
+              {packagingOption && (
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-4'>
+                    <img
+                      src={packagingOption.imageSrc}
+                      alt={packagingOption.label}
+                      className='h-12 w-12 object-contain rounded-md border border-[#0000D0] bg-white p-1'
+                    />
+                    <span className='text-sm tracking-wide'>
+                      TỈ MỈ {packagingOption.label}
+                    </span>
+                  </div>
+                  <span className='text-sm'>
+                    {packagingOption.price.toLocaleString('vi-VN')}đ
                   </span>
                 </div>
-                <span className='text-sm'>120.000đ</span>
-              </div>
+              )}
+              {versionOption && (
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-4'>
+                    <div className='h-12 w-12 rounded-md bg-linear-to-b from-[#0000FF] to-[#4A4AFF] border border-[#0000D0] flex items-center justify-center overflow-hidden'>
+                      <img
+                        src={versionOption.imageSrc}
+                        alt={versionOption.label}
+                        className='h-full w-full object-contain p-1'
+                      />
+                    </div>
+                    <span className='text-sm tracking-wide'>
+                      {versionOption.label}
+                    </span>
+                  </div>
+                  <span className='text-sm'>
+                    {versionOption.price.toLocaleString('vi-VN')}đ
+                  </span>
+                </div>
+              )}
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-4'>
-                  <Skeleton className='h-12 w-12 rounded-none bg-foreground' />
-                  <span className='text-sm tracking-wide'>KEYRING</span>
+                  <img
+                    src={includedItem.imageSrc}
+                    alt={includedItem.label}
+                    className='h-12 w-12 object-contain rounded-md border border-[#0000D0] bg-white p-1'
+                  />
+                  <span className='text-sm tracking-wide'>
+                    {includedItem.label}
+                  </span>
                 </div>
-                <span className='text-sm'>0đ</span>
+                <span className='text-sm'>
+                  {includedItem.price.toLocaleString('vi-VN')}đ
+                </span>
               </div>
             </div>
 
@@ -197,7 +257,7 @@ export default function CheckoutPage() {
                     <img
                       src={capturedCharacter}
                       alt='Your custom character design'
-                      className='w-full h-full object-contain scale-[1.4] drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)] select-none animate-fade-in relative z-10'
+                      className='w-full h-full object-contain scale-[1.5] translate-y-[10%] origin-center drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)] select-none animate-fade-in relative z-10'
                     />
                   </div>
                   <div className='text-center pt-2.5 pb-0.5 text-sm font-black tracking-wider text-[#0000D0] uppercase shrink-0 leading-none'>
@@ -213,10 +273,14 @@ export default function CheckoutPage() {
               <div className='flex gap-4'>
                 <Input
                   placeholder='Discount code'
+                  value={discountCode}
+                  onChange={e => setDiscountCode(e.target.value)}
                   className='h-12 bg-background rounded-lg text-base'
                 />
                 <Button
+                  type='button'
                   variant='secondary'
+                  onClick={handleApplyDiscount}
                   className='h-12 px-6 bg-btn-muted text-muted-foreground font-medium rounded-lg hover:bg-btn-muted/80'
                 >
                   Apply
@@ -226,15 +290,28 @@ export default function CheckoutPage() {
               <div className='space-y-2 pt-2'>
                 <div className='flex justify-between text-base'>
                   <span>Subtotal</span>
-                  <span>179.000đ</span>
+                  <span>{subtotal.toLocaleString('vi-VN')}đ</span>
                 </div>
                 <div className='flex justify-between text-base'>
                   <span>Shipping</span>
-                  <span>0đ</span>
+                  <span className='flex items-center gap-2'>
+                    {discount && (
+                      <span className='line-through text-muted-foreground'>
+                        {SHIPPING_FEE.toLocaleString('vi-VN')}đ
+                      </span>
+                    )}
+                    {shipping.toLocaleString('vi-VN')}đ
+                  </span>
                 </div>
+                {discount && (
+                  <div className='flex items-center gap-1.5 text-sm text-[#0000D0] font-medium'>
+                    <Tag className='h-4 w-4' />
+                    <span>{discount.label}</span>
+                  </div>
+                )}
                 <div className='flex justify-between text-3xl font-black pt-2'>
                   <span>Total</span>
-                  <span>0đ</span>
+                  <span>{total.toLocaleString('vi-VN')}đ</span>
                 </div>
               </div>
 

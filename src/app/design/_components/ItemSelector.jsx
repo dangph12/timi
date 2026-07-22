@@ -45,10 +45,11 @@ export default function ItemSelector({ onContinue }) {
   useEffect(() => {
     if (!seeded.current) {
       seeded.current = true;
-      setSelections(prev => ({
-        ...prev,
-        item: { type: 'keychain', color: 'pink' }
-      }));
+      setSelections(prev =>
+        prev.item?.type
+          ? prev
+          : { ...prev, item: { type: 'keychain', color: 'pink' } }
+      );
     }
   }, [setSelections]);
 

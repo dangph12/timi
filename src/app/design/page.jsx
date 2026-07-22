@@ -153,6 +153,7 @@ export default function DesignPage() {
               ref={designCanvasRef}
               width={size.width}
               height={size.height}
+              activeStep={activeStep}
             />
           )}
         </div>
