@@ -1,5 +1,6 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   login as loginApi,
   register as registerApi,
@@ -25,6 +26,7 @@ export function useAuth() {
   const [user, setUser] = useAtom(userAtom);
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const login = useCallback(async (email, password) => {
     setLoading(true);
@@ -33,6 +35,7 @@ export function useAuth() {
       resetAuthState();
       setAccessToken(data.accessToken);
       setUser(normalizeUser(data));
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
       toast.success(data.message || 'Đăng nhập thành công');
       return data;
     } catch (error) {
@@ -42,7 +45,7 @@ export function useAuth() {
     } finally {
       setLoading(false);
     }
-  }, [setAccessToken, setUser]);
+  }, [setAccessToken, setUser, queryClient]);
 
   const register = useCallback(async (body) => {
     setLoading(true);
@@ -51,6 +54,7 @@ export function useAuth() {
       resetAuthState();
       setAccessToken(data.accessToken);
       setUser({ ...normalizeUser(data), phone: body.phone || null });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
       toast.success(data.message || 'Đăng ký thành công');
       return data;
     } catch (error) {
@@ -60,7 +64,7 @@ export function useAuth() {
     } finally {
       setLoading(false);
     }
-  }, [setAccessToken, setUser]);
+  }, [setAccessToken, setUser, queryClient]);
 
   const logout = useCallback(async () => {
     try {
@@ -70,9 +74,10 @@ export function useAuth() {
     } finally {
       setAccessToken(null);
       setUser(null);
+      queryClient.clear();
       toast.success('Đã đăng xuất');
     }
-  }, [setAccessToken, setUser]);
+  }, [setAccessToken, setUser, queryClient]);
 
   return { user, isAuthenticated, loading, login, register, logout };
 }
