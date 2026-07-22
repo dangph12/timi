@@ -87,7 +87,7 @@ export default function SkuSelector({ onContinue, isPending = false, onAddToCart
   function handleCategorySelect(category) {
     setSelections((prev) => {
       const newId = prev.categoryId === category.id ? null : category.id;
-      return { ...prev, categoryId: newId, sizeId: null };
+      return { ...prev, categoryId: newId };
     });
   }
 
@@ -142,10 +142,10 @@ export default function SkuSelector({ onContinue, isPending = false, onAddToCart
         />
       </div>
 
-      <p className="text-xs text-muted-foreground font-semibold mb-4 tracking-wide">
+      <p className="text-xs text-muted-foreground font-semibold mb-3 tracking-wide">
         Chọn danh mục
       </p>
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-2 gap-1.5 mb-3">
         {categories.map((cat) => (
           <OptionCard
             key={cat.id}
@@ -154,7 +154,7 @@ export default function SkuSelector({ onContinue, isPending = false, onAddToCart
             isSelected={categoryId === cat.id}
             onSelect={() => handleCategorySelect(cat)}
             disabled={disabledCategoryIds.has(cat.id)}
-            imageScale={150}
+            imageScale={110}
           />
         ))}
       </div>

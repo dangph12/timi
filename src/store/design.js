@@ -11,4 +11,4 @@ export const capturedCharacterAtom = atom(null);
 
 export const designIdAtom = atom(null);
 
-export const designNameAtom = atom("My Character");
+export const designNameAtom = atom("Nhân vật của tôi");
