@@ -3,7 +3,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { designSelectionsAtom, partOptionsAtom } from '@/store/design';
 import { usePartOptions } from '@/app/thiet-ke/_hooks/usePartsData';
 import OptionCard from './OptionCard';
-import StepContinue from './StepContinue';
+import StickyButton from './StepContinue';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Ban } from 'lucide-react';
 
@@ -168,7 +168,7 @@ export default function PartSelector({ part, onContinue }) {
         </div>
       )}
 
-      <StepContinue
+      <StickyButton
         disabled={!noOptions && !isSelected && !part.allowMultiSelect && isBody}
         onClick={onContinue}
         label="TIẾP →"

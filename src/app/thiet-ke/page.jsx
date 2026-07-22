@@ -25,6 +25,7 @@ import { useParts } from "@/app/thiet-ke/_hooks/usePartsData";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loading from "@/components/Loading";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/api";
 
 export default function DesignPage() {
   const [activeStep, setActiveStep] = useState(1);
@@ -60,7 +61,6 @@ export default function DesignPage() {
       navigate("/tao-don-hang");
     },
     onError: async (error) => {
-      const { getErrorMessage } = await import('@/lib/api');
       toast.error(await getErrorMessage(error));
     },
   });
@@ -89,7 +89,6 @@ export default function DesignPage() {
       toast.success("Đã thêm vào giỏ hàng");
     },
     onError: async (error) => {
-      const { getErrorMessage } = await import('@/lib/api');
       toast.error(await getErrorMessage(error));
     },
   });

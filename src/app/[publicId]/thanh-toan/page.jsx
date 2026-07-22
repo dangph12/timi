@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
-import { orderAtom, orderPublicIdAtom, paymentMethodAtom } from "@/store/order";
+import { orderAtom, orderPublicIdAtom } from "@/store/order";
 import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Loader2, ArrowLeft } from "lucide-react";
-import { cancelOrder, confirmCodPayment, getOrder } from "@/services/orders";
+import { cancelOrder, confirmCodPayment, getOrderForPayment } from "@/services/orders";
+import { getErrorMessage } from "@/lib/api";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -34,14 +35,13 @@ export default function PaymentPage() {
   const [sseStatus, setSseStatus] = useState("connecting");
   const paidRef = useRef(false);
   const redirectedRef = useRef(false);
-  const setPaymentMethod = useSetAtom(paymentMethodAtom);
   const [selectedMethod, setSelectedMethod] = useState("QR");
   const [timeLeft, setTimeLeft] = useState(null);
   const [isExpired, setIsExpired] = useState(false);
 
   const { data: fetchedOrder } = useQuery({
     queryKey: ["order", publicId],
-    queryFn: () => getOrder(publicId),
+    queryFn: () => getOrderForPayment(publicId),
     enabled: !!publicId && !order,
   });
 
@@ -95,7 +95,7 @@ export default function PaymentPage() {
     });
 
     eventSource.onerror = () => {
-      setSseStatus("error");
+      if (!isExpired && !isPaymentDone) setSseStatus("error");
     };
 
     eventSource.onopen = () => {
@@ -118,9 +118,14 @@ export default function PaymentPage() {
     };
 
     updateTimer();
-    const interval = setInterval(updateTimer, 1000);
+    if (isExpired) return;
+    const interval = setInterval(() => {
+      const remaining = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (remaining <= 0) setIsExpired(true);
+    }, 1000);
     return () => clearInterval(interval);
-  }, [order?.expiresAt]);
+  }, [order?.expiresAt, isExpired]);
 
   useEffect(() => {
     if (isExpired && !isPaymentDone) {
@@ -154,7 +159,6 @@ export default function PaymentPage() {
       toast.success("Đã hủy đơn hàng");
       navigate(-1);
     } catch (error) {
-      const { getErrorMessage } = await import('@/lib/api');
       toast.error(await getErrorMessage(error));
       setIsCancelling(false);
     }
@@ -172,7 +176,6 @@ export default function PaymentPage() {
         toast.success("Xác nhận thanh toán thành công!");
         navigate(`/${publicId}/hoan-tat`);
       } catch (error) {
-        const { getErrorMessage } = await import('@/lib/api');
         toast.error(await getErrorMessage(error));
         setIsConfirmingCod(false);
       }
@@ -241,7 +244,6 @@ export default function PaymentPage() {
                   type="button"
                   onClick={() => {
                     setSelectedMethod("QR");
-                    setPaymentMethod("QR");
                   }}
                   className={`flex-1 py-2 px-4 rounded-lg border text-sm font-bold transition-colors disabled:opacity-50 ${
                     selectedMethod === "QR"
@@ -256,7 +258,6 @@ export default function PaymentPage() {
                   type="button"
                   onClick={() => {
                     setSelectedMethod("COD");
-                    setPaymentMethod("COD");
                   }}
                   className={`flex-1 py-2 px-4 rounded-lg border text-sm font-bold transition-colors disabled:opacity-50 ${
                     selectedMethod === "COD"

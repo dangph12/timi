@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router';
 import { getOrders } from '@/services/orders';
 import { usePaginatedQuery } from '@/hooks/usePaginatedQuery';
 import { Button } from '@/components/ui/button';
-import { Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Package } from 'lucide-react';
+import Pagination from '@/components/Pagination';
 import { STATUS, STATUS_COLORS, formatCurrency, formatDate } from '@/constants/order';
 
 export default function OrderListPage() {
@@ -95,32 +96,11 @@ export default function OrderListPage() {
           </div>
         )}
 
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-6">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === 0}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Trang trước
-            </Button>
-            <span className="text-sm">
-              <span className="font-bold text-foreground">Trang {page + 1}</span>
-              <span className="text-muted-foreground"> / {totalPages}</span>
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= totalPages - 1}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Trang sau
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       </div>
     </>
   );

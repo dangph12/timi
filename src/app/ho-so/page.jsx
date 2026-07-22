@@ -7,7 +7,7 @@ import * as yup from 'yup';
 import { useAtom } from 'jotai';
 import { useAuth } from '@/hooks/useAuth';
 import { userAtom } from '@/store/auth';
-import { authApi } from '@/services/auth';
+import { updateProfile } from '@/services/auth';
 import { getErrorMessage } from '@/lib/api';
 import { parseAddress, buildAddress } from '@/lib/address';
 import { useAddressSelection } from '@/hooks/useAddressSelection';
@@ -69,7 +69,7 @@ export default function ProfilePage() {
     try {
       const fullAddress = buildAddress(data.street, effectiveWard?.name, effectiveProvince?.name);
       const payload = { ...data, address: fullAddress };
-      const result = await authApi.updateProfile(payload);
+      const result = await updateProfile(payload);
       setUser((prev) => ({ ...prev, ...payload }));
       toast.success(result.message || 'Cập nhật thông tin thành công');
     } catch (error) {

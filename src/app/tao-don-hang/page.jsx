@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
-import { orderIdAtom, orderAtom, orderPublicIdAtom } from "@/store/order";
+import { orderAtom, orderPublicIdAtom } from "@/store/order";
 import { capturedCharacterAtom, designIdAtom, designNameAtom } from "@/store/design";
 import { selectedSkuAtom, skuSelectionsAtom } from "@/store/sku";
 import { userAtom } from "@/store/auth";
@@ -8,7 +8,7 @@ import { useNavigate, useLocation } from "react-router";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { createOrder } from "@/services/orders";
-import { useCart } from "@/hooks/useCart";
+import { useCartQuery } from "@/hooks/useCart";
 import { checkoutCart } from "@/services/cart";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { checkoutFormSchema } from "@/schemas";
@@ -35,9 +35,9 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/api";
 
 export default function CheckoutPage() {
-  const setOrderId = useSetAtom(orderIdAtom);
   const setOrder = useSetAtom(orderAtom);
   const setOrderPublicId = useSetAtom(orderPublicIdAtom);
   const navigate = useNavigate();
@@ -89,12 +89,11 @@ export default function CheckoutPage() {
   } = useAddressSelection(user?.address);
   const [submitted, setSubmitted] = useState(false);
 
-  const cartQuery = useCart();
+  const cartQuery = useCartQuery({ enabled: fromCart });
 
   const orderMutation = useMutation({
     mutationFn: createOrder,
     onSuccess: (data) => {
-      setOrderId(data.id);
       setOrderPublicId(data.publicId);
       setOrder((prev) => ({
         ...prev,
@@ -106,7 +105,6 @@ export default function CheckoutPage() {
       navigate(`/${data.publicId}/thanh-toan`);
     },
     onError: async (error) => {
-      const { getErrorMessage } = await import('@/lib/api');
       toast.error(await getErrorMessage(error));
     },
   });
@@ -114,7 +112,6 @@ export default function CheckoutPage() {
   const cartCheckoutMutation = useMutation({
     mutationFn: checkoutCart,
     onSuccess: (data) => {
-      setOrderId(data.id);
       setOrderPublicId(data.publicId);
       setOrder((prev) => ({
         ...prev,
@@ -126,7 +123,6 @@ export default function CheckoutPage() {
       navigate(`/${data.publicId}/thanh-toan`);
     },
     onError: async (error) => {
-      const { getErrorMessage } = await import('@/lib/api');
       toast.error(await getErrorMessage(error));
     },
   });
@@ -389,7 +385,7 @@ export default function CheckoutPage() {
                   </thead>
                   <tbody>
                     {fromCart
-                      ? cartQuery.data?.content?.map((item) => {
+                      ? cartQuery.items.map((item) => {
                           const unitPrice =
                             item.priceAtPurchase ?? item.sku?.price ?? 0;
                           return (
@@ -474,7 +470,7 @@ export default function CheckoutPage() {
                   <span>Tổng cộng</span>
                   <span>
                     {fromCart
-                      ? (cartQuery.data?.content?.reduce(
+                      ? (cartQuery.items.reduce(
                           (sum, item) =>
                             sum +
                             (item.priceAtPurchase ?? item.sku?.price ?? 0) *

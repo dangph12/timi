@@ -21,20 +21,19 @@ export const confirmCodPayment = async (publicId) => {
       headers: { 'Idempotency-Key': codPaymentKeys.get(publicId) },
     })
     .json();
-  codPaymentKeys.delete(publicId);
   return result;
 };
 
 export const getOrders = (params = {}) =>
   api.get('v1/orders', { searchParams: params }).json();
 
-export const getOrderDetail = (publicId) =>
+export const getOrder = (publicId) =>
   api.get(`v1/orders/${publicId}`).json();
 
 export const cancelOrder = (publicId) =>
   api.post(`v1/orders/${publicId}/cancel`).json();
 
-export const getOrder = async (publicId) => {
+export const getOrderForPayment = async (publicId) => {
   const raw = await api.get(`v1/orders/${publicId}`).json();
   const item = raw.items?.[0];
   return {

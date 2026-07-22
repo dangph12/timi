@@ -1,6 +1,1 @@
-import { atom } from 'jotai';
-
-export const cartItemsAtom = atom([]);
-export const cartPageAtom = atom(0);
-export const cartTotalElementsAtom = atom(0);
-export const cartTotalPagesAtom = atom(0);
+// All cart atoms removed - cart state now managed by useCartQuery hook

@@ -5,7 +5,7 @@ import { designNameAtom } from '@/store/design';
 import { useSkus } from '@/app/thiet-ke/_hooks/useSkusData';
 import OptionCard from './OptionCard';
 import QuantityInput from './QuantityInput';
-import StepContinue from './StepContinue';
+import StickyButton from './StepContinue';
 import SkuPriceDisplay from './SkuPriceDisplay';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -231,7 +231,7 @@ export default function SkuSelector({ onContinue, isPending = false, onAddToCart
           </Button>
         </div>
       ) : (
-        <StepContinue
+        <StickyButton
           disabled={!canContinue}
           onClick={onContinue}
           label="THANH TOÁN"

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { authApi } from '@/services/auth';
+import { getMe } from '@/services/auth';
 import { accessTokenAtom, userAtom } from '@/store/auth';
 import { Loader2 } from 'lucide-react';
 
@@ -21,8 +21,7 @@ export default function OAuthCallbackPage() {
 
     setAccessToken(token);
 
-    authApi
-      .getMe()
+    getMe()
       .then((data) => {
         setUser({
           accountId: data.accountId,

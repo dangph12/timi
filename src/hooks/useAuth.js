@@ -1,6 +1,10 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useState } from 'react';
-import { authApi } from '@/services/auth';
+import {
+  login as loginApi,
+  register as registerApi,
+  logout as logoutApi,
+} from '@/services/auth';
 import { accessTokenAtom, userAtom, isAuthenticatedAtom } from '@/store/auth';
 import { getErrorMessage, resetAuthState } from '@/lib/api';
 import { toast } from 'sonner';
@@ -25,7 +29,7 @@ export function useAuth() {
   const login = useCallback(async (email, password) => {
     setLoading(true);
     try {
-      const data = await authApi.login(email, password);
+      const data = await loginApi(email, password);
       resetAuthState();
       setAccessToken(data.accessToken);
       setUser(normalizeUser(data));
@@ -43,7 +47,7 @@ export function useAuth() {
   const register = useCallback(async (body) => {
     setLoading(true);
     try {
-      const data = await authApi.register(body);
+      const data = await registerApi(body);
       resetAuthState();
       setAccessToken(data.accessToken);
       setUser({ ...normalizeUser(data), phone: body.phone || null });
@@ -60,7 +64,7 @@ export function useAuth() {
 
   const logout = useCallback(async () => {
     try {
-      await authApi.logout();
+      await logoutApi();
     } catch {
       // Silently ignore logout errors
     } finally {

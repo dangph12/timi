@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 
-export default function StepContinue({
+export default function StickyButton({
   disabled,
   onClick,
   label = "TIẾP →",

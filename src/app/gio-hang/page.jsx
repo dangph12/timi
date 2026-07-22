@@ -1,18 +1,20 @@
 import { useNavigate, Link } from 'react-router';
 import { ShoppingCart, Trash2, Plus, Minus } from 'lucide-react';
 import {
-  useCart,
+  useCartQuery,
   useUpdateCartItemQuantity,
   useRemoveCartItem,
 } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/api';
+import Pagination from '@/components/Pagination';
 
 export default function CartPage() {
   const navigate = useNavigate();
   const { items, page, setPage, totalElements, totalPages, isLoading, error } =
-    useCart();
+    useCartQuery();
   const updateQty = useUpdateCartItemQuantity();
   const removeItem = useRemoveCartItem();
 
@@ -27,7 +29,6 @@ export default function CartPage() {
       { itemId, quantity: newQty },
       {
         onError: async (err) => {
-          const { getErrorMessage } = await import('@/lib/api');
           toast.error(await getErrorMessage(err));
         },
       }
@@ -37,7 +38,6 @@ export default function CartPage() {
   const handleRemove = (itemId) => {
     removeItem.mutate(itemId, {
       onError: async (err) => {
-        const { getErrorMessage } = await import('@/lib/api');
         toast.error(await getErrorMessage(err));
       },
     });
@@ -155,29 +155,14 @@ export default function CartPage() {
               })}
             </div>
 
-            {totalPages > 1 && (
-              <div className="flex justify-center gap-2 mt-6">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page <= 0}
-                  onClick={() => setPage((p) => Math.max(0, p - 1))}
-                >
-                  Trước
-                </Button>
-                <span className="flex items-center text-sm text-muted-foreground px-3">
-                  {page + 1} / {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages - 1}
-                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-                >
-                  Sau
-                </Button>
-              </div>
-            )}
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              prevLabel="Trước"
+              nextLabel="Sau"
+              showIcons={false}
+            />
 
             <div className="mt-8 border-t-2 border-border pt-6">
               <div className="flex items-baseline justify-between">

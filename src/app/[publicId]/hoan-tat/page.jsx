@@ -3,7 +3,7 @@ import { orderAtom, orderPublicIdAtom } from "@/store/order";
 import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { getOrder } from "@/services/orders";
+import { getOrderForPayment } from "@/services/orders";
 import { Loader2 } from "lucide-react";
 
 export default function FinishPage() {
@@ -18,7 +18,7 @@ export default function FinishPage() {
 
   const { data: fetchedOrder } = useQuery({
     queryKey: ["order", publicId],
-    queryFn: () => getOrder(publicId),
+    queryFn: () => getOrderForPayment(publicId),
     enabled: !!publicId && !order,
   });
 

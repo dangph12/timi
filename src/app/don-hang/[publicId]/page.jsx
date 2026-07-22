@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router';
-import { getOrderDetail } from '@/services/orders';
+import { getOrder } from '@/services/orders';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Package } from 'lucide-react';
@@ -16,7 +16,7 @@ export default function OrderDetailPage() {
 
   const { data: order, isLoading } = useQuery({
     queryKey: ['order', publicId],
-    queryFn: () => getOrderDetail(publicId),
+    queryFn: () => getOrder(publicId),
   });
 
   const title = order
