@@ -2,24 +2,6 @@ import { Button } from "@/components/ui/button";
 import { PenTool, LogIn, LayoutGrid } from "lucide-react";
 import { Link } from "react-router";
 
-const KEYPOINTS = [
-  {
-    icon: LogIn,
-    title: "Vào là thiết kế luôn",
-    desc: "Không cần tạo tài khoản, không cần đăng nhập trước.",
-  },
-  {
-    icon: PenTool,
-    title: "Tự tay chỉnh từng chi tiết",
-    desc: "Tóc, mắt, quần áo, phụ kiện — đổi cái nào thấy ngay cái đó trên hình.",
-  },
-  {
-    icon: LayoutGrid,
-    title: "Nhiều lựa chọn thiết kế",
-    desc: "Hơn 70 lựa chọn dành cho bạn",
-  },
-];
-
 export function Page() {
   const title = "Timi - Cá nhân hoá phụ kiện cho bạn";
   const description =
@@ -47,7 +29,7 @@ export function Page() {
             </picture>
           </div>
 
-          <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-start px-6 md:px-0 lg:px-8 xl:px-12 pb-8 md:pb-12 lg:pb-16">
+          <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center px-6 md:px-0 lg:px-8 xl:px-12 pb-8 md:pb-12 lg:pb-16">
             <h1
               className="text-[1.5rem] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] font-black text-primary/50 break-words tracking-normal sm:tracking-wide"
               style={{
@@ -59,31 +41,54 @@ export function Page() {
             </h1>
             <Link to="/thiet-ke">
               <Button className="bg-primary hover:bg-primary/75 text-white border-[3px] md:border-4 border-white rounded-full px-5 py-3 md:px-8 md:py-6 text-sm md:text-lg font-black tracking-widest shadow-none mt-2 md:mt-4 lg:mt-6">
-                XEM NGAY
+                THIẾT KẾ NGAY
               </Button>
             </Link>
           </div>
         </main>
 
         <section className="bg-background px-4 md:px-8 py-12 md:py-20">
-          <div className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {KEYPOINTS.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.title}
-                  className="flex flex-col items-center text-center p-6 rounded-xl border border-border hover:border-primary/30 transition-colors"
-                >
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Icon className="h-6 w-6" />
-                  </div>
-                  <h3 className="text-base font-black mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {item.desc}
-                  </p>
-                </div>
-              );
-            })}
+          <div className="mx-auto max-w-3xl space-y-8 md:space-y-12">
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
+              <div className="flex h-14 w-14 md:h-20 md:w-20 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <LogIn className="h-7 w-7 md:h-10 md:w-10" />
+              </div>
+              <div className="text-center md:text-left">
+                <h3 className="text-lg md:text-xl font-black mb-1">Vào là thiết kế luôn</h3>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                  Không cần tạo tài khoản, không cần đăng nhập trước.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
+              <div className="flex h-14 w-14 md:h-20 md:w-20 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <PenTool className="h-7 w-7 md:h-10 md:w-10" />
+              </div>
+              <div className="text-center md:text-left">
+                <h3 className="text-lg md:text-xl font-black mb-1">Tự tay chỉnh từng chi tiết</h3>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                  Tóc, mắt, quần áo, phụ kiện — đổi cái nào thấy ngay cái đó trên hình.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
+              <div className="flex h-14 w-14 md:h-20 md:w-20 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <LayoutGrid className="h-7 w-7 md:h-10 md:w-10" />
+              </div>
+              <div className="text-center md:text-left">
+                <h3 className="text-lg md:text-xl font-black mb-1">Nhiều lựa chọn thiết kế</h3>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                  Hơn 70 lựa chọn dành cho bạn
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-center mt-10 md:mt-14">
+            <Link to="/thiet-ke">
+              <Button className="bg-primary hover:bg-primary/75 text-white border-[3px] md:border-4 border-white rounded-full px-5 py-3 md:px-8 md:py-6 text-sm md:text-lg font-black tracking-widest shadow-none">
+                THIẾT KẾ NGAY
+              </Button>
+            </Link>
           </div>
         </section>
       </div>
