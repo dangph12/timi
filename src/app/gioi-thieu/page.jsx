@@ -25,6 +25,18 @@ export function Page() {
           Timi là nền tảng cho phép bạn tự tay thiết kế nhân vật độc đáo, sau đó áp dụng lên nhiều loại sản phẩm khác nhau. Trải nghiệm quy trình từ thiết kế, đặt hàng, đến thanh toán — tất cả trong một giao diện trực quan và mượt mà.
         </p>
 
+        <p className="text-sm md:text-base text-muted-foreground leading-relaxed -mt-6 mb-10">
+          Dự án được phát triển bởi{' '}
+          <a
+            href="https://drive.google.com/open?id=1gocMqsnAcFRHsIriBcvfsw-SC4FqEGtD&usp=drive_fs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary font-bold underline underline-offset-2"
+          >
+            Phan Hải Đăng
+          </a>
+        </p>
+
         <h2 className="text-2xl font-black mb-4">Tính năng chính</h2>
         <ul className="space-y-3 mb-10">
           {KEYPOINTS.map((item) => {
