@@ -15,6 +15,7 @@ const RegisterPage = lazy(() => import('@/app/dang-ky/page'));
 const ProfilePage = lazy(() => import('@/app/ho-so/page'));
 const OAuthCallbackPage = lazy(() => import('@/app/oauth2/callback/page'));
 const OrderListPage = lazy(() => import('@/app/don-hang/page'));
+const AboutPage = lazy(() => import('@/app/gioi-thieu/page'));
 const OrderDetailPage = lazy(() => import('@/app/don-hang/[publicId]/page'));
 
 const router = createBrowserRouter([
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
     Component: Layout,
     children: [
       { index: true, Component: HomePage },
+      { path: 'gioi-thieu', Component: AboutPage },
       { path: 'gio-hang', Component: CartPage },
       { path: 'thiet-ke', Component: DesignPage },
       { path: 'tao-don-hang', Component: CheckoutPage },

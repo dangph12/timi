@@ -14,16 +14,24 @@ export default function Header() {
   return (
     <>
       <header className='flex items-center justify-between px-4 md:px-8 py-3 md:py-4 bg-background sticky top-0 z-50 shadow-sm'>
-        <Link
-          to='/'
-          className='hover:opacity-80 transition-opacity flex items-center justify-center'
-        >
-          <img
-            src='/logo.png'
-            alt='Timi logo'
-            className='h-6 md:h-8 lg:h-10 w-auto object-contain'
-          />
-        </Link>
+        <div className='flex items-center gap-2 sm:gap-4 lg:gap-6'>
+          <Link
+            to='/'
+            className='hover:opacity-80 transition-opacity'
+          >
+            <img
+              src='/logo.png'
+              alt='Timi logo'
+              className='h-6 md:h-8 lg:h-10 w-auto object-contain align-middle'
+            />
+          </Link>
+          <Link
+            to='/gioi-thieu'
+            className='hidden lg:inline text-base font-medium text-foreground hover:text-primary align-middle transition-colors'
+          >
+            Giới thiệu
+          </Link>
+        </div>
 
         <div className='flex items-center gap-2 sm:gap-4 lg:gap-6'>
           <Link
@@ -89,7 +97,7 @@ export default function Header() {
         )}
       >
         <div className='flex items-center justify-between px-4 py-3 border-b'>
-          <span className='font-bold text-sm'>Menu</span>
+          <span className='font-bold text-base'>Menu</span>
           <button
             onClick={() => setDrawerOpen(false)}
             className='p-1 hover:bg-muted rounded-md transition-colors'
@@ -103,14 +111,21 @@ export default function Header() {
           <Link
             to='/thiet-ke'
             onClick={() => setDrawerOpen(false)}
-            className='block px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors'
+            className='block px-3 py-2.5 text-base font-medium rounded-md hover:bg-muted transition-colors'
           >
             Thiết kế
           </Link>
           <Link
+            to='/gioi-thieu'
+            onClick={() => setDrawerOpen(false)}
+            className='block px-3 py-2.5 text-base font-medium rounded-md hover:bg-muted transition-colors'
+          >
+            Giới thiệu
+          </Link>
+          <Link
             to='/gio-hang'
             onClick={() => setDrawerOpen(false)}
-            className='block px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors'
+            className='block px-3 py-2.5 text-base font-medium rounded-md hover:bg-muted transition-colors'
           >
             Giỏ hàng
           </Link>
@@ -120,14 +135,14 @@ export default function Header() {
               <Link
                 to='/ho-so'
                 onClick={() => setDrawerOpen(false)}
-                className='block px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors'
+                className='block px-3 py-2.5 text-base font-medium rounded-md hover:bg-muted transition-colors'
               >
                 Hồ sơ
               </Link>
               <Link
                 to='/don-hang'
                 onClick={() => setDrawerOpen(false)}
-                className='block px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors'
+                className='block px-3 py-2.5 text-base font-medium rounded-md hover:bg-muted transition-colors'
               >
                 Đơn hàng
               </Link>
@@ -138,14 +153,14 @@ export default function Header() {
               <Link
                 to='/dang-nhap'
                 onClick={() => setDrawerOpen(false)}
-                className='block px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors'
+                className='block px-3 py-2.5 text-base font-medium rounded-md hover:bg-muted transition-colors'
               >
                 Đăng nhập
               </Link>
               <Link
                 to='/dang-ky'
                 onClick={() => setDrawerOpen(false)}
-                className='block px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors'
+                className='block px-3 py-2.5 text-base font-medium rounded-md hover:bg-muted transition-colors'
               >
                 Đăng ký
               </Link>

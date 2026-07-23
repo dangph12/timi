@@ -314,6 +314,10 @@ export default function PaymentPage() {
                   </p>
                 </div>
               )}
+
+              <p className="mt-6 text-[10px] text-muted-foreground/50 text-center leading-relaxed">
+                Trang web mang tính chất giới thiệu sản phẩm, không phải cửa hàng thật — đơn hàng chỉ là trải nghiệm quy trình.
+              </p>
             </div>
           </main>
 

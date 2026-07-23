@@ -171,7 +171,7 @@ export default function PartSelector({ part, onContinue }) {
       <StickyButton
         disabled={!noOptions && !isSelected && !part.allowMultiSelect && isBody}
         onClick={onContinue}
-        label="TIẾP →"
+        label="TIẾP"
       />
     </>
   );

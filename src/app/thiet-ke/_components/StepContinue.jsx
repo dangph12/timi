@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 export default function StickyButton({
   disabled,
   onClick,
-  label = "TIẾP →",
+  label = "TIẾP",
   isPending = false,
 }) {
   return (
@@ -14,6 +15,7 @@ export default function StickyButton({
         disabled={disabled || isPending}
       >
         {label}
+        <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
       </Button>
     </div>
   );

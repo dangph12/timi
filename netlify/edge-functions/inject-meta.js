@@ -4,6 +4,11 @@ const META = {
     description:
       'Tự tay thiết kế nhân vật độc đáo của riêng bạn cùng Timi.',
   },
+  '/gioi-thieu': {
+    title: 'Giới thiệu - Timi',
+    description:
+      'Timi là trang web giới thiệu sản phẩm, cho phép bạn tự tay thiết kế nhân vật và trải nghiệm quy trình mua sắm trực tuyến.',
+  },
   '/thiet-ke': {
     title: 'Thiết kế nhân vật - Timi',
     description:
