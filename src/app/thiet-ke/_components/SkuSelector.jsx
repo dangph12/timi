@@ -201,20 +201,6 @@ export default function SkuSelector({ onContinue, isPending = false, onAddToCart
       {onAddToCart ? (
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-border/80 z-50 flex gap-3 md:static md:p-0 md:bg-transparent md:backdrop-blur-none md:border-none md:z-auto md:mt-4">
           <Button
-            className="flex-1 py-4 text-xs font-black bg-primary hover:bg-primary/80 text-white tracking-widest rounded-full h-11 transition-all shadow-md active:scale-[0.98]"
-            onClick={onContinue}
-            disabled={!canContinue || isPending}
-          >
-            {isPending ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                ĐANG XỬ LÝ...
-              </span>
-            ) : (
-              'MUA NGAY'
-            )}
-          </Button>
-          <Button
             disabled={!canContinue || isAddingToCart}
             onClick={onAddToCart}
             variant="outline"
@@ -227,6 +213,21 @@ export default function SkuSelector({ onContinue, isPending = false, onAddToCart
               </span>
             ) : (
               'THÊM VÀO GIỎ'
+            )}
+          </Button>
+
+          <Button
+            className="flex-1 py-4 text-xs font-black bg-primary hover:bg-primary/80 text-white tracking-widest rounded-full h-11 transition-all shadow-md active:scale-[0.98]"
+            onClick={onContinue}
+            disabled={!canContinue || isPending}
+          >
+            {isPending ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                ĐANG XỬ LÝ...
+              </span>
+            ) : (
+              'MUA NGAY'
             )}
           </Button>
         </div>
