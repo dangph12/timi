@@ -190,7 +190,7 @@ export default function DesignPage() {
       <meta property="og:description" content={description} />
       <meta property="og:type" content="website" />
       <div className="flex h-full flex-col font-body">
-        <div className="flex flex-col md:flex-row flex-1 w-full min-h-0 overflow-hidden">
+        <div className="flex flex-col md:flex-row flex-1 w-full min-h-0">
           {/* Left Sidebar */}
           <div className="w-full md:w-1/3 p-4 pb-28 md:pb-4 overflow-y-auto border-t md:border-t-0 md:border-r border-border order-2 md:order-1 flex-1">
             {sections.map((part, idx) => {
@@ -302,7 +302,7 @@ export default function DesignPage() {
           {/* Right Canvas */}
           <div
             ref={canvasRef}
-            className="w-full h-[40vh] md:h-full md:w-2/3 bg-muted order-1 md:order-2 shrink-0 md:shrink"
+            className="w-full h-[40vh] md:h-full md:w-2/3 bg-muted order-1 md:order-2 shrink-0 md:shrink overflow-hidden"
           >
             {size.width > 0 && (
               <DesignCanvas
