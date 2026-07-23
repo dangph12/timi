@@ -1,9 +1,9 @@
 import { PenTool, LogIn, LayoutGrid, TriangleAlert } from "lucide-react";
 
 const KEYPOINTS = [
-  { icon: PenTool, text: "Thiết kế nhân vật trực quan với nhiều tùy chọn" },
-  { icon: LogIn, text: "Trải nghiệm thiết kế không cần đăng nhập" },
-  { icon: LayoutGrid, text: "Áp dụng thiết kế lên nhiều danh mục sản phẩm" },
+  { icon: LogIn, text: "Vào là thiết kế luôn — không cần tạo tài khoản, không cần đăng nhập trước." },
+  { icon: PenTool, text: "Tự tay chỉnh từng chi tiết — tóc, mắt, quần áo, phụ kiện, đổi cái nào thấy ngay cái đó." },
+  { icon: LayoutGrid, text: "Nhiều lựa chọn thiết kế — hơn 70 lựa chọn dành cho bạn." },
 ];
 
 export function Page() {
