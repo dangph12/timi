@@ -34,8 +34,8 @@ export default function RegisterPage() {
     }
   };
 
-  const title = 'Đăng ký - Tỉ Mỉ';
-  const description = 'Tạo tài khoản Tỉ Mỉ mới.';
+  const title = 'Đăng ký - Timi';
+  const description = 'Tạo tài khoản Timi mới.';
 
   return (
     <>
@@ -48,7 +48,7 @@ export default function RegisterPage() {
           <div className="text-center">
             <h1 className="text-2xl font-black">Đăng ký</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Tạo tài khoản mới tại Tỉ Mỉ
+              Tạo tài khoản mới tại Timi
             </p>
           </div>
 

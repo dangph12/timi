@@ -25,7 +25,7 @@ export default function OrderListPage() {
     setPage(0);
   };
 
-  const title = 'Đơn hàng của tôi - Tỉ Mỉ';
+  const title = 'Đơn hàng của tôi - Timi';
 
   const tabs = [null, ...Object.keys(STATUS)];
 

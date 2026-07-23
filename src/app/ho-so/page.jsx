@@ -80,7 +80,7 @@ export default function ProfilePage() {
 
   if (!isAuthenticated || !user) return null;
 
-  const title = 'Hồ sơ - Tỉ Mỉ';
+  const title = 'Hồ sơ - Timi';
 
   return (
     <>

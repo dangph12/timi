@@ -32,8 +32,8 @@ export default function LoginPage() {
     }
   };
 
-  const title = 'Đăng nhập - Tỉ Mỉ';
-  const description = 'Đăng nhập vào tài khoản Tỉ Mỉ của bạn.';
+  const title = 'Đăng nhập - Timi';
+  const description = 'Đăng nhập vào tài khoản Timi của bạn.';
 
   return (
     <>

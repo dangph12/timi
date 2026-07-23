@@ -1,32 +1,32 @@
 const META = {
   '/': {
-    title: 'Tỉ Mỉ - Cá nhân hoá phụ kiện cho bạn',
+    title: 'Timi - Cá nhân hoá phụ kiện cho bạn',
     description:
-      'Tự tay thiết kế nhân vật độc đáo của riêng bạn cùng Tỉ Mỉ.',
+      'Tự tay thiết kế nhân vật độc đáo của riêng bạn cùng Timi.',
   },
   '/thiet-ke': {
-    title: 'Thiết kế nhân vật - Tỉ Mỉ',
+    title: 'Thiết kế nhân vật - Timi',
     description:
       'Tùy chỉnh hộp DIY của bạn với kiểu tóc, mắt, quần áo và phụ kiện độc đáo. Tạo thiết kế nhân vật hoàn hảo.',
   },
   '/tao-don-hang': {
-    title: 'Thanh toán - Tỉ Mỉ',
+    title: 'Thanh toán - Timi',
     description:
-      'Hoàn tất đơn hàng Tỉ Mỉ của bạn. Vui lòng cung cấp thông tin liên hệ và giao hàng.',
+      'Hoàn tất đơn hàng Timi của bạn. Vui lòng cung cấp thông tin liên hệ và giao hàng.',
   },
   '/thanh-toan': {
-    title: 'Thanh toán - Tỉ Mỉ',
+    title: 'Thanh toán - Timi',
     description: 'Thanh toán đơn hàng của bạn',
   },
   '/hoan-tat': {
-    title: 'Đã xác nhận đơn hàng - Tỉ Mỉ',
-    description: 'Cảm ơn bạn đã đặt hàng tại shop Tỉ Mỉ.',
+    title: 'Đã xác nhận đơn hàng - Timi',
+    description: 'Cảm ơn bạn đã đặt hàng tại shop Timi.',
   },
 };
 
 const FALLBACK = {
-  title: 'Tỉ Mỉ',
-  description: 'Tỉ Mỉ - Cá nhân hoá phụ kiện cho bạn.',
+  title: 'Timi',
+  description: 'Timi - Cá nhân hoá phụ kiện cho bạn.',
 };
 
 const OG_IMAGE = 'https://timishop.netlify.app/og-image.jpg';

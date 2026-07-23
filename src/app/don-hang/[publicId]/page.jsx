@@ -20,8 +20,8 @@ export default function OrderDetailPage() {
   });
 
   const title = order
-    ? `Đơn hàng ${publicId} - Tỉ Mỉ`
-    : 'Đơn hàng - Tỉ Mỉ';
+    ? `Đơn hàng ${publicId} - Timi`
+    : 'Đơn hàng - Timi';
 
   return (
     <>

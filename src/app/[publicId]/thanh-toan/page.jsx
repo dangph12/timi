@@ -182,7 +182,7 @@ export default function PaymentPage() {
     }
   };
 
-  const title = "Thanh toán - Tỉ Mỉ";
+  const title = "Thanh toán - Timi";
   const description =
     "Thanh toán đơn hàng của bạn";
 

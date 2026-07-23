@@ -175,9 +175,9 @@ export default function CheckoutPage() {
     }
   };
 
-  const title = "Thanh toán - Tỉ Mỉ";
+  const title = "Thanh toán - Timi";
   const description =
-    "Hoàn tất đơn hàng Tỉ Mỉ của bạn. Vui lòng cung cấp thông tin liên hệ và giao hàng.";
+    "Hoàn tất đơn hàng Timi của bạn. Vui lòng cung cấp thông tin liên hệ và giao hàng.";
 
   return (
     <>

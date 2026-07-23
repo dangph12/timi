@@ -19,8 +19,8 @@ export default function Header() {
           className='hover:opacity-80 transition-opacity flex items-center justify-center'
         >
           <img
-            src='/timilogo.png'
-            alt='Tỉ Mỉ logo'
+            src='/logo.png'
+            alt='Timi logo'
             className='h-6 md:h-8 lg:h-10 w-auto object-contain'
           />
         </Link>

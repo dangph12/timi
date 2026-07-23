@@ -36,9 +36,9 @@ export default function FinishPage() {
   const displaySubtotal = (order?.cart?.subtotal ?? 0).toLocaleString("vi-VN") + "đ";
   const displayTotal = (order?.cart?.total ?? 0).toLocaleString("vi-VN") + "đ";
 
-  const title = "Đã xác nhận đơn hàng - Tỉ Mỉ";
+  const title = "Đã xác nhận đơn hàng - Timi";
   const description =
-    "Cảm ơn bạn đã đặt hàng tại shop Tỉ Mỉ.";
+    "Cảm ơn bạn đã đặt hàng tại shop Timi.";
 
   if (!order && urlPublicId) return (
     <div className="h-full flex items-center justify-center">
@@ -62,7 +62,7 @@ export default function FinishPage() {
               Cảm ơn bạn đã đặt hàng
             </h1>
             <p className="text-sm md:text-lg">
-              <span className="text-primary font-bold">Shop Tỉ Mỉ</span> sẽ gọi xác nhận đơn hàng của bạn trong thời gian sớm nhất.
+              <span className="text-primary font-bold">Shop Timi</span> sẽ gọi xác nhận đơn hàng của bạn trong thời gian sớm nhất.
             </p>
           </div>
 

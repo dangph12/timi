@@ -152,7 +152,7 @@ export default function DesignPage() {
     designMutation,
   ]);
 
-  const title = "Thiết kế nhân vật - Tỉ Mỉ";
+  const title = "Thiết kế nhân vật - Timi";
   const description =
     "Tùy chỉnh hộp DIY của bạn với kiểu tóc, mắt, quần áo và phụ kiện độc đáo. Tạo thiết kế nhân vật hoàn hảo.";
 

@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 
 export function Page() {
-  const title = "Tỉ Mỉ - Cá nhân hoá phụ kiện cho bạn";
+  const title = "Timi - Cá nhân hoá phụ kiện cho bạn";
   const description =
-    "Tự tay thiết kế nhân vật độc đáo của riêng bạn cùng Tỉ Mỉ.";
+    "Tự tay thiết kế nhân vật độc đáo của riêng bạn cùng Timi.";
 
   return (
     <>

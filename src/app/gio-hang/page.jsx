@@ -43,7 +43,7 @@ export default function CartPage() {
     });
   };
 
-  const title = 'Giỏ hàng - Tỉ Mỉ';
+  const title = 'Giỏ hàng - Timi';
 
   return (
     <>
