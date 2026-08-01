@@ -7,11 +7,20 @@ const DesignPage = lazy(() => import('@/app/design/page'));
 const CheckoutPage = lazy(() => import('@/app/checkout/page'));
 const PaymentPage = lazy(() => import('@/app/payment/page'));
 const FinishPage = lazy(() => import('@/app/finish/page'));
-
+const AboutUsPage = lazy(() => import('@/app/aboutus/page'));
+const HowToBuyPage = lazy(() => import('@/app/howtobuy/page'));
 const router = createBrowserRouter([
   {
     path: '/',
     Component: HomePage
+  },
+  {
+    path: '/aboutus',
+    Component: AboutUsPage
+  },
+  {
+    path: '/howtobuy',
+    Component: HowToBuyPage
   },
   {
     path: '/design',
@@ -28,7 +37,8 @@ const router = createBrowserRouter([
   {
     path: '/finish',
     Component: FinishPage
-  }
+  },
+ 
 ]);
 
 export default router;
