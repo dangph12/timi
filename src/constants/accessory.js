@@ -6,7 +6,7 @@ export const ACCESSORIES = [
   { id: 'A05', label: 'Accessory A05', type: 'hat' },
   { id: 'A06', label: 'Accessory A06', type: 'hat' },
   { id: 'A07', label: 'Accessory A07' },
-  { id: 'A08', label: 'Accessory A08' }
+  { id: 'A08', label: 'Accessory A08' },
 ];
 
 export const ACCESSORY_OFFSETS = {
@@ -18,17 +18,17 @@ export const ACCESSORY_OFFSETS = {
     A05: { x: 0, y: -0.42, scale: 1.28 },
     A06: { x: 0, y: -0.4, scale: 1.28 },
     A07: { x: 0.35, y: -0.3, scale: 0.25 },
-    A08: { x: 0.02, y: -0.1, scale: 1 }
+    A08: { x: 0.02, y: -0.075, scale: 1.1 },
   },
   economy: {
-    A05: { x: 0, y: -0.24, scale: 1.33 },
-    A06: { x: 0, y: -0.3, scale: 1.25 },
+    A05: { x: 0, y: -0.29, scale: 1.33 },
+    A06: { x: 0, y: -0.3, scale: 1.3 },
     A07: { x: 0.35, y: -0.32, scale: 0.3 },
-    A08: { x: 0.02, y: 0.32, scale: 1.2 }
-  }
+    A08: { x: 0.02, y: 0.33, scale: 1.2 },
+  },
 };
 
 export const ACCESSORY_MUTEX_GROUPS = [
   ['A01', 'A02'],
-  ['A05', 'A06']
+  ['A05', 'A06'],
 ];
