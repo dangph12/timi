@@ -6,9 +6,9 @@ export default function OptionCard({
   imageSrc,
   isSelected,
   onSelect,
-  imageScale = 135,
+  imageScale = 125,
   disabled = false,
-  imageBgClass = ''
+  imageBgClass = '',
 }) {
   return (
     <button
@@ -29,7 +29,7 @@ export default function OptionCard({
             className='object-contain filter drop-shadow-sm'
             style={{
               maxWidth: `${imageScale}%`,
-              maxHeight: `${imageScale}%`
+              maxHeight: `${imageScale}%`,
             }}
             alt={label}
           />
@@ -49,7 +49,9 @@ export default function OptionCard({
           {label}
         </p>
         {subtitle && (
-          <p className={`text-[11px] mt-0.5 transition-colors ${isSelected ? 'text-[#0000D0]' : 'text-slate-400'}`}>
+          <p
+            className={`text-[11px] mt-0.5 transition-colors ${isSelected ? 'text-[#0000D0]' : 'text-slate-400'}`}
+          >
             {subtitle}
           </p>
         )}
