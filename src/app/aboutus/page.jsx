@@ -35,14 +35,13 @@ export function AboutUsPage() {
 
         {/* SERVICES SECTION */}
         <section className='relative bg-[#001ffc] text-white w-full overflow-hidden'>
-
-             <Link to='/design' className='hidden md:block'>
-                  <img
-                    src='/aboutus/about3.png'
-                    alt='About Us - Tỉ Mỉ Workshop'
-                    className='w-full h-auto object-cover'
-                  />
-                </Link>
+          <Link to='/design'>
+            <img
+              src='/aboutus/about3.png'
+              alt='About Us - Tỉ Mỉ Workshop'
+              className='w-full h-auto object-cover'
+            />
+          </Link>
         </section>
 
         {/* FOOTER SOCIAL & BRAND PATTERN */}
