@@ -25,7 +25,7 @@ export function Page() {
                 <Link to='/design' className='hidden md:block'>
                   <img
                     src='/homebg1.png'
-                    alt='About Us - Tỉ Mỉ Workshop'
+                    alt='Back to School Collection - Try it'
                     className='w-full h-auto object-cover'
                   />
                 </Link>
