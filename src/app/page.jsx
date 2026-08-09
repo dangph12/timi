@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import Header from '@/components/header';
+import { Link } from 'react-router';
 
 export function Page() {
   const title = 'Tỉ Mỉ - Made by hand, shaped by you';
@@ -13,52 +14,38 @@ export function Page() {
       <meta property='og:title' content={title} />
       <meta property='og:description' content={description} />
       <meta property='og:type' content='website' />
-      <div className='flex min-h-screen flex-col font-sans'>
-        <Header />
+      <div className='flex min-h-screen flex-col font-sans bg-white overflow-x-hidden'>
+              <Header />
+      
+              {/* HERO SECTION - Blue Background with about1 image */}
+              <section className='relative bg-[#001ffc] text-white w-full overflow-hidden'>
+                {/* Desktop */}
 
-        {/* Hero Section */}
-        <main className='flex-1 relative bg-[#e7e7eb] flex flex-col justify-end px-0 md:px-8 py-10 lg:py-16'>
-          <div className='absolute inset-0 z-0 overflow-hidden pointer-events-none'>
-            <picture className='absolute inset-0 w-full h-full'>
-              <source media='(max-width: 768px)' srcSet='/hero/mobile.png' />
-              <source media='(min-width: 769px)' srcSet='/hero/desktop.png' />
-              <img
-                src='/hero/desktop.png'
-                alt='Hero background'
-                className='w-full h-full object-cover'
-                loading='lazy'
-              />
-            </picture>
-          </div>
+                
+                <Link to='/design' className='hidden md:block'>
+                  <img
+                    src='/homebg1.png'
+                    alt='About Us - Tỉ Mỉ Workshop'
+                    className='w-full h-auto object-cover'
+                  />
+                </Link>
+              
 
-          {/* Content */}
-          <div className='relative z-10 w-full flex flex-col items-start mb-12 sm:mb-16 md:mb-20 lg:mb-28 px-6 md:px-0 lg:px-8 xl:px-12'>
-            <h1
-              className='text-[2.5rem] sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5.5rem] leading-[1.1] font-black text-[#8cc6eb] tracking-wide'
-              style={{
-                WebkitTextStroke: '0.12em white',
-                paintOrder: 'stroke fill'
-              }}
-            >
-              Made by hand, shaped by you
-            </h1>
-            <Button className='bg-[#8cc6eb] hover:bg-[#7cb9e0] text-white border-[3px] md:border-4 border-white rounded-full px-5 py-3 md:px-8 md:py-6 text-sm md:text-lg font-black tracking-widest shadow-none mt-2 md:mt-4 lg:mt-6'>
-              CHECK IT OUT
-            </Button>
-          </div>
 
-          {/* Pagination Indicators */}
-          <div className='absolute bottom-6 md:bottom-10 right-6 md:right-10 lg:right-16 z-10 flex gap-2 md:gap-3'>
-            {[1, 2, 3, 4, 5, 6].map((item, i) => (
-              <button
-                key={i}
-                className={`h-2 rounded-full transition-all ${i === 1 ? 'w-10 bg-white' : 'w-10 bg-white/50 hover:bg-white/70'}`}
-                aria-label={`Go to slide ${i + 1}`}
-              />
-            ))}
-          </div>
-        </main>
-      </div>
+
+
+                {/* Mobile - clickable to /design */}
+                <Link to='/design' className='block md:hidden'>
+                  <img
+                    src='/hombg3.png'
+                    alt='Back to School Collection - Try it'
+                    className='w-full h-auto object-cover'
+                  />
+                </Link>
+              </section>
+   
+      
+            </div>
     </>
   );
 }
