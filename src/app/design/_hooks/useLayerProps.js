@@ -35,7 +35,7 @@ function calcVersionBounds(canvasWidth, canvasHeight, versionImage) {
 
   return {
     x: canvasWidth / 2,
-    y: canvasHeight / 2 - 35,
+    y: canvasHeight * 0.45, // responsive: equals height/2-35 at ~700px but avoids top-clip on small screens
     width: w,
     height: h,
   };

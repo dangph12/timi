@@ -10,13 +10,13 @@ export const PACKAGING_OPTIONS = [
   {
     id: 'gift-box',
     label: 'GIFT BOX',
-    price: 50000,
+    price: 130000,
     imageSrc: '/packaging/GIFT BOX.png'
   },
   {
     id: 'diy-box',
     label: 'DIY BOX',
-    price: 70000,
+    price: 50000,
     imageSrc: '/packaging/D.I.Y BOX.png'
   }
 ];
