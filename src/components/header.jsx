@@ -24,12 +24,10 @@ export default function Header() {
 
         {/* Left Navigation */}
         <nav className='hidden lg:flex gap-6 items-center font-bold text-sm tracking-wide'>
-          <a
-            href='#'
-            className='flex items-center gap-1 hover:text-pink-500 transition-colors'
-          >
-            SHOP <ChevronDown size={14} strokeWidth={3} className='mt-0.5' />
-          </a>
+          <Link to='/' className='hover:text-pink-500 transition-colors'>
+            HOME
+          </Link>
+
           <Link to='/howtobuy' className='hover:text-pink-500 transition-colors'>
             HOW TO BUY
           </Link>
@@ -85,14 +83,13 @@ export default function Header() {
       {isMobileMenuOpen && (
         <div className='lg:hidden fixed inset-x-0 top-[53px] md:top-[65px] bg-white z-40 border-b border-gray-200 shadow-lg px-6 py-6 transition-all animate-in slide-in-from-top-2'>
           <nav className='flex flex-col gap-4 font-bold text-base tracking-wide text-gray-800'>
-            <a
-              href='#'
+            <Link
+              to='/'
               onClick={() => setIsMobileMenuOpen(false)}
-              className='flex items-center justify-between py-2 border-b border-gray-100 hover:text-pink-500 transition-colors'
+              className='py-2 border-b border-gray-100 hover:text-pink-500 transition-colors'
             >
-              <span>SHOP</span>
-              <ChevronDown size={18} />
-            </a>
+              HOME
+            </Link>
             <Link
               to='/howtobuy'
               onClick={() => setIsMobileMenuOpen(false)}
